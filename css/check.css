@@ -1,0 +1,92 @@
+/*盘点*/
+.gird{
+	display: flex;
+	justify-content:flex-start;
+	align-content: center;
+	align-items: start;
+    padding: 5px 10px;
+}
+.gird-label{
+	width:20%;
+	display: inline-block;
+	padding-top: 10px;
+}
+.gird-button{
+    width: 19%;
+    margin: 0 1%;
+}
+.gird-content{
+	width: 80%;
+}
+.mui-content .mui-btn.mui-btn-block{
+	margin:0 2%;
+	font-size: 14px;
+	width: 95%;
+	padding: 10px 0;
+	background: #f2a11c;
+	color: #fff;
+	border: 0;
+}
+.mui-content .mui-btn.mui-btn-block.btn{
+	background: #fff;
+	color: #666;
+	margin-bottom:12px;
+    width: 100%;
+    margin-left: 0;
+}
+#List .mui-table-view-cell{
+	padding: 0;
+	margin-bottom: 15px;
+}
+.search_head{
+	padding: 0;
+}
+.mui-search.search_head.mui-active::before{
+	content: '';
+}
+.search_head .mui-placeholder{
+	text-align: left;
+	padding-left: 18px;
+	top: 0;
+}
+.search_head .mui-placeholder .mui-icon-search::before{
+	content: '';
+}
+#ulList_start,#ulList_end{
+	position: absolute;
+	width: 100%;
+	top: 50px;
+	left: 0;
+	z-index: 9;
+	background-color: #efeff4;
+}
+.search_ullist_start,.search_ullist_end{
+	z-index: 2;
+    list-style: none;
+    position: relative;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+    list-style: none;
+    width: 60%;
+    margin-left: 20%;
+    border-radius: 4px;
+    background-color: #FFFFFF;
+}
+.search_ullist_start_li,.search_ullist_end_li{
+	position: relative;
+    overflow: hidden;
+    margin-bottom: 1px;
+    padding: 10px 36px;
+    border-radius: 4px;
+    border-bottom: solid 1px #C7C7CC;
+}
+#textarea{
+	border: 1px solid rgba(0,0,0,.2);
+    border-radius: 4px;
+    background-color: #fff;
+    padding: 10px 15px;
+    margin-bottom: 0;
+    -webkit-appearance: none;
+    -webkit-user-select: none;
+}

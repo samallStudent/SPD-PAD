@@ -1,0 +1,124 @@
+<script type="text/html" id='detail_tpl'>
+	<div style="margin-top:10px;">
+		{{ each list value i }}
+		<ul class="mui-table-view" style="margin-bottom:8px;">
+			<li class="mui-table-view-cell mui-collapse mui-active">
+				<a class="mui-navigate-right" href="#">单据信息</a>
+				<div class="mui-collapse-content">
+					<div class="mui-input-row">
+						<label>配送/验收单</label>
+						<p class="detailRow_content">{{ distributeCode ? distributeCode: '' }}</p>
+					</div>
+					<div class="mui-input-row">
+						<label>状态</label>
+						<p class="detailRow_content">{{ value.status ? value.status === 1 ? '待验收':'已验收': '' }}</p>
+					</div>
+					<div class="mui-input-row">
+						<label>类型</label>
+						<p class="detailRow_content">{{ typeName ? typeName: '' }}</p>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<ul class="mui-table-view" style="margin-bottom:8px;">
+			<li class="mui-table-view-cell mui-collapse mui-active">
+				<a class="mui-navigate-right" href="#">产品信息</a>
+				<div class="mui-collapse-content">
+						<div class="mui-input-row">
+							<label>通用名称</label>
+							<p class="detailRow_content">{{value && value.ctmmGenericName ? value.ctmmGenericName: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>商品名</label>
+							<p class="detailRow_content">{{value && value.ctmmTradeName ? value.ctmmTradeName: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>规格</label>
+							<p class="detailRow_content">{{value && value.ctmmSpecification? value.ctmmSpecification:''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>剂型</label>
+							<p class="detailRow_content">{{value && value.ctmmDosageFormDesc ? value.ctmmDosageFormDesc:''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>生产厂家</label>
+							<p class="detailRow_content">{{value && value.ctmmManufacturerName ? value.ctmmManufacturerName: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>批准文号</label>
+							<p class="detailRow_content">{{ value && value.approvalNo ? value.approvalNo: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>包装规格</label>
+							<p class="detailRow_content">{{value && value.packageSpecification ? value.packageSpecification: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>单位</label>
+							<p class="detailRow_content">{{ value && value.unit ? value.unit: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							{{ if isPsList && value.status === 1 && value.isUsual === 0 }}
+								<label class="font-warning">生产批号</label>
+								<input class="mui-input editInput BatchNo" value={{ value && value.productBatchNo ? value.productBatchNo: ''}} />
+								{{ else }}
+									<label>生产批号</label>
+									<p class="detailRow_content">{{ value && value.productBatchNo ?value.productBatchNo: ''}}</p>
+							{{ /if }}
+						</div>
+						<div class="mui-input-row">
+							{{ if isPsList && value.status === 1 && value.isUsual === 0 }}
+								<label class="font-warning">生产日期</label>
+								<input class="mui-input editInput realProductTime" type='date' value={{ value && value.realProductTime ? value.realProductTime: ''}} />
+								{{ else }}
+									<label>生产日期</label>
+									<p class="detailRow_content">{{value && value.realProductTime ? value.realProductTime: ''}}</p>
+							{{ /if }}
+							
+						</div>
+						<div class="mui-input-row">
+							<label>指示货位</label>
+							<p class="detailRow_content">{{value && value.replanStoreName ? value.replanStoreName: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							{{ if isPsList && value.status === 1 && isUsual === 0 }}
+								<label class="font-warning">有效期至</label>
+								<input class="mui-input editInput realValidEndDate" type='date' value={{ value && value.realValidEndDate ? value.realValidEndDate: '' }} />
+								{{ else }}
+									<label>有效期至</label>
+									<p class="detailRow_content">{{value && value.realValidEndDate ? value.realValidEndDate: ''}}</p>
+							{{ /if }}
+						</div>
+						{{ if isShowTemprature === 1 }}
+							<div class="mui-input-row">
+								{{ if isPsList && value.status === 1 && isUsual === 0 }}
+									<label class="font-warning">验收温度（℃）</label>
+									<input class="mui-input editInput realAcceptanceTemperature" type='number' value={{ value && value.realAcceptanceTemperature ? value.realAcceptanceTemperature: ''}}/>
+									{{ else }}
+										<label>验收温度（℃）</label>
+										<p class="detailRow_content">{{value && value.realAcceptanceTemperature ? value.realAcceptanceTemperature: ''}}</p>
+								{{ /if }}
+							</div>
+						{{ /if }}
+						<div class="mui-input-row">
+							<label>配送数量</label>
+							<p class="detailRow_content">{{ value && value.realDeliveryQuantiry ? value.realDeliveryQuantiry: 0 }}</p>
+						</div>
+						<div class="mui-input-row">
+							{{ if isPsList && value.status === 1 && isUsual === 0 }}
+								<label class="font-warning">实到数量</label>
+								<input class="mui-input editInput realReceiveQuantiry" type="number"  pattern="[0-9]*" value={{ value && value.realReceiveQuantiry ? value.realReceiveQuantiry: value && value.realDeliveryQuantiry ? value.realDeliveryQuantiry: '' }} />
+								{{ else }}
+									<label>实到数量</label>
+									<p class="detailRow_content">{{value && value.isUsual === 0 && value.realReceiveQuantiry ? value.realReceiveQuantiry: 0 }}</p>
+							{{ /if }}
+						</div>
+						<div class="mui-input-row">
+							<label>供应商</label>
+							<p class="detailRow_content">{{value && value.supplierName ? value.supplierName: ''}}</p>
+						</div>
+				</div>
+			</li>
+		</ul>
+		{{ /each }}
+	</div>
+</script>

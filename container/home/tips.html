@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/home.css" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		<link rel="import" href="../../tpl/tips.html" id="tips" />
+	</head>
+
+	<body>
+		<div class="mui-content" id="tipDetail">
+
+		</div>
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			(function($, doc) {
+				// 挂载模板
+				var utils = new Utils();
+				utils.appendModule('#tips');
+				$.plusReady(function() {
+					$.init();
+					plus.screen.lockOrientation("portrait-primary");
+					var self = plus.webview.currentWebview();
+					
+					var params = JSON.parse(self.tipId);
+					console.log(params)
+					var detialData = { list: [] };
+					plus.nativeUI.showWaiting()
+					mui.ajaxRequest('/a/pad/drugreminddetail/findDrugRemindDetail',{
+						data: { id: params.id },
+						success: function(data){
+							plus.nativeUI.closeWaiting()
+							var result = data.data;
+							detialData.list.push(result)
+							detialData.title = params.title;
+							detialData.tipdate = params.tipdate;
+							detialData.remindType = params.remindType;
+							console.log(detialData)
+							template(detialData);
+						},
+						error: function(xhr,type,errorThrown){
+							alert(xhr.responseText)
+                		}
+					})
+					
+					
+				});
+				function template(data){
+                    utils.innerTplHtml('tips-tpl', '#tipDetail', data);
+        		}
+			}(mui, document))
+		</script>
+	</body>
+
+</html>

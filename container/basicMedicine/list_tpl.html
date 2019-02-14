@@ -1,0 +1,69 @@
+
+<script type="text/html" id='list_tpl_view'>
+	{{ each list value i}}
+		<div class="am-card scrollList-item am-card-full" 
+			data-id={{ value.id }}
+			data-isUsual={{ value.isUsual }}
+			data-drugCode={{ value.drugCode }}
+			data-parentId={{ value.parentId }}
+		>
+			<div class="am-card-header">
+				<div class="am-card-header-content">
+					<span style="font-size: 18px; color: rgb(51, 51, 51); font-weight: bold;">
+					{{ value.ctmmGenericName ? value.ctmmGenericName:value.ctmmTradeName ? value.ctmmTradeName: '' }}</span>
+				</div>
+				<div class="am-card-header-extra">
+					<span>{{ value.type }}</span>
+				</div>
+			</div>
+			<div class="am-card-body">
+				<div class="am-flexbox am-flexbox-align-center">
+					<div class="am-flexbox-item"> 
+						单位：<span>{{ value.unit }}</span> 
+					</div>
+					<div class="am-flexbox-item"> 
+						规格：<span>{{ value.ctmmSpecification }}</span> 
+					</div>
+					<div class="am-flexbox-item"> 
+						数量：<span>{{ value.realDeliveryQuantiry }}</span> 
+					</div>
+				</div>
+				<div class="am-flexbox am-flexbox-align-center">
+					<div class="am-flexbox-item"> 
+						实到数量：<span>{{ value.realReceiveQuantiry }}</span>
+					</div>
+					<div class="am-flexbox-item am-last-flexItem">
+					 	生产日期：<span>{{ value.realProductTime }}</span>
+					</div>
+					<div class="am-flexbox-item am-last-flexItem">
+					 	有效期至：<span>{{ value.realValidEndDate }}</span>
+					</div>
+				</div>
+				<div class="am-flexbox am-flexbox-align-center">
+					<div class="am-flexbox-item"> 
+						批准文号：<span>{{ value.approvalNo }}</span>
+					</div>
+					<div class="am-flexbox-item"> 
+						指示货位:<span>{{ value.replanStoreName }}</span>
+					</div>
+					<div class="am-flexbox-item am-last-flexItem">
+					 	生产厂家：<span>{{ value.ctmmManufacturerName }}</span>
+					</div>
+				
+				</div>
+			</div>
+			<div class="am-card-footer">
+				<div class="am-card-footer-content"></div>
+				<div class="am-card-footer-extra">
+					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined moreDetail" data-id={{ value.id }} data-index={{ i }} style="margin: 0 5px;">更多详情</button>
+					{{ if acceptance }}
+						<button type="button" class="mui-btn mui-btn-blue mui-btn-danger acceptance" data-id={{ value.id }}  data-index={{ i }}>确认验收</button>
+					{{ /if }}
+					
+				</div>
+			</div>
+		</div>
+		<div style="background-color: #f5f5f9; height: 6px;">
+		</div>
+	{{/each}}
+</script>

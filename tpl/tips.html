@@ -1,0 +1,93 @@
+<script type="text/html" id="tips-tpl">
+		<div class="main-title">
+			<div class="tip-title">{{ title }}</div>
+			<div class="tip-date">{{ tipdate }}</div>
+		</div>
+		{{ each list value i}}
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<div class="mui-input-row">
+					<label>商品名称</label>
+					<p class="detailRow_content">{{ value.ctmmTradeName }}</p>
+				</div>
+			</li>
+			<li class="mui-table-view-cell">
+				<div class="mui-input-row">
+					<label>通用名称</label>
+					<p class="detailRow_content">{{ value.ctmmGenericName}}</p>
+				</div>
+			</li>
+			<li class="mui-table-view-cell">
+				<div class="mui-input-row">
+					<label>规格</label>
+					<p class="detailRow_content">{{ value.ctmmSpecification }}</p>
+				</div>
+			</li>
+			<li class="mui-table-view-cell">
+				<div class="mui-input-row">
+					<label>剂型</label>
+					<p class="detailRow_content">{{ value.ctmmDosageFormDesc }}</p>
+				</div>
+			</li>
+			<li class="mui-table-view-cell">
+				<div class="mui-input-row">
+					<label>生产厂家</label>
+					<p class="detailRow_content">{{ value.ctmmManufacturerName }}</p>
+				</div>
+			</li>
+			<li class="mui-table-view-cell">
+				<div class="mui-input-row">
+					<label>包装规格</label>
+					<p class="detailRow_content">{{ value.packageSpecification }}</p>
+				</div>
+			</li>
+			<li class="mui-table-view-cell">
+				<div class="mui-input-row">
+					<label>单位</label>
+					<p class="detailRow_content">{{ value.unit }}</p>
+				</div>
+			</li>
+			{{  if remindType === 'usefulDate' }}
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row">
+						<label>生产批号</label>
+						<p class="detailRow_content">{{ value.lot }}</p>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row">
+						<label>生产日期</label>
+						<p class="detailRow_content">{{ value.productDate }}</p>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row">
+						<label>有效期至</label>
+						<p class="detailRow_content">{{ value.validEndDate }}</p>
+					</div>
+				</li>
+			{{ else }}
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row">
+						<label>当前库存</label>
+						<p class="detailRow_content">{{ value.usableQuantity }}</p>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row">
+						<label>库存上限</label>
+						<p class="detailRow_content">{{ value.upperQuantity }}</p>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row">
+						<label>库存下限</label>
+						<p class="detailRow_content">{{ value.downQuantity }}</p>
+					</div>
+				</li>
+			{{ /if }}
+			
+		</ul>
+	{{ /each }}
+	
+</script>

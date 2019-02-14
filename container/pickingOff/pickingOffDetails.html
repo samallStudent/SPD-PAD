@@ -1,0 +1,188 @@
+<!-- 拣货下架-  详情页 - yuwei-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="import" href="./detail_tpl.html" id="acc_detail_tpl"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/check.css" />
+		
+	</head>
+
+	<body>
+		<div class="mui-content detailRow">
+			<form class="mui-input-group" id="detailContent" style="background:none;">
+				<ul class="mui-table-view" style="margin-bottom:12px;">
+					<li class="mui-table-view-cell mui-collapse">
+						<a class="mui-navigate-right" href="#">产品信息</a>
+						<div class="mui-collapse-content">
+								<div class="mui-input-row">
+									
+								</div>
+						</div>
+					</li>
+				</ul>
+			</form>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+
+			(function($) {
+				var utils = new Utils();
+				utils.appendModule('#acc_detail_tpl');
+				
+				function showData(data){
+					var html = template('detail_tpl', data);
+					document.getElementById('detailContent').innerHTML = html;
+				}
+				
+			// 模板加载
+			$.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				var details = JSON.parse(self.details);//获得参数
+				var detailData = {};
+				
+				$.init({
+					beforeback: function() {
+				        var list = plus.webview.currentWebview().opener();  
+				        mui.fire(list, 'pagefresh',{ selectTab: details.selected , hasPicked: true , query : details.query  }); 
+				        return true;  
+			    	}
+				})
+				console.log('details*******************') 
+				console.log(JSON.stringify(details)) 
+				var titleUrl = '/a/common/pickingorderdetail/getPickingDetailPad?pickingOrderNo=' + details.pickingOrderNo,
+					url = '/a/common/pickingorderdetail/detailList',
+					pickUrl = '/a/common/pickingorder/finishPicking';
+				if(details.hasPicked){
+					var groundBtn = '<button type="button" id="picking" class="mui-btn mui-btn-warning mui-btn-block" style="margin-bottom: 20px;" data-loading-text = "提交中" data-loading-icon-position="right">确认拣货</button>'
+					document.querySelector('.detailRow').insertAdjacentHTML("beforeEnd",groundBtn);
+				}
+				var postData = {
+					pickingOrderNo: details.pickingOrderNo,
+					id: details.id,
+					pickingStatus: details.pickingStatus
+				};
+				plus.nativeUI.showWaiting('加载中...');
+				mui.ajaxRequest(titleUrl,{
+						type: 'GET',
+						success: function(data){
+							if(data.code === 200){
+								for(var key in data.data){
+									detailData[key] = data.data[key];
+									detailData.hasPicked = details.hasPicked;
+								}
+								mui.ajaxRequest(url,{
+									type: 'POST',
+									data: postData,
+									success: function(data){
+										plus.nativeUI.closeWaiting();
+										if(data.code === 200){
+											detailData.list = data.data.list;
+											console.log(detailData)
+											showData(detailData);
+											if(details.hasAcceptance){
+												setTimeout(function(){
+													showOrHideBtn()
+													var acceptanceBtn = '<button type="button" id="acceptance" class="mui-btn mui-btn-warning mui-btn-block" style="margin-bottom: 20px;" data-loading-text = "提交中" data-loading-icon-position="right">确认拣货</button>'
+													document.querySelector('.detailRow').insertAdjacentHTML("beforeEnd",acceptanceBtn);
+												},100)
+											}
+											
+										}else{
+											mui.toast(data.msg,{ type: 'div' });
+										}
+									},
+									error: function(xhr,type,errorThrown){
+										console.log(xhr.responseText)
+			                		}
+								});
+							}else{
+								mui.toast(data.msg,{ type: 'div' });
+							}
+							
+						},
+						error: function(xhr,type,errorThrown){
+							console.log(xhr.responseText)
+                		}
+					});
+
+
+				if(details.hasPicked){
+					var picking = document.querySelector('#picking');
+					picking.addEventListener('tap',function(e){
+						var num = details.allocationNum;
+						var realInputNum = document.querySelector('.relNum').value;
+						if(realInputNum > num){
+							return mui.toast('实际上架数量不得大于指示数量',{ type: 'div' });
+						}
+						if(realInputNum <=0){
+							return mui.toast('实际上架数量不得小于或等于0',{ type: 'div' });
+						}
+						var btnArray = ['否', '是'];
+							mui.confirm('是否确认拣货？', '操作提示', btnArray, function(e) {
+								if (e.index == 1) {
+									console.log(detailData)
+									var pickingDetail = [],postData = {},submitData = {};
+									postData.drugCode = detailData.list[0].drugCode;
+									postData.id = detailData.list[0].id;
+									postData.pickingNum = realInputNum
+									pickingDetail.push(postData);
+									submitData.applyNo = detailData.applyOrder;
+									submitData.pickingOrderNo = detailData.pickingOredr;
+									submitData.pickingDetail = pickingDetail;
+									console.log(JSON.stringify(submitData));
+									mui.ajaxRequest(pickUrl,{
+				                		type: 'POST',
+				                		data: submitData,
+				                		contentType: "application/json",
+				                		showWaiting: true,
+				                		success: function(data){
+				                			if(data.code === 200){
+//				                				mui.toast('下架成功',{ type: 'div' });
+				                				mui.toast('拣货成功',{ type: 'div' });
+				                				setTimeout(function(){
+				                					var page =  plus.webview.getWebviewById('pickingOffList');
+													mui.fire(page,'pagefresh',{ selectTab: '1' ,query:{ selected:"left" } });
+													common.gotowin('pickingOffList',{  });
+													plus.webview.currentWebview().close();
+				                				},300)
+				                				
+//				                				var parmasData = {};
+//												parmasData.finishUrl = '../pickingOff/index';
+//												parmasData.keepUrl = 'pickingOffList';
+//												parmasData.resultType = 'picking';
+//												parmasData.itemData = details.orderInfo;
+//												common.openwin('../result/index',{ parmas: JSON.stringify(parmasData) },{
+//													titleText: '结果',
+//													autoBackButton: false
+//												})
+				                			}else{
+				                				mui.alert(data.msg)
+				                			}
+				                		},
+				                		error: function(xhr,type,errorThrown){
+											console.log(xhr.responseText)
+				                		}
+				            		});
+								}
+							},'div')
+					})
+				}
+				
+			});
+		})(mui);
+		
+		</script>
+	</body>
+
+</html>

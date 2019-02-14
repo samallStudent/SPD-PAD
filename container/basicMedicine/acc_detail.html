@@ -1,0 +1,186 @@
+<!--验收 -  详情页 - wwb-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="import" href="./detail_tpl.html" id="acc_detail_tpl"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/check.css"  rel="stylesheet"/>
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		
+	</head>
+
+	<body>
+		<div class="mui-content detailRow">
+			<form class="mui-input-group" id="detailContent" style="background:none;">
+				<ul class="mui-table-view" style="margin-bottom:12px;">
+					<li class="mui-table-view-cell mui-collapse">
+						<a class="mui-navigate-right" href="#">产品信息</a>
+						<div class="mui-collapse-content">
+								
+						</div>
+					</li>
+				</ul>
+			</form>
+			<form id="List">
+				
+			</form>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="../../js/request.js" ></script>
+		<script type="text/javascript">
+			
+			(function($) {
+				var utils = new Utils();
+				utils.appendModule('#acc_detail_tpl');
+				
+				function showData(data){
+					var html = template('detail_tpl', data);
+					if(html){
+						document.getElementById('detailContent').innerHTML = html;
+					}
+					
+				}
+				var checkType = undefined, 
+					type = undefined, 
+					data = null, 
+					details = undefined, 
+					url = '/a/exam/detail', // 分页接口
+					titleUrl = '/a/exam/detailhead',// 头部接口
+					checkUrl = '/a/checkacceptdetail/basemedic'; // 验收接口
+				$.plusReady(function(){
+					$.init({
+						beforeback: function() {
+					        var list = plus.webview.currentWebview().opener();  
+					        console.log(details.selectTabs)
+					        mui.fire(list, 'pagefresh',{ selectTabs: details.selectTabs === 1 ? '1': '0' , query: details.query }); 
+					        return true;  
+				    	}
+					})
+					
+					var self = plus.webview.currentWebview();
+					details = JSON.parse(self.details);//获得参数
+					checkType = details.checkType;
+					status = details.status;
+					console.log(JSON.stringify(details) );
+					console.log(typeof details.selectTabs)
+					var postData = {
+						distributeCode: details.distributeCode,
+						status: details.status,
+						id: details.id
+					};
+					var detailData = {};
+					plus.nativeUI.showWaiting('加载中...');
+					mui.ajaxRequest(titleUrl,{
+						type: 'POST',
+						data: { distributeCode: postData.distributeCode },
+						success: function(data){
+							if(data.code === 200){
+								console.log('titleUrl*****************')
+								console.log(JSON.stringify(data))
+								for(var key in data.data){
+									detailData[key] = data.data[key];
+									detailData.isPsList = details.isPsList;
+								}
+								mui.ajaxRequest(url,{
+									type: 'POST',
+									data: postData,
+									success: function(data){
+										console.log('url*****************')
+										console.log(JSON.stringify(data))
+										plus.nativeUI.closeWaiting();
+										if(data.code === 200){
+											detailData.list = data.data.list;
+											console.log(detailData)
+											showData(detailData);
+											if(details.hasAcceptance){
+												setTimeout(function(){
+//													showOrHideBtn()
+													var acceptanceBtn = '<button type="button" id="acceptance" class="mui-btn mui-btn-warning mui-btn-block" style="margin-bottom: 20px;" data-loading-text = "提交中" data-loading-icon-position="right">确认验收</button>'
+													document.querySelector('.detailRow').insertAdjacentHTML("beforeEnd",acceptanceBtn);
+												},100)
+											}
+											
+										}else{
+											mui.toast(data.msg,{ type: 'div' });
+										}
+									},
+									error: function(xhr,type,errorThrown){
+										console.log(xhr.responseText)
+			                		}
+								});
+							}else{
+								mui.toast(data.msg,{ type: 'div' });
+							}
+							
+						},
+						error: function(xhr,type,errorThrown){
+							console.log(xhr.responseText)
+                		}
+					});
+					
+					// checkType  1 2 4 配送单 可编辑     其余 出库单  不能编辑
+					// 验收
+					mui('.detailRow').on('tap','#acceptance',function(event){
+						let postData = [], submitData = {}, values = {};
+						values.productBatchNo = detailData.list[0].productBatchNo;
+						values.realProductTime = detailData.list[0].realProductTime;
+						values.realValidEndDate = detailData.list[0].realValidEndDate;
+						if(defaultStatus.isShowTemprature === 1){
+							values.realAcceptanceTemperature = detailData.list[0].realAcceptanceTemperature;
+						}
+						values.realReceiveQuantiry = detailData.list[0].realReceiveQuantiry;
+						values.drugCode = detailData.list[0].drugCode;
+						values.isUsual = detailData.list[0].isUsual;
+						values.id = detailData.list[0].id;
+						values.parentId = detailData.list[0].id;
+						postData.push(values);
+						submitData.detailList = postData;
+						submitData.distributeCode = detailData.distributeCode;
+						let count = 0;
+						mui.each(submitData.detailList,function(index,item){
+							count += Number(item.realReceiveQuantiry)
+						});
+						if(count > detailData.list[0].realReceiveQuantiry){
+							mui.toast('请注意：实到数量比配送数量多');
+						}
+						console.log(submitData,'submitData'); // 批号 数据
+						document.activeElement.blur(); // 隐藏软键盘
+						var btnArray = ['否', '是'];
+						mui.confirm('是否确认验收？', '确认', btnArray, function(e) {
+							if (e.index == 1) {
+								mui.ajaxRequest(checkUrl,{
+									type: 'POST',
+									data: submitData,
+									showWaiting: true,
+									contentType: "application/json",
+									success: function(data){
+										if(data.code === 200){
+											mui.toast('验收成功',{ type: 'div' });
+											var page =  plus.webview.getWebviewById('basic_acc_list');
+											mui.fire(page,'pagefresh',{ selectTabs: '1', query:{} });
+											common.gotowin('basic_acc_list',{  });
+											plus.webview.currentWebview().close();
+										}
+									},
+									error: function(xhr,type,errorThrown){
+										console.log(xhr.responseText)
+			                		}
+								})
+							}
+						},'div')
+					})
+				})
+			})(mui);
+		
+		</script>
+	</body>
+
+</html>

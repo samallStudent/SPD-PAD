@@ -1,0 +1,227 @@
+<!--单号搜索页面-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>搜索页面</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<style>
+			#ulList{
+				padding-top: 10px;
+			}
+			.search-ullist{
+				z-index: 2;
+			    background-color: #efeff4;
+			    border-bottom: solid 1px #F5F5F9;
+			    border-radius: 2px;
+			    list-style: none;
+			    position: relative;
+			    margin-top: 0;
+			    margin-bottom: 0;
+			    padding-left: 0;
+			    list-style: none;
+			    width: 100%;
+			}
+			.search-ullist-li{
+				position: relative;
+			    overflow: hidden;
+			    padding: 10px 36px;
+			}
+			.search-ullist-li::before{
+				font-family: Muiicons;
+				content: '\e466';
+				position: absolute;
+				left: 10px;
+			}
+			.history-title{
+				display: flex;
+				justify-content: space-between;
+				padding-right: 10px;
+			}
+			.history-tags{
+				display: flex;
+				flex-wrap: wrap;
+			    padding: 0 10px 10px 0;
+			}
+			.tag{
+				padding: 8px 10px;
+				margin: 8px 10px;
+			    border: solid 1px #ccc;
+			    background-color: #F5F5F9;
+			    border-radius: 3px;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			 <div class="mui-input-row mui-search search_head" style="width:85%;display: inline-block;">
+				<input type="search" id="search" class="mui-input-clear" placeholder="请输入单号">
+			</div>
+		     <a class="mui-action-back mui-pull-right" style="height:45px;line-height: 45px;">取消</a>
+		</header>
+		<div class="mui-content">
+			<div id="ulList">
+					
+			</div>
+			<div style="padding:10px;">
+				<div class="history-title">
+					<h4>历史搜索记录</h4>
+				</div>
+				
+				<div class="history-tags">
+					
+				</div>
+				
+			</div>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+			(function($) {
+				mui.init();
+				
+				var params = undefined, key = undefined, localStorageItem = [] // 单号
+				$.plusReady(function(){
+					var self = plus.webview.currentWebview();
+					params = JSON.parse(self.params);//获得参数
+					console.log(self.params);
+				    key = params.key;
+					var searchList = JSON.parse(plus.storage.getItem('searchCodeHistory'));
+					console.log(searchList);
+					localStorageItem = searchList && searchList.list ? searchList.list: [];
+					if(searchList && searchList.list.length){
+						// 创建 删除历史记录标签
+						var span = document.createElement('span');
+						span.className = 'mui-icon mui-icon-trash clearHistory';
+						document.querySelector('.history-title').appendChild(span);
+						
+						// 创建 历史记录tag
+						mui.each(searchList.list,function(index,item){
+							var div = document.createElement('div');
+							div.className = 'tag';
+							div.innerHTML = item;
+							div.setAttribute('data-distributeCode',item);
+							document.querySelector('.history-tags').appendChild(div)
+						})
+					}
+					console.log(localStorageItem)
+				    // 删除 历史记录
+				    $('.history-title').on('tap','.clearHistory',function(){
+				    	var btnArray = ['否', '是'];
+				    	mui.confirm('是否确认删除历史搜索记录？', '确认', btnArray, function(e) {
+				    		if (e.index == 1) {
+				    			plus.nativeUI.showWaiting();
+				    			setTimeout(function(){
+				    				plus.storage.removeItem('searchCodeHistory');
+				    				console.log(plus.storage.getItem('searchCodeHistory'))
+					    			var deleteChild = document.querySelector('.clearHistory');
+					    			document.querySelector('.history-title').removeChild(deleteChild);
+					    			document.querySelector('.history-tags').innerHTML = '';
+					    			
+					    			plus.nativeUI.closeWaiting();
+				    			},1000)
+				    		}
+				    	},'div')
+				    });
+				    
+				    // 点击tag 进行搜索
+				    $('.history-tags').on('tap','.tag',function(){
+				    	var dataset = this.dataset;
+				    	var page =  plus.webview.getWebviewById(params.route);
+				    	var searchData = {
+				    		distributeCode: dataset.distributecode,
+				    		auditStatus: params.auditStatus
+				    	}
+					  	mui.fire(page,'search',{ searchData: JSON.stringify(searchData) });
+					  	mui.back()
+				    })
+				   
+				    $('.search_head').on('keyup','#search',function(e){
+				    	var paramName  = e.target.value;
+				    	var url = null, data = {};
+						if(paramName){
+					    	if(key === 'distributeCode'){
+					    		// 单号
+					    		url = '/a/checkaccept/shelfListNoPage';
+					    		data = {
+					    			distributeCode: paramName,
+					    			auditStatus: params.auditStatus
+					    		}
+					    	}
+					    	mui.ajaxRequest(url,{
+								type:"post",
+								data: data,
+								success: function(data){
+									if(data.code === 200){
+										let dataList = data.data;
+										createSelect(dataList,key);
+									}
+								},
+								error: function(xhr,type,errorThrown){
+									alert(xhr.responseText)
+			            		}
+							})
+						}else{
+							document.querySelector('#ulList').innerHTML = '';
+						}
+				   });
+				   
+				   
+					function createSelect(data,key){
+						if(document.querySelector('.search-ullist')){
+							var ulList = document.querySelector('.search-ullist');
+							document.querySelector('#ulList').removeChild(ulList);
+						}
+						var ul = document.createElement('ul');
+						ul.className = 'search-ullist';
+						for(var i=0;i<data.length; i++){
+							var li = document.createElement('li');
+							li.className = 'search-ullist-li';
+							li.setAttribute('data-distributeCode',data[i].distributeCode);
+							li.innerHTML = data[i].distributeCode;
+							ul.appendChild(li);
+						}
+						document.querySelector('#ulList').appendChild(ul)
+					  }
+				  $('#ulList').on('tap','.search-ullist-li',function(){
+				  	console.log(localStorageItem)
+				  	let dataset = this.dataset;
+				  	console.log(dataset)
+				  	let flag = false;
+				  	mui.each(localStorageItem,function(index,item){
+			  			if(item === dataset.distributecode){
+			  				flag = true
+			  			}
+			  		});
+			  		if(!flag){
+			  			if(localStorageItem.length > 10){
+			  				localStorageItem.shift();
+			  			}
+			  			localStorageItem.push(dataset.distributecode);
+			  			console.log('当前不存在')
+			  		}else{
+			  			console.log('已经存在')
+			  		}
+			  		let localParams = {
+			  			list: localStorageItem
+			  		}
+			  		let searchData = {
+			  			distributeCode: dataset.distributecode,
+			  			auditStatus: params.auditStatus
+			  		}
+			  		plus.storage.setItem('searchCodeHistory',JSON.stringify(localParams))
+			  		var page =  plus.webview.getWebviewById(params.route);
+			  		mui.fire(page,'search',{ searchData: JSON.stringify(searchData)});
+			  		mui.back()
+				  });
+				})
+			})(mui);
+			
+		</script>
+	</body>
+
+</html>

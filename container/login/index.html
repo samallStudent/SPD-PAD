@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<div class="am-title">药品物流管理系统</div>
+			<form id='login-form'>
+				<div class="am-input-row">
+					<label class="am-input-label">
+						<img src="../../assest/userlogin.svg" height="24" width="24" />
+					</label>
+					<div class="am-input-control">
+						<input id='account' type="text" placeholder="请输入账号"/>
+					</div>
+				</div>
+				<div class="am-input-row">
+					<label class="am-input-label">
+						<img src="../../assest/password.svg" height="24" width="24" />
+					</label>
+					<div class="am-input-control">
+						<input id='password' type="password" placeholder="请输入密码"/>
+					</div>
+				</div>
+			</form>
+			<div class="mui-content-padded">
+				<button id='login' Readonly class="mui-btn mui-btn-block mui-btn-warning" data-loading-text = "登录中" data-loading-icon-position="right">登 录</button>
+			</div>
+			
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/common.js"></script>
+		<script type="text/javascript" src="../../js/request.js" ></script>
+		<script>
+			(function($, doc) {
+				$.init({
+					statusBarBackground: '#f7f7f7'
+				});
+				$.plusReady(function() {
+					plus.screen.lockOrientation("portrait-primary");
+					var loginButton = doc.getElementById('login');
+					var accountBox = doc.getElementById('account');
+					var passwordBox = doc.getElementById('password');
+					var btnArray = ['确认'];
+					loginButton.addEventListener('tap', function(event) {
+					document.activeElement.blur(); // 隐藏软键盘
+					if(!accountBox.value) return mui.toast('请输入用户名',{ type: 'div' });
+					if(!passwordBox.value) return mui.toast('请输入密码',{ type: 'div' });
+					mui(this).button('loading');
+					var _this = this;
+						mui.ajaxRequest('/a/entryPass/entryptPassword',{
+							type: 'POST',
+							data: {
+								password: passwordBox.value
+							},
+							success: function(data){
+								if(data.code === 200){
+									let entryPwd = data.data.password;
+									mui.ajaxRequest('/a/login',{
+										type: 'POST',
+										data: {
+											username: accountBox.value,
+											password: entryPwd
+										},
+										success: function(res){
+											mui(_this).button('reset');
+											if(res.code === 200){
+												console.log(res)
+												var flag =  setUser(res.data);
+												if(!flag) return mui.toast('请重新进行登陆操作',{ duration:'long', type:'div' });
+												common.openwin('../home/index',{})
+											}else{
+												mui.toast(res.msg,{ type: 'div' });
+												mui(_this).button('reset');
+											}
+																					
+										},
+										error: function(xhr,type,errorThrown){
+											console.log(xhr.responseText)
+										}
+									})
+								}else{
+										mui.alert('账号或密码错误', '', btnArray, function(e) {
+										if (e.index == 0) {
+//											alert('你点击了是');
+										}
+									},'div')
+								}
+							},
+							error: function(xhr,type,errorThrown){
+								mui(_this).button('reset');
+				
+							}
+						})
+					});
+				});
+			}(mui, document));
+			
+			function setUser(res){
+				var deptInfo = res.deptInfo;
+				var deptList = [];
+				var currDept = {};
+				mui.each(deptInfo,function(index,item){
+					if(item.deptType === "3" || item.deptType === '4'|| item.deptType === '5'){
+						var deptItem = {
+							deptId: item.deptId,
+							deptType: item.deptType,
+							deptName: item.deptName,
+							lastSelect: item.lastSelect
+						}
+						if(item.lastSelect){
+							currDept = item;
+						}
+						deptList.push(deptItem);
+					}
+				});
+				currDept = currDept.deptId ? currDept: deptList[0];
+				plus.storage.setItem('currDept',JSON.stringify(currDept));
+				plus.storage.setItem('deptList',JSON.stringify(deptList));
+				// 后台设置当前选中库房
+				var url = '/a/cacheCurrentDept/'+ currDept.deptId
+				mui.ajaxRequest(url,{
+            		type: 'get',
+            		showWaiting: true,
+            		success: function(data){
+            			if(data.code === 200){
+            				mui.toast('设置当前系统成功',{ type: 'div' });
+            				let history = undefined;// 设置历史记录数据结构
+            				if(currDept.deptType === '3' || currDept.deptType === '4' ){
+            					history = {
+            						'acceptance':{
+            							'main_list': [],
+            							'sub_list':[]
+            						},
+            						'grounding':{
+            							'main_list': [],
+            							'sub_list':[]
+            						},
+            						'pickingOff':{
+            							'main_list': [],
+            							'sub_list':[]
+            						},
+            						'stock':{
+            							'main_list': [], 
+            						}
+            					}
+            				}else{
+            					history = {
+            						'acceptance':{
+            							'main_list': [],
+            							'sub_list':[]
+            						},
+            						'stock':{
+            							'main_list': [], 
+            						}
+            					}
+            				}
+            				plus.storage.setItem('searchHistory',JSON.stringify(history));
+            			}else{
+            				mui.toast('设置切换系统失败,请重新登陆',{ type: 'div' });
+            				return false
+            			}
+            		},
+            		error: function(xhr,type,errorThrown){
+            			return false
+            		}
+        		});
+        		return true
+			}
+		</script>
+	</body>
+
+</html>

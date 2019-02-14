@@ -1,0 +1,223 @@
+{
+  "container/acceptance/acc_list.html": {
+    "refer": [
+      "container/acceptance/acc_detail.html",
+      "container/acceptance/acc_batch.html",
+      "container/result/index.html",
+      "container/commonPages/searchPage.html"
+    ],
+    "resources": []
+  },
+  "container/acceptance/index.html": {
+    "refer": [
+      "container/acceptance/acc_list.html",
+      "container/commonPages/qrcode.html",
+      "container/commonPages/searchPage.html",
+      "container/acceptance/acc_detail.html",
+      "container/acceptance/acc_not_list.html"
+    ],
+    "resources": []
+  },
+  "container/home/index.html": {
+    "refer": [
+      "container/pickingOff/index.html",
+      "container/home/tips.html",
+      "container/acceptance/index.html",
+      "container/grounding/index.html",
+      "container/stockQuery/index.html",
+      "container/check/index.html",
+      "container/home/profile.html",
+      "container/commonPages/qrcode.html",
+      "container/basicMedicine/index.html"
+    ],
+    "resources": [
+      "js/utils.js",
+      "css/home.css",
+      "js/mui.pullToRefresh.js",
+      "js/common.js",
+      "js/mui.pullToRefresh.material.js",
+      "js/template-web.js",
+      "js/request.js",
+      "js/mui.js",
+      "tpl/message.html"
+    ]
+  },
+  "container/grounding/index.html": {
+    "refer": [
+      "container/grounding/ground_list.html",
+      "container/commonPages/qrcode.html",
+      "container/commonPages/searchPage.html",
+      "container/commonPages/searchCode.html",
+      "container/grounding/ground_not_list.html"
+    ],
+    "resources": []
+  },
+  "container/grounding/ground_list.html": {
+    "refer": [
+      "container/grounding/ground_detail.html",
+      "container/grounding/ground_batch.html",
+      "container/result/index.html",
+      "container/commonPages/searchPage.html"
+    ],
+    "resources": []
+  },
+  "container/pickingOff/index.html": {
+    "refer": [
+      "container/pickingOff/pickingOffList.html",
+      "container/commonPages/qrcode.html",
+      "container/commonPages/searchPage.html",
+      "container/pickingOff/pickingOffListUn.html"
+    ],
+    "resources": []
+  },
+  "container/stockQuery/index.html": {
+    "refer": [
+      "container/stockQuery/details.html",
+      "container/commonPages/searchPage.html"
+    ],
+    "resources": []
+  },
+  "container/check/index.html": {
+    "refer": [
+      "container/check/checkList.html",
+      "container/check/subIndex.html",
+      "container/check/index.html"
+    ],
+    "resources": [
+      "container/check/subIndex.html"
+    ]
+  },
+  "container/check/checkList.html": {
+    "refer": [
+      "container/check/checkDetails.html"
+    ],
+    "resources": []
+  },
+  "container/acceptance/acc_detail.html": {
+    "refer": [
+      "container/Result/index.html",
+      "container/result/index.html"
+    ],
+    "resources": []
+  },
+  "container/pickingOff/pickingOffList.html": {
+    "refer": [
+      "container/pickingOff/pickingOffDetails.html",
+      "container/pickingOff/picking_batch.html",
+      "container/result/index.html",
+      "container/commonPages/searchPage.html"
+    ],
+    "resources": []
+  },
+  "container/login/login.html": {
+    "refer": [
+      "container/login/main.html",
+      "container/login/forget_password.html",
+      "container/login/reg.html",
+      "container/home/index.html"
+    ],
+    "resources": []
+  },
+  "container/guide.html": {
+    "refer": [
+      "container/login/login.html",
+      "container/login/index.html"
+    ],
+    "resources": []
+  },
+  "container/login/index.html": {
+    "refer": [
+      "container/home/index.html"
+    ],
+    "resources": []
+  },
+  "container/index.html": {
+    "refer": [
+      "container/guide.html",
+      "container/login/index.html"
+    ],
+    "resources": []
+  },
+  "container/commonPages/qrcode.html": {
+    "refer": [
+      "container/acceptance/acc_list.html"
+    ]
+  },
+  "container/acceptance/acc_batch.html": {
+    "refer": [
+      "container/result/index.html"
+    ]
+  },
+  "container/grounding/ground_batch.html": {
+    "refer": [
+      "container/result/index.html"
+    ]
+  },
+  "container/pickingOff/picking_batch.html": {
+    "refer": [
+      "container/result/index.html"
+    ]
+  },
+  "container/pickingOff/pickingOffDetails.html": {
+    "refer": [
+      "container/result/index.html"
+    ]
+  },
+  "container/check/checkDetails.html": {
+    "refer": [
+      "container/result/index.html"
+    ]
+  },
+  "container/grounding/ground_detail.html": {
+    "refer": [
+      "container/result/index.html"
+    ]
+  },
+  "container/basicMedicine/index.html": {
+    "refer": [
+      "container/basicMedicine/acc_list.html",
+      "container/basicMedicine/basic_acc_list.html"
+    ]
+  },
+  "container/basicMedicine/acc_list.html": {
+    "refer": [
+      "container/basicMedicine/acc_detail.html",
+      "container/basicMedicine/basic_acc_batch.html",
+      "container/commonPages/searchPage.html"
+    ]
+  },
+  "container/basicMedicine/acc_detail.html": {
+    "refer": [
+      "container/result/index.html"
+    ]
+  },
+  "container/basicMedicine/basic_acc_list.html": {
+    "refer": [
+      "container/commonPages/searchPage.html"
+    ]
+  },
+  "container/home/profile.html": {
+    "refer": [
+      "container/login/index.html"
+    ]
+  },
+  "container/acceptance/acc_not_list.html": {
+    "refer": [
+      "container/acceptance/acc_detail.html",
+      "container/commonPages/searchPage.html",
+      "container/acceptance/acc_batch.html"
+    ]
+  },
+  "container/grounding/ground_not_list.html": {
+    "refer": [
+      "container/grounding/ground_detail.html",
+      "container/grounding/ground_batch.html",
+      "container/commonPages/searchPage.html"
+    ]
+  },
+  "container/pickingOff/pickingOffListUn.html": {
+    "refer": [
+      "container/commonPages/searchPage.html"
+    ]
+  }
+}

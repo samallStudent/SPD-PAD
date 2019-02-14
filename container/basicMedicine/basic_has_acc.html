@@ -1,0 +1,301 @@
+<!--验收列表  - 药品信息 列表页 - wwb-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="import" href="./list_tpl.html" id="acc_list_tpl"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav themes_bg_color">
+		   	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+		   		<label class="mui-pull-right theme_back_font">返回</label>
+		   	</a>
+		    <h1 class="mui-title themes_title">药品信息</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-input-row mui-search search_head" onclick="toSearchPage()">
+				<input type="search" class="mui-input-clear"  readonly="readonly" placeholder="通用名/商品名/生产厂家" >
+			</div>
+			<div class="home-card-wrapper" style="padding: 8px;margin-top: 0;margin-bottom: 8px;">
+	            <div class="home-card-title">已验收</div>
+	        </div>
+			<div id="slider" class="mui-slider themes_tab mui-fullscreen" style="margin-top: 45px;">
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+				<div class="mui-slider-group">
+					<div id="item1mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll" id="mui-table-view-tab1">
+								<ul class="mui-table-view">
+									<li class="mui-table-view-cell mui-tab1" style="padding: 0;">
+										
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery.min.js" ></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			if(window.plus) {
+                plusready();
+            } else {
+                document.addEventListener('plusready', plusready, false);
+            }
+            function plusready() {
+                plus.key.addEventListener('backbutton',function(){
+                    plus.webview.currentWebview().close();
+                })
+            }
+            //去搜索页面
+			function toSearchPage (){
+				document.activeElement.blur(); // 隐藏软键盘
+				var params = {};
+				params.id = 'basic_has_acc';
+				params.route = '../basicMedicine/basic_has_acc';
+				params.auditStatus = '2'; // 都是已验收单据
+				params.selectTabs = 2;
+				params.selected = 'right';
+				params.module = 'basicMedicine';
+				params.location = 'sub_list';
+				common.openwin('../commonPages/searchPage',{ params: JSON.stringify(params) },false)
+			}
+			
+			(function($,$JQ) {
+				
+				$.init({
+					beforeback: function() {
+				        var list = plus.webview.currentWebview().opener();  
+				        mui.fire(list, 'pagefresh',{ hasAcceptance: true });  // 参数判断是某一个Tabs 右侧tabs 刷寻右侧列表
+				        return true;  
+			    	}
+				})
+				var deceleration = mui.os.ios?0.003:0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					scrollX: false,
+					bounce: true,
+					indicators: true, //是否显示滚动条
+					deceleration:deceleration
+				});
+				/* 渲染模板   */
+				var params = undefined, 
+					checkType = undefined,
+					type = undefined, 
+					isShowTemprature = undefined, //是否显示验收温度 1 显示 0 隐藏
+					isPsList = undefined; // 验收单类型     
+				
+				var utils = new Utils();
+				utils.appendModule('#acc_list_tpl');
+				
+				$('.mui-scroll-wrapper').scroll({
+					bounce: true,
+					indicators: true, //是否显示滚动条
+					deceleration:deceleration
+				});
+				
+				var page = 1, 
+					totalPage = undefined, 
+					pageSize = 15, 
+					isMore = true, 
+					query = {};
+				var _url = '/a/exam/detail'; // 分页接口
+				var distributeCode = undefined , status = '2';
+				
+				function template(data, insertType){
+        			utils.innerTplHtml('list_tpl_view','.mui-tab1', data, insertType);
+            	}
+				/*
+            	 	下拉刷新
+            	 * */
+            	function pulldownRefresh(){
+					var self = this;
+					page = 1;
+					var postData = {
+						distributeCode: distributeCode,
+						status,status,
+						pageNo: page,
+                		pageSize: pageSize
+					};
+					if(query.hisDrugCode){
+						postData.hisDrugCode = query.hisDrugCode
+					}else{
+						globalQuery={}
+						$JQ('.mui-input-clear').val('');
+						$JQ('.mui-placeholder').show();
+					}
+					query = {};
+					mui.ajaxRequest(_url,{
+                		type: 'POST',
+                		data: postData,
+                		success: function(data){
+                			var resData = data.data;
+                			resData.acceptance = false;
+                			console.log(resData)
+                			totalPage = data.totalPage;
+                			if(resData.list.length === 0 ||resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage){
+                				isMore = false;
+                				self.endPullDownToRefresh(true);
+                				document.querySelectorAll('.mui-pull-loading')[0].innerHTML = '没有更多数据';
+                			}else{
+                				isMore = true;
+                				self.endPullDownToRefresh(false);
+                				self.refresh(true);
+                			}
+							return template(resData, false)
+                		},
+                		error: function(xhr,type,errorThrown){
+							console.log(xhr.responseText)
+                		}
+            		});
+				}
+            	
+            	
+            	/*
+					 
+				 *  上拉加载更多
+				 * */
+				function pullupRefresh(){
+					var self = this;
+					console.log(isMore,'isMore')
+					if(isMore){
+						page++;
+						mui.ajaxRequest(_url,{
+	                		type: 'POST',
+	                		data:{
+	                			distributeCode: distributeCode,
+	                			status,status,
+	                			pageNo: page,
+	                			pageSize: pageSize
+	                		},
+	                		success: function(data){
+	                			var resData = data.data;
+	                			resData.acceptance = false;
+	                			if(resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage){
+		            				isMore = false;
+		            				self.endPullUpToRefresh(true);
+		            				document.querySelectorAll('.mui-pull-loading').innerHTML = '没有更多数据';
+		            			}else{
+		            				isMore = true;
+		            				self.endPullUpToRefresh(false);
+		            				self.refresh(true);
+		            			}
+								return template(resData, true)
+	                			
+	                		},
+	                		error: function(xhr,type,errorThrown){
+								console.log(xhr.responseText)
+	                		}
+	            		});
+					}else{
+						document.querySelector('.mui-pull-loading').innerHTML = '没有更多数据';
+						self.endPullUpToRefresh(true);
+					}
+					
+				}
+
+				// 模板加载
+				$.plusReady(function(){
+					let globalQuery = {};
+					window.addEventListener('pagefresh',function(e){
+						console.log('从详情回来')
+						console.log(e.detail.query)
+						query = e.detail.query;
+						setTimeout(function(){
+							console.log('刷新了啊啊啊啊 啊');
+							mui('.mui-scroll-wrapper').scroll().scrollTo(0,0);
+							mui(".mui-scroll").pullToRefresh().pullDownLoading();
+						},200)
+					});
+					
+					// 触发刷新 搜索页面搜的值
+					window.addEventListener('sub_search',function(event){
+						console.log('从搜索页面回来')
+						console.log(JSON.stringify(event.detail) );
+						query = globalQuery = JSON.parse(event.detail.searchParams);
+						$JQ('.mui-input-clear').val(query.hisDrugName);
+						$JQ('.mui-placeholder').hide();
+						setTimeout(function(){
+							mui(".mui-scroll").pullToRefresh().pullDownLoading();
+						},200)
+						console.log('刷新了')
+					})
+					
+					var isUsual = undefined;
+					var self = plus.webview.currentWebview();
+				    params = JSON.parse(self.params);//获得参数
+				    console.log(JSON.stringify(params))
+				    distributeCode = params.distributecode;
+				    isUsual = params.isusual;
+				    //循环初始化所有下拉刷新，上拉加载。
+					$.each(document.querySelectorAll('.mui-scroll'), function(index, pullRefreshEl) {
+						
+						$(pullRefreshEl).pullToRefresh({
+							down: {
+								style:'circle',
+								contentdown : "下拉可以刷新",
+								contentover : "释放立即刷新",
+								contentrefresh : "正在刷新...",
+								callback: pulldownRefresh
+							},
+							up: {
+								contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+	      						contentnomore:'没有更多数据',
+								callback: pullupRefresh
+							}
+						});
+					});
+					// 第一个tab 默认加载一次数据
+					mui(".mui-scroll").pullToRefresh().pullDownLoading();
+					
+					if(plus.storage.getItem('currDept')){
+						checkType = '3';
+					}else{
+						mui.toast('请重新登陆');
+						common.openwin('../login/index')
+					}
+					
+					//绑定点击事件  - 进入详情页
+						
+					$('#slider').on('tap','.moreDetail',function(){
+						let id = this.dataset.id;
+						let newData = {};
+						newData.checkType = checkType; // 药房，药库，基数药 区分
+						newData.distributeCode = distributeCode;
+						newData.isShowTemprature = isShowTemprature;
+						newData.hasAcceptance = false;// 判断 详情页面是否有验收按钮
+						newData.status = status;
+						newData.id = id;
+						newData.isPsList = false; // 是否是配送单
+						newData.query = globalQuery ; 
+						console.log('newData',JSON.stringify(newData))
+						console.log('query',JSON.stringify(globalQuery))
+						console.log(JSON.stringify(Object.assign(newData,globalQuery)))
+						document.activeElement.blur(); // 隐藏软键盘
+						common.openwin('acc_detail',{ details: JSON.stringify(newData) },{
+							titleText: '验收详情'
+						})
+					});
+				});
+				
+			})(mui,jQuery);
+		
+		</script>
+	</body>
+
+</html>

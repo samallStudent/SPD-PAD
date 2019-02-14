@@ -1,0 +1,93 @@
+<script type="text/html" id='detail_tpl'>
+	<div style="margin-top:10px;">
+		{{ each list value i }}
+		<ul class="mui-table-view" style="margin-bottom:8px;">
+			<li class="mui-table-view-cell mui-collapse mui-active">
+				<a class="mui-navigate-right" href="#">单据信息</a>
+				<div class="mui-collapse-content">
+						<div class="mui-input-row">
+							<label>拣货单号</label>
+							<p class="detailRow_content">{{ pickingOredr ? pickingOredr: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>单号</label>
+							<p class="detailRow_content">{{ applyOrder ? applyOrder: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>申领部门</label>
+							<p class="detailRow_content">{{ applyDeptName ? applyDeptName: ''}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>状态</label>
+							<p class="detailRow_content">{{ value.status === 0 ? '待拣货': '已拣货' }}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>拣货人</label>
+							<p class="detailRow_content">{{ pickingUserName ? pickingUserName: '' }}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>拣货时间</label>
+							<p class="detailRow_content">{{ pickingTime ? pickingTime: ''}}</p>
+						</div>
+				</div>
+			</li>
+		</ul>
+		<ul class="mui-table-view" style="margin-bottom:8px;">
+			<li class="mui-table-view-cell mui-collapse mui-active">
+				<a class="mui-navigate-right" href="#">产品信息</a>
+				<div class="mui-collapse-content">
+						<div class="mui-input-row">
+							<label>通用名</label>
+							<p class="detailRow_content">{{value.ctmmGenericName}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>规格</label>
+							<p class="detailRow_content">{{value.ctmmSpecification}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>生产厂家</label>
+							<p class="detailRow_content">{{value.ctmmManufacturerName}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>生产批号</label>
+							<p class="detailRow_content">{{value.lot}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>生产日期</label>
+							<p class="detailRow_content">{{value.productDate}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>有效期至</label>
+							<p class="detailRow_content">{{value.validEndDate}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>包装规格</label>
+							<p class="detailRow_content">{{value.packageSpecification}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>单位</label>
+							<p class="detailRow_content">{{value.replanUnit}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>指示货位</label>
+							<p class="detailRow_content">{{value.locName}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>数量</label>
+							<p class="detailRow_content">{{value.allocationNum}}</p>
+						</div>
+						<div class="mui-input-row">
+							{{ if hasPicked }}
+								<label class='font-warning'>实际下架数量</label>
+								<input class="mui-input editInput relNum" type="number" pattern="[0-9]*" value={{ value.allocationNum  }} />
+								{{ else }}
+									<label>实际下架数量</label>
+									<p class="detailRow_content">{{ value.pickingNum }}</p>
+							{{ /if }}
+						</div>
+				</div>
+			</li>
+		</ul>
+		{{ /each }}
+	</div>
+</script>

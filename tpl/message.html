@@ -1,0 +1,12 @@
+<script type="text/html" id="message-tpl">
+	{{each list value i}}
+		<li class="mui-table-view-cell mui-media message-detail" data-id = "{{value.id}}" data-title="{{ value.meassage }}" data-tipDate="{{ value.createDate }}">
+			<a class="mui-navigate-right">
+				<div class="mui-media-body">
+					<div class="title">{{ value.meassage }}</div>
+					<p class='mui-ellipsis'> {{ value.createDate }} </p>
+				</div>
+			</a>
+		</li> 
+	{{/each}}
+</script>

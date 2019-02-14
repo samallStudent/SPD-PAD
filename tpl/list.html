@@ -1,0 +1,9 @@
+<script type="text/html" id="demo">
+	<h1>{{title}}</h1>
+	<ul class="mui-table-view">
+		{{each list  value i}}
+			<li class="mui-table-view-cell" data-type = "">
+		<a class="mui-navigate-right">索引 {{i + 1}} ：{{value}}</a></li>
+		{{/each}}
+	</ul>
+</script>

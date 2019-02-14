@@ -1,0 +1,161 @@
+<!--上架 -  详情页 - wwb-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="import" href="./detail_tpl.html" id="ground_detail_tpl"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/check.css"  rel="stylesheet"/>
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		
+	</head>
+
+	<body>
+		<div class="mui-content detailRow">
+			<form class="mui-input-group" id="detailContent" style="background:none;">
+				<ul class="mui-table-view" style="margin-bottom:12px;">
+					<li class="mui-table-view-cell mui-collapse">
+						<a class="mui-navigate-right" href="#">产品信息</a>
+						<div class="mui-collapse-content">
+							
+						</div>
+					</li>
+				</ul>
+			</form>
+			
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery.min.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+
+			(function($,$$) {
+				var utils = new Utils();
+				utils.appendModule('#ground_detail_tpl');
+				
+				function showData(data){
+					var html = template('detail_tpl', data);
+					document.getElementById('detailContent').innerHTML = html;
+				}
+				
+				$.plusReady(function(){
+					$.init({
+						beforeback: function() {
+					        var list = plus.webview.currentWebview().opener();  
+					        mui.fire(list, 'pagefresh',{ selectTabs: details.selectTabs === 1 ? 0: 1, query: details.query }); 
+					        return true;  
+				    	}
+					})
+					
+					var self = plus.webview.currentWebview();
+					var details = JSON.parse(self.details);//获得参数
+					console.log(JSON.stringify(details.selectTabs) );
+					var postData = {
+						distributeCode: details.distributeCode,
+						upFinishType: details.upFinishType,
+						id: details.id
+					};
+					var detailData = {};
+					var url = '/a/shelfInfo/shelfInfoList',
+						titleUrl = '/a/shelfInfo/shelfInfoTitle',
+						groundUrl = '/a/checkacceptdetail/finish';
+					plus.nativeUI.showWaiting('加载中...');
+					mui.ajaxRequest(titleUrl,{
+						type: 'POST',
+						data: { distributeCode: postData.distributeCode },
+						success: function(data){
+							console.log(JSON.stringify(data))
+							if(data.code === 200){
+								for(var key in data.data){
+									detailData[key] = data.data[key];
+								}
+								mui.ajaxRequest(url,{
+									type: 'POST',
+									data: postData,
+									success: function(data){
+										console.log(JSON.stringify(data))
+										plus.nativeUI.closeWaiting();
+										if(data.code === 200){
+											detailData.list = data.data.list;
+											console.log('detailData********************************')
+											showData(detailData);
+											if(details.upFinishType === '0'){
+												var groundBtn = '<button type="button" id="ground" class="mui-btn mui-btn-warning mui-btn-block" style="margin-bottom: 20px;" data-loading-text = "提交中" data-loading-icon-position="right">确认上架</button>'
+												document.querySelector('.detailRow').insertAdjacentHTML("beforeEnd",groundBtn);
+											}
+										}else{
+											mui.toast(data.msg,{ type: 'div' });
+										}
+									},
+									error: function(xhr,type,errorThrown){
+										console.log(xhr.responseText)
+			                		}
+								});
+							}else{
+								mui.toast(data.msg,{ type: 'div' });
+							}
+							
+						},
+						error: function(xhr,type,errorThrown){
+							console.log(xhr.responseText)
+                		}
+					})
+					
+					// 上架
+					console.log(details.upFinishType)
+					if(details.upFinishType === '0'){
+						var ground = (document.querySelector('#ground'));
+						$('.detailRow').on('tap','#ground',function(e){
+							var realReceiveStore = $$('.realReceiveStore').val();
+							document.activeElement.blur(); // 隐藏软键盘
+							var btnArray = ['否', '是'];
+							mui.confirm('是否确认上架？', '操作提示', btnArray, function(e) {
+								if (e.index == 1) {
+									var detailListVo = [],postData = {},submitData = {};
+									postData.id = detailData.list[0].id;
+									postData.realNum = detailData.list[0].realNum;
+									postData.productBatchNo = detailData.list[0].productBatchNo;
+									postData.realReceiveStore = realReceiveStore;
+									detailListVo.push(postData);
+									submitData.detailListVo = detailListVo;
+									submitData.distributeCode = detailData.distributecode;
+									console.log(JSON.stringify(submitData));
+									mui.ajaxRequest(groundUrl,{
+				                		type: 'POST',
+				                		data: submitData,
+				                		contentType: "application/json",
+				                		showWaiting: true,
+				                		success: function(data){
+				                			if(data.code === 200){
+				                				mui.toast('上架成功',{ type: 'div' });
+				                				var page =  plus.webview.getWebviewById('ground_not_list');
+												mui.fire(page,'pagefresh',{ selectTab: '1' });
+												common.gotowin('acc_not_list',{  });
+												plus.webview.currentWebview().close();
+				                			}else{
+				                				mui.alert(data.msg)
+				                			}
+				                		},
+				                		error: function(xhr,type,errorThrown){
+											console.log(xhr.responseText)
+				                		}
+				            		});
+								}
+							},'div')
+						});
+					}
+				})
+			})(mui,jQuery);
+		
+		</script>
+	</body>
+
+</html>

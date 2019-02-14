@@ -1,0 +1,110 @@
+<!--库存查询  - 详情页 - yuweI-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link rel="import" href="./details_view.html" id="card_view"/>
+	</head>
+
+	<body>
+		
+		<div class="mui-content detailRow">
+				<form class="mui-input-group" id="detailContent" style="background:none;">
+					<ul class="mui-table-view" style="margin-bottom:12px;">
+						<li class="mui-table-view-cell mui-collapse">
+							<a class="mui-navigate-right" href="#">产品信息</a>
+							<div class="mui-collapse-content">
+									
+							</div>
+						</li>
+					</ul>
+				
+				</form>
+		</div>
+		
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			(function($) {
+				
+				var utils = new Utils();
+				utils.appendModule('#card_view');
+				
+				$.plusReady(function(){
+					
+					var params, hisDrugCode = undefined, drugCode = undefined;
+					var self = plus.webview.currentWebview();
+				    params = JSON.parse(self.params);//获得参数
+					hisDrugCode = params.hisdrugcode;
+					drugCode = params.drugcode;
+					var baseUrl = '/a/StoreDetail/getRoomRepertoryDetail';
+					var tableUrl = '/a/StoreDetail/getRoomRepertoryDetailList';
+					var renderData = { };
+					plus.nativeUI.showWaiting();
+					genDetailData(baseUrl,hisDrugCode)
+					
+
+				/*
+				  获取列表数据
+				 * */
+				
+					function genDetailData(baseUrl,hisDrugCode){
+						// 详情 数据
+						mui.ajaxRequest(baseUrl,{
+	                		type: 'POST',
+	                		data: {
+	                			hisDrugCode: hisDrugCode
+	                		},
+	                		success: function(data){
+	                			if(data.code === 200){
+	                				var list = [];
+	                				list.push(data.data);
+	                				renderData.list = list;
+	                				genTableData(tableUrl,drugCode);
+	                			}else{
+	                				mui.alert(data.msg)
+	                			}
+	                		},
+	                		error: function(xhr,type,errorThrown){
+								console.log(xhr.responseText)
+	                		}
+	            		});
+					}
+					
+					function genTableData(tableUrl,drugCode){
+						// 列表数据
+						
+	            		mui.ajaxRequest(tableUrl,{
+	                		type: 'post',
+	                		data: {
+	                			drugCode: drugCode
+	                		},
+	                		success: function(data){
+	                			if(data.code === 200){
+	                				plus.nativeUI.closeWaiting();
+	                				var tablist = data.data.list;
+	                				renderData.tablist = tablist;
+	                				var html = template('deitail_view', renderData);
+									document.getElementById('detailContent').innerHTML = html;
+	                			}else{
+	                				mui.alert(data.msg)
+	                			}
+	                		},
+	                		error: function(xhr,type,errorThrown){
+								console.log(xhr.responseText)
+	                		}
+	            		});
+					}
+				})
+		})(mui);
+		
+		</script>
+	</body>
+
+</html>

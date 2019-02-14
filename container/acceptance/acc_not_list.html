@@ -1,0 +1,477 @@
+<!--验收列表  - 药品信息 列表页 - wwb-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="import" href="./list_tpl.html" id="acc_list_tpl"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav themes_bg_color">
+		   	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+		   		<label class="mui-pull-right theme_back_font">返回</label>
+		   	</a>
+		    <h1 class="mui-title themes_title">药品信息</h1>
+		    <a href="#" class="mui-pull-right batchAccetpance" style="height: 45px;padding-top: 12px;">
+		    	批量验收
+		    </a>
+		</header>
+		<div class="mui-content">
+			<div class="mui-input-row mui-search search_head" onclick="toSearchPage()">
+				<input type="search" class="mui-input-clear" readonly="readonly" placeholder="通用名/商品名/生产厂家">
+			</div>
+			
+			<div id="slider" class="mui-slider themes_tab mui-fullscreen">
+				<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<a class="mui-control-item themes_font_color_tab" href="#item1mobile">待验收</a>
+					<a class="mui-control-item themes_font_color_tab" href="#item2mobile">已验收</a>
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+				<div class="mui-slider-group">
+					<div id="item1mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll" id="mui-table-view-tab1">
+								<ul class="mui-table-view">
+									<li class="mui-table-view-cell mui-tab1" style="padding: 0;">
+										
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll" id="mui-table-view-tab2">
+								<ul class="mui-table-view">
+									<li class="mui-table-view-cell mui-tab2" style="padding: 0;">
+										
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery.min.js" ></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			if(window.plus) {
+                plusready();
+            } else {
+                document.addEventListener('plusready', plusready, false);
+            }
+            function plusready() {
+                plus.key.addEventListener('backbutton',function(){
+                    plus.webview.currentWebview().close();
+                })
+            }
+            var auditStatus = undefined, //验收状态   1 待验收  2 已验收
+            	selectTabs = 1; // 默认选中第一个tab
+            //去搜索页面
+			function toSearchPage (){
+				var params = {};
+				params.id = 'acc_not_list';
+				params.route = '../acceptance/acc_not_list';
+				params.auditStatus = auditStatus;
+				params.selectTabs = selectTabs;
+				params.selected = selected;
+				params.module = 'acceptance';
+				params.location = 'sub_list';
+				common.openwin('../commonPages/searchPage',{ params: JSON.stringify(params) },false);
+				document.activeElement.blur(); // 隐藏软键盘
+			}
+			
+			(function($,$$) {
+				
+				$.init({
+					beforeback: function() {
+				        var list = plus.webview.currentWebview().opener();  
+				        mui.fire(list, 'pagefresh',{ hasAcceptance:  selectTabs === 1 ? true: false}); 
+				        return true;  
+			    	}
+				})
+				var deceleration = mui.os.ios?0.003:0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: true,
+					indicators: true, //是否显示滚动条
+					deceleration:deceleration
+				});
+				var currentSelected = undefined;
+				
+				
+				/* 渲染模板   */
+				var params = undefined, 
+					checkType = undefined,
+					type = undefined, 
+					isShowTemprature = undefined, //是否显示验收温度 1 显示 0 隐藏
+					isPsList = undefined; // 验收单类型     
+					selected = '.mui-tab1'; // 默认选中内容区块
+				
+				var utils = new Utils();
+				utils.appendModule('#acc_list_tpl');
+				
+				var page = 1, totalPage = undefined, pageSize = 15, isMore = true, query = {};
+				var _url = '/a/exam/detail', // 分页接口
+					checkUrl = '/a/checkacceptdetail/checkList';
+				    url = '/a/checkaccept/detail',
+				 	pageLeft = 1, 
+					pageRight = 1, 
+					totalPageLeft = undefined, 
+					totalPageRight = undefined, 
+					isMore = true, 
+					distributeCode = undefined, 
+					status = undefined;
+				
+				function template(selected, data, insertType){
+					utils.innerTplHtml('list_tpl_view', selected , data, insertType);
+            	}
+				/*
+            	 	下拉刷新
+            	 * */
+            	function pulldownRefresh(){
+					var self = this;
+					pageLeft = 1; pageRight = 1;
+					status = selectTabs === 1 ? '1': '2';
+					var postData = {
+						distributeCode: distributeCode,
+						status,status,
+						pageNo: 1,
+                		pageSize: pageSize
+					};
+					if(query.hisDrugCode){
+						postData.hisDrugCode = query.hisDrugCode
+						$$('.mui-input-clear').val(query.hisDrugName);
+					}else{
+						globalQuery={}
+						$$('.mui-input-clear').val('');
+						$$('.mui-placeholder').show();
+					}
+					query = {};
+					mui.ajaxRequest(_url,{
+                		type: 'POST',
+                		data: postData,
+                		success: function(data){
+                			var resData = data.data;
+                			resData.acceptance = selectTabs === 1 ? true: false;
+                			resData.checkType = checkType;
+                			totalPage = data.totalPage;
+                			if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
+                				var i = selectTabs === 1 ? 0 : 1;
+                				isMore = false;
+                				self.endPullDownToRefresh(true);
+                				document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+                			}else{
+                				isMore = true;
+                				self.endPullDownToRefresh(false);
+                				self.refresh(true);
+                			}
+							return template(selected,resData, false)
+                		},
+                		error: function(xhr,type,errorThrown){
+							console.log(xhr.responseText)
+                		}
+            		});
+				}
+            	
+            	/*
+					 
+				 *  上拉加载更多
+				 * */
+				function pullupRefresh(){
+					var self = this;
+					console.log(isMore,'isMore')
+					if(isMore){
+						page++;
+						mui.ajaxRequest(_url,{
+	                		type: 'POST',
+	                		data:{
+	                			distributeCode: distributeCode,
+	                			status,status,
+	                			pageNo: page,
+	                			pageSize: pageSize
+	                		},
+	                		success: function(data){
+	                			var resData = data.data;
+//	                			resData.acceptance = selectTabs === 1 && checkType === 1 ? true: false;
+	                			resData.acceptance = status === '1'? true: false;
+	                			resData.checkType = checkType;
+	                			if(resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage){
+	                				var i = selectTabs === 1 ? 0 : 1;
+		            				isMore = false;
+		            				self.endPullUpToRefresh(true);
+		            				document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+		            			}else{
+		            				isMore = true;
+		            				self.endPullUpToRefresh(false);
+		            				self.refresh(true);
+		            			}
+								return template(selected, resData, true)
+	                			
+	                		},
+	                		error: function(xhr,type,errorThrown){
+								console.log(xhr.responseText)
+	                		}
+	            		});
+					}else{
+						var i = selectTabs === 1 ? 0 : 1;
+						document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+						self.endPullUpToRefresh(true);
+					}
+					
+				}
+
+				// 模板加载
+				$.plusReady(function(){
+					let globalQuery = {};
+					window.addEventListener('pagefresh',function(event){
+						console.log('从详情回来')
+						console.log(JSON.stringify(event.detail))
+						query = event.detail.query;
+						console.log(typeof event.detail.selectTabs);
+						let index = event.detail.selectTabs === '1' ? 0 : 1;
+						console.log(index,'index')
+						if(index === 1){
+							mui('#slider').slider().gotoItem(1);
+						}
+						setTimeout(function(){
+							mui('.mui-scroll-wrapper').scroll()[index].scrollTo(0,0,100);
+							mui(".mui-scroll").pullToRefresh()[index].pullDownLoading();
+						},200)
+						
+					});
+					// 触发刷新 搜索页面搜的值
+					window.addEventListener('sub_search',function(event){
+						console.log('从搜索页面回来')
+						console.log(JSON.stringify(event.detail) );
+						query  = globalQuery = JSON.parse(event.detail.searchParams);
+						console.log(typeof event.detail.selectTabs)
+						let index = event.detail.selectTabs === 1 ? 0 : 1;
+						$$('.mui-input-clear').val(query.hisDrugName);
+						$$('.mui-placeholder').hide();
+
+						setTimeout(function(){
+							mui('.mui-scroll-wrapper').scroll()[index].scrollTo(0,0,100);
+							mui(".mui-scroll").pullToRefresh()[index].pullDownLoading();
+						},300)
+						console.log('刷新了')
+					});
+					
+					if(plus.storage.getItem('currDept')){
+						type = JSON.parse(plus.storage.getItem('currDept')).deptType;
+						switch(type){
+							case '3':
+								checkType = 1; // 药库
+								break;
+							case '4':
+								checkType = 2; // 药房
+								break;
+							case '5':
+								checkType = 3; // 基数药
+								break;
+							default:
+								break;
+						}
+					}
+					
+					var isUsual = undefined;
+					var self = plus.webview.currentWebview();
+				    params = JSON.parse(self.params);//获得参数
+				    console.log(params)
+				    distributeCode = params.distributecode;
+				    isUsual = params.isusual;
+				    
+				    // 判断是否是配送单
+				    isPsList = (params.accepttype === '101' || params.accepttype === '102' || params.accepttype === '103' ||params.accepttype === '104' ) ? true: false;
+				    console.log(isPsList)
+				    currentSelected = params.currentSelected; // 当前选中tabs 
+				    status = currentSelected === 'left'? '1': '2';
+				    auditStatus = currentSelected === 'left'? '1': '2';
+				    selectTabs = currentSelected === 'left'? 1: 2;
+				    console.log(status)
+				    if(currentSelected === 'left'){
+				    	$$('.batchAccetpance').show();
+				    }else{
+				    	$$('.batchAccetpance').hide();
+				    }
+				    console.log(currentSelected);
+				    
+				    //循环初始化所有下拉刷新，上拉加载。
+					$.each(document.querySelectorAll('.mui-scroll'), function(index, pullRefreshEl) {
+						
+						$(pullRefreshEl).pullToRefresh({
+							down: {
+								style:'circle',
+								contentdown : "下拉可以刷新",
+								contentover : "释放立即刷新",
+								contentrefresh : "正在刷新...",
+								callback: pulldownRefresh
+							},
+							up: {
+								contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+	      						contentnomore:'没有更多数据',
+								callback: pullupRefresh
+							}
+						});
+					});
+					// 第一个tab 默认加载一次数据
+					mui(".mui-scroll").pullToRefresh()[ selectTabs -1 ].pullDownLoading();
+					
+					// 展开编辑
+					$('#slider').on('tap','.edit',function(){
+						this.innerHTML = this.innerHTML === '收起编辑' ? '展开编辑':'收起编辑' ;
+						var editFormNode = this.parentNode.parentNode.previousElementSibling.querySelector('.editForm')
+						editFormNode.style.display = editFormNode.style.display === 'block' ? 'none': 'block';
+					});
+					
+					
+					var item2 = document.querySelector('#item2mobile');
+					var item1 = document.querySelector('#item1mobile');
+					document.getElementById('slider').addEventListener('slide', function(e) {
+						$$('.mui-input-clear').val('');
+						let index = e.detail.slideNumber;
+						if (index === 1) {
+							status = '2';
+							selected = '.mui-tab2';
+							selectTabs = 2;
+							mui('#slider').slider().gotoItem(1);
+							$$('.batchAccetpance').hide();
+							$('.mui-slider-group .mui-scroll .mui-tab2')[0].innerHTML = '';
+							if (!item2.querySelector('.am-card')) {
+								mui(".mui-slider-group .mui-scroll").pullToRefresh()[index].pullDownLoading();
+							}
+						}
+						if(index === 0){
+							status = '1';
+							selected = '.mui-tab1';
+							selectTabs = 1;
+							$$('.batchAccetpance').show();
+							mui('#slider').slider().gotoItem(0);
+							$('.mui-slider-group .mui-scroll .mui-tab1')[0].innerHTML = '';
+							if (!item1.querySelector('.am-card')) {
+								mui(".mui-slider-group .mui-scroll").pullToRefresh()[index].pullDownLoading();
+							}
+						}
+					});
+					
+					//绑定点击事件  - 进入详情页
+						
+					$('#slider').on('tap','.moreDetail',function(){
+						let id = this.dataset.id;
+						let newData = {};
+						newData.checkType = checkType; // 药房，药库，基数药 区分
+						hasAcceptance = selectTabs === 1 ? true: false;
+						newData.distributeCode = distributeCode;
+						newData.isShowTemprature = isShowTemprature;
+						newData.hasAcceptance = hasAcceptance;// 判断 详情页面是否有验收按钮
+						newData.status = status;
+						newData.id = id;
+						newData.selectTabs = selectTabs;
+						newData.isPsList = isPsList; // 是否是配送单
+						newData.query = globalQuery;
+						console.log(JSON.stringify(newData))
+						document.activeElement.blur(); // 隐藏软键盘
+						common.openwin('acc_detail',{ details: JSON.stringify(newData) },{
+							titleText: '验收详情'
+						})
+					});
+					
+					/* 批量验收 */
+					$('.mui-bar').on('tap','.batchAccetpance',function(){
+						var paramsData = {};
+						paramsData.isPsList = isPsList;
+						paramsData.distributeCode = distributeCode;
+						paramsData.status = '1';
+						paramsData.isShowTemprature = isShowTemprature;
+						paramsData.itemData = params;
+						paramsData.checkType = checkType;
+						paramsData.acceptance = true;
+						console.log(JSON.stringify(paramsData));
+						common.openwin('acc_batch',{ params: JSON.stringify(paramsData) },false)
+					})
+					
+					// 绑定事件 --确认验收
+					$('#slider').on('tap','.acceptance',function(){
+						document.activeElement.blur(); // 隐藏软键盘
+						var editFormNode = this.parentNode.parentNode.previousElementSibling.querySelector('.editForm')
+						let id = this.dataset.id;
+						let index = this.dataset.index;
+						let postData = {}, detailList = [], submitData = {};
+						var _this_node = document.querySelectorAll('.am-card')[index];
+						console.log(_this_node.dataset)
+						postData.id = _this_node.dataset.id;
+						postData.drugCode = _this_node.dataset.drugcode;
+						postData.isUsual = Number(_this_node.dataset.isusual);
+						if(isPsList && Number(_this_node.dataset.isusual) === 0){
+							// 配送单验收
+							var realReceiveQuantity = editFormNode.querySelector('.realReceiveQuantity').value;
+							var realProductTime = editFormNode.querySelector('.realProductTime').value;
+							var productBatchNo = editFormNode.querySelector('.productBatchNo').value;
+							var realValidEndDate = editFormNode.querySelector('.realValidEndDate').value;
+							if(isShowTemprature === 1){
+								var realAcceptanceTemperature = editFormNode.querySelector('.realAcceptanceTemperature').value;
+							}
+							if(realReceiveQuantity && realProductTime && productBatchNo && realValidEndDate){
+								postData.realReceiveQuantiry = Number(realReceiveQuantity);
+								postData.realProductTime = realProductTime;
+								postData.productBatchNo = productBatchNo;
+								postData.realValidEndDate = realValidEndDate;
+								if(isShowTemprature === 1){
+									postData.realAcceptanceTemperature = realAcceptanceTemperature;
+								}
+							}
+						}else{
+							// 送货单验收
+							postData.realReceiveQuantiry = _this_node.dataset.realreceivequantiry;
+							postData.realProductTime = _this_node.dataset.realproducttime;
+							postData.productBatchNo = _this_node.dataset.productbatchno;
+							postData.realValidEndDate = _this_node.dataset.realvalidenddate;
+						}
+						detailList.push(postData);
+						submitData.detailList = detailList;
+						submitData.distributeCode = distributeCode;
+						console.log(submitData);
+						var btnArray = ['否', '是'];
+						mui.confirm('是否确认验收？', '确认', btnArray, function(e) {
+							if (e.index == 1) {
+								mui.ajaxRequest(checkUrl,{
+									type: 'POST',
+									data: submitData,
+									showWaiting: true,
+									contentType: "application/json",
+									success: function(data){
+										if(data.code === 200){
+											mui.toast('验收成功',{ type: 'div' });
+											mui(".mui-scroll").pullToRefresh()[ selectTabs -1 ].pullDownLoading();
+										}
+									},
+									error: function(xhr,type,errorThrown){
+										console.log(xhr.responseText)
+			                		}
+								})
+							}
+						},'div')
+						
+					});
+					
+				});
+				
+			})(mui,jQuery);
+		
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,145 @@
+<script type="text/html" id='detail_tpl'>
+	<div style="margin-top:10px;">
+		{{ each list value i }}
+		<ul class="mui-table-view" style="margin-bottom:8px;">
+			<li class="mui-table-view-cell mui-collapse">
+				<a class="mui-navigate-right" href="#">单据信息</a>
+				<div class="mui-collapse-content">
+						<div class="mui-input-row">
+							<label>盘点单号</label>
+							<p class="detailRow_content">{{value.checkbillno ? value.checkbillno: '--'}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>类型</label>
+							<p class="detailRow_content">{{value.checkbilltypename?value.checkbilltypename:'--'}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>部门</label>
+							<p class="detailRow_content">{{value.checkbilldeptname?value.checkbilldeptname:'--'}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>制单人</label>
+							<p class="detailRow_content">{{value.createusername ? value.createusername:'--'}}</p>
+						</div> 
+						<div class="mui-input-row">
+							<label>制单时间</label>
+							<p class="detailRow_content">{{value.createdate ? value.createdate:'--'}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>盘点周期</label>
+							<p class="detailRow_content">{{value.distributionNo}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>盘点人</label>
+							<p class="detailRow_content">{{value.sheveusername ? value.sheveusername: '--'}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>提交时间</label>
+							<p class="detailRow_content">{{value.updatedate ? value.updatedate: '--'}}</p>
+						</div>
+				</div>
+			</li>
+		</ul>
+		<ul class="mui-table-view" style="margin-bottom:8px;">
+			<li class="mui-table-view-cell mui-collapse mui-active">
+				<a class="mui-navigate-right" href="#">产品信息</a>
+				<div class="mui-collapse-content">
+						<div class="mui-input-row">
+							<label>货位</label>
+							<p class="detailRow_content">{{ value.locName }}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>货位类型</label>
+							<p class="detailRow_content">{{ value.positionTypeName }}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>通用名</label>
+							<p class="detailRow_content">{{value.ctmmGenericName}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>规格</label>
+							<p class="detailRow_content">{{value.ctmmSpecification}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>生产厂家</label>
+							<p class="detailRow_content">{{value.ctmmManufacturerName}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>包装规格</label>
+							<p class="detailRow_content">{{value.packageSpecification}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>单位</label>
+							<p class="detailRow_content">{{value.unit}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>账面库存</label>
+							<p class="detailRow_content" id="accountNum">{{value.accountStoreNum}}</p>
+						</div>
+						<div class="mui-input-row">
+							{{ if value.checkDetailStatus === 1 }}
+								<label class="font-warning">实际数量</label>
+								<input pattern="[0-9]*" id="accountStoreNum" type="number" value={{ value.accountStoreNum }} placeholder="请输入" class="practicalRepertory flex-item-input" />
+								{{ else }}
+									<label>实际数量</label>
+									<p class="detailRow_content">{{value.practicalRepertory}}</p>
+							{{ /if }}
+							
+						</div>
+						<div class="mui-input-row">
+							<label>盈亏数量</label>
+							<p class="detailRow_content" id="checkNum">{{value.checkNum}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>账面批号</label>
+							<p class="detailRow_content">{{value.accountBatchNo}}</p>
+						</div>
+						<div class="mui-input-row">
+							{{ if value.checkDetailStatus === 1 }}
+								<label class="font-warning">实际批号</label>
+								<input pattern="[0-9]*" type="number" value={{ value.accountBatchNo }} placeholder="请输入" class="practicalBatch flex-item-input" />
+								{{ else }}
+								<label>实际批号</label>
+								<p class="detailRow_content">{{value.practicalBatch}}</p>
+							{{ /if }}
+						</div>
+						<div class="mui-input-row">
+							<label>生产日期</label>
+							<p class="detailRow_content">{{value.accountProductTime}}</p>
+						</div>
+						<div class="mui-input-row">
+							{{ if value.checkDetailStatus === 1 }}
+								<label class="font-warning">实际生产日期</label>
+								<input pattern="[0-9]*" type="date" value={{ value.accountProductTime }} placeholder="请输入" class="realProductTime flex-item-input" />
+								{{ else }}
+								<label>实际生产日期</label>
+								<p class="detailRow_content">{{value.realProductTime}}</p>
+							{{ /if }}
+						</div>
+						<div class="mui-input-row">
+							<label>有效期至</label>
+							<p class="detailRow_content">{{value.accountEndTime}}</p>
+						</div>
+						<div class="mui-input-row">
+							{{ if value.checkDetailStatus === 1 }}
+								<label class="font-warning">实际有效期至</label>
+								<input pattern="[0-9]*" type="date" value={{ value.accountEndTime }} placeholder="请输入" class="validEndTime flex-item-input"/>
+								{{ else }}
+								<label>实际有效期至</label>
+								<p class="detailRow_content">{{value.validEndTime}}</p>
+							{{ /if }}
+						</div>
+						<div class="mui-input-row">
+							<label>单价</label>
+							<p class="detailRow_content" id="referencePrice">{{ value.referencePrice }}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>盈亏金额</label>
+							<p class="detailRow_content" id="total">{{ (value.referencePrice*value.checkNum).toFixed(4) }}</p>
+						</div>
+				</div>
+			</li>
+		</ul>
+		{{ /each }}
+	</div>
+</script>

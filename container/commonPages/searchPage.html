@@ -1,0 +1,653 @@
+<!--通用 搜索页面-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>搜索页面</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<style>
+			#noResult{
+				display: none;
+				padding: 5px 10px;
+				font-size: 14px;
+				color: #666;
+			}
+			#ulList{
+				padding-top: 10px;
+			}
+			.search-ullist{
+				z-index: 2;
+			    background-color: #efeff4;
+			    border-bottom: solid 1px #F5F5F9;
+			    border-radius: 2px;
+			    list-style: none;
+			    position: relative;
+			    margin-top: 0;
+			    margin-bottom: 0;
+			    padding-left: 0;
+			    list-style: none;
+			    width: 100%;
+			}
+			.search-ullist-li{
+				position: relative;
+			    overflow: hidden;
+			    padding: 10px 36px;
+			}
+			.search-ullist-li::before{
+				font-family: Muiicons;
+				content: '\e466';
+				position: absolute;
+				left: 10px;
+			}
+			.history-title{
+				display: flex;
+				justify-content: space-between;
+				padding-right: 10px;
+			}
+			.history-tags{
+				display: flex;
+				flex-wrap: wrap;
+			    padding: 0 10px 10px 0;
+			}
+			.tag{
+				padding: 8px 10px;
+				margin: 8px 10px;
+			    border: solid 1px #ccc;
+			    background-color: #F5F5F9;
+			    border-radius: 3px;
+			}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			 <div class="mui-input-row mui-search search_head" style="width:85%;display: inline-block;">
+				<input type="search" id="search" class="mui-input-clear" autofocus="autofocus" placeholder="供应商/通用名/商品名" >
+			</div>
+		     <a class="mui-action-back mui-pull-right" style="height:45px;line-height: 45px;">取消</a>
+		</header>
+		<div class="mui-content">
+			<div id="ulList">
+					
+			</div>
+			<div id="noResult">暂无搜索结果</div>
+			<div style="padding:10px;">
+				<div class="history-title">
+					<h4>历史搜索记录</h4>
+				</div>
+				<div class="history-tags">
+					
+				</div>
+				
+			</div>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery.min.js"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			(function($,$JQ) {
+				mui.init();
+				// H5 plus事件处理
+				
+				function plusReady(){
+						var Context = plus.android.importClass("android.content.Context");
+						var InputMethodManager = plus.android.importClass("android.view.inputmethod.InputMethodManager");
+						var main = plus.android.runtimeMainActivity();
+						var imm = main.getSystemService(Context.INPUT_METHOD_SERVICE);
+						setTimeout(function(){
+							imm.toggleSoftInput(0,InputMethodManager.SHOW_FORCED);
+						},200);
+				}
+				document.addEventListener("plusready",plusReady,false);
+						
+	
+				function back (){
+					let searchValue = '';
+						let searchParams = {}, saveData = {}, flag = false;
+						// 存储当前搜索记录
+						if(location === 'sub_list'){
+							searchParams = { hisDrugCode : '',hisDrugName: searchValue,type: params.auditStatus,selected: params.selected }
+							saveData = { hisDrugCode: '', hisDrugName: searchValue };
+						}
+						if(module === 'acceptance' || module === 'basicMedicine'){
+						if(location === 'main_list'){
+							searchParams = { supplierCode: '', supplierName: searchValue };
+							saveData = { supplierCode: '', supplierName: searchValue };
+							
+						}
+					}else if(module === 'grounding'){
+						if(location==='main_list'){
+							searchParams = { distributeCode: searchValue, auditStatus: params.auditStatus };
+							saveData = searchValue;
+						}
+					}else if(module === 'pickingOff'){
+						if(location === 'main_list'){
+							searchParams = { pickingOrderNo: searchValue, auditStatus: params.auditStatus };
+							saveData = searchValue;
+						}
+					}else{
+						searchParams = { bigDrugCode : '',ctmmParam: searchValue };
+						saveData = { bigDrugCode: '', ctmmParam: searchValue };
+					}
+						
+						var page = undefined;
+						if(location === 'main_list'){
+							page =  plus.webview.getWebviewById(params.route);
+							mui.fire(page,'search',{ searchParams: JSON.stringify(searchParams),selectTabs: params.selectTabs });
+						}else{
+							page = plus.webview.getWebviewById(params.id);
+							mui.fire(page,'sub_search',{ searchParams: JSON.stringify(searchParams),selectTabs: params.selectTabs });
+						}
+						document.activeElement.blur();
+				}
+				
+				// 重写mui-back**************************
+				var old_back = mui.back;
+				mui.back = function(){
+					//执行mui封装好的窗口关闭逻辑；
+					back();
+					old_back();
+				}
+				
+				var params = undefined, 
+					key = undefined,
+					selected = undefined,
+					module = undefined,// 模块
+					location = undefined;// 入口：主列表/子列表
+				
+				$.plusReady(function(){
+						var self = plus.webview.currentWebview();
+						params = JSON.parse(self.params);//获得参数
+						console.log(self.params);
+						console.log(params.selectTabs,'sdfad')
+					    key = params.key;
+					    selected = params.selected;
+					    module = params.module;
+					    location = params.location;
+						// 输入框聚焦
+						var searchList = JSON.parse(plus.storage.getItem('searchHistory'));
+						console.log(searchList)
+						let currHistory = searchList[module][location];
+						console.log(currHistory)
+				
+						
+						
+					// 键盘搜索按钮
+					document.querySelector('.search_head').addEventListener('keypress',function(e){
+						if(e.keyCode == "13") {
+							console.log(e.target.value);
+							let searchValue =  e.target.value;
+					        e.preventDefault(); // 阻止默认事件---阻止页面刷新
+					        let searchParams = {}, saveData = {}, flag = false;
+					        // 存储当前搜索记录
+					        if(location === 'sub_list'){
+					        	searchParams = { hisDrugCode : '',hisDrugName: searchValue,type: params.auditStatus,selected: params.selected }
+					        	saveData = { hisDrugCode: '', hisDrugName: searchValue };
+					  			mui.each(currHistory,function(index,item){
+					  				if(item === saveData.hisDrugCode && item.hisDrugName === saveData.hisDrugName){
+					  					flag = true;
+					  				}
+					  			});
+					        }
+					        if(module === 'acceptance' || module === 'basicMedicine' ){
+						  		if(location === 'main_list'){
+						  			searchParams = { supplierCode: '', supplierName: searchValue };
+						  			saveData = { supplierCode: '', supplierName: searchValue };
+						  			mui.each(currHistory,function(index,item){
+						  				if(item === saveData.supplierCode && item.supplierName === saveData.supplierName){
+						  					flag = true;
+						  				}
+						  			});
+						  		}
+						  	}else if(module === 'grounding'){
+						  		if(location==='main_list'){
+						  			searchParams = { distributeCode: searchValue, auditStatus: params.auditStatus };
+						  			saveData = searchValue;
+						  			mui.each(currHistory,function(index,item){
+				  					if(item === searchValue){
+				  						flag = true
+				  					}
+				  				});
+						  		}
+						  	}else if(module === 'pickingOff'){
+						  		if(location === 'main_list'){
+									searchParams = { pickingOrderNo: searchValue, auditStatus: params.auditStatus };
+									saveData = searchValue;
+									mui.each(currHistory,function(index,item){
+					  					if(item === searchValue){
+					  						flag = true
+					  					}
+						  			});
+						  		}
+						  	}else{
+						  		searchParams = { bigDrugCode : '',ctmmParam: searchValue };
+						  		saveData = { bigDrugCode: '', ctmmParam: searchValue };
+						  		mui.each(currHistory,function(index,item){
+					  				if(item.bigDrugCode === saveData.bigDrugCode && item.ctmmParam === saveData.ctmmParam){
+					  					flag = true;
+					  				}
+					  			});
+						  	}
+						  	if(!flag){
+						  		if(currHistory.length >= 10){
+			  						currHistory.shift();
+			  					}
+			  					currHistory.unshift(saveData)
+						  	}
+					        searchList[module][location] = currHistory;
+				  			plus.storage.setItem('searchHistory',JSON.stringify(searchList));
+					        var page = undefined;
+						  	if(location === 'main_list'){
+						  		page =  plus.webview.getWebviewById(params.route);
+						  		mui.fire(page,'search',{ searchParams: JSON.stringify(searchParams) });
+						  	}else{
+						  		page = plus.webview.getWebviewById(params.id);
+						  		mui.fire(page,'sub_search',{ searchParams: JSON.stringify(searchParams) });
+						  	}
+							setTimeout(function(){
+								document.activeElement.blur(); // 隐藏软键盘
+							},300)
+							plus.webview.currentWebview().close();
+						}
+					})
+					
+					var lastChildNode = document.querySelector('.mui-placeholder').lastChild;
+					if(location === 'sub_list' || module === 'stock'){
+						lastChildNode.innerText = '请输入通用名/商品名';
+					}else{
+						if((module === 'acceptance' || module === 'basicMedicine') && location === 'main_list'){
+							lastChildNode.innerText = '请输入供应商'
+						}else if(module === 'grounding' || module === 'pickingOff'){
+							lastChildNode.innerText = '请输入单号'
+						}
+					}
+					
+						if(currHistory && currHistory.length){
+							// 创建 删除历史记录标签
+							var span = document.createElement('span');
+							span.className = 'mui-icon mui-icon-trash clearHistory';
+							document.querySelector('.history-title').appendChild(span);
+							
+							// 创建 历史记录tag
+							mui.each(currHistory,function(index,item){
+								var div = document.createElement('div');
+								div.className = 'tag';
+								if(location === 'sub_list'){
+									div.innerHTML = item.hisDrugName;
+									div.setAttribute('data-hisDrugName',item.hisDrugName);
+									div.setAttribute('data-hisDrugCode',item.hisDrugCode)
+								}
+								if(module === 'acceptance' || module === 'basicMedicine'){
+									if(location === 'main_list'){
+										div.innerHTML = item.supplierName
+										div.setAttribute('data-supplierCode',item.supplierCode);
+										div.setAttribute('data-supplierName',item.supplierName);
+									}
+								}else if(module === 'grounding'){
+									if(location === 'main_list'){
+										div.innerHTML = item;
+										div.setAttribute('data-distributeCode',item)
+									}
+						
+								}else if(module === 'pickingOff'){
+									if(location === 'main_list'){
+										div.innerHTML = item;
+										div.setAttribute('data-applyOrderNo',item)
+									}
+								}else{
+									div.innerHTML = item.ctmmParam;
+									div.setAttribute('data-bigDrugCode',item.bigDrugCode);
+									div.setAttribute('data-ctmmParam',item.ctmmParam)
+								}
+								document.querySelector('.history-tags').appendChild(div)
+								
+							})
+						}
+					
+				    // 删除 历史记录
+				    $('.history-title').on('tap','.clearHistory',function(){
+				    	var btnArray = ['否', '是'];
+				    	mui.confirm('是否确认删除历史搜索记录？', '确认', btnArray, function(e) {
+				    		if (e.index == 1) {
+				    			plus.nativeUI.showWaiting();
+				    			setTimeout(function(){
+				    				currHistory = [];
+				    				searchList[module][location] = currHistory;
+				  					plus.storage.setItem('searchHistory',JSON.stringify(searchList));
+					    			var deleteChild = document.querySelector('.clearHistory');
+					    			document.querySelector('.history-title').removeChild(deleteChild);
+					    			document.querySelector('.history-tags').innerHTML = '';
+					    			plus.nativeUI.closeWaiting();
+				    			},500)
+				    		}
+				    	},'div')
+				    });
+				    
+				    // 点击tag 进行搜索
+				    $('.history-tags').on('tap','.tag',function(){
+				    	var dataset = this.dataset;
+				    	console.log(dataset)
+				    	let searchParams = {};
+				    	if(location === 'sub_list'){
+				    		searchParams = { hisDrugCode : dataset.hisdrugcode,hisDrugName: dataset.hisdrugname,type: params.auditStatus,selected: params.selected }
+				    	}
+				    	if(module === 'acceptance' || module === 'basicMedicine'){
+					  		if(location === 'main_list'){
+								console.log('acceptance main_list')
+					  			if(dataset.suppliercode || dataset.suppliercode ===""){
+					  				searchParams = {
+							  			supplierCode: dataset.suppliercode,
+							  			supplierName: dataset.suppliername
+							  		}
+					  			}
+					  		}
+					  	}else if(module === 'grounding'){
+					  		if(location==='main_list'){
+					  			if(dataset.distributecode || dataset.distributecode ===""){
+					  				searchParams = { distributeCode: dataset.distributecode, auditStatus: params.auditStatus }
+					  			}
+					  		}
+					  	}else if(module === 'pickingOff'){
+					  		if(location === 'main_list'){
+								if(dataset.applyorderno || dataset.applyorderno ===""){
+									searchParams = { pickingOrderNo: dataset.applyorderno, auditStatus: params.auditStatus }
+								}
+					  		}
+					  	}else{
+					  		if(dataset.bigdrugcode || dataset.bigdrugcode ===""){
+					  			searchParams = { bigDrugCode : dataset.bigdrugcode,ctmmParam: dataset.ctmmparam }
+					  		}
+					  	}
+				  		var page = undefined;
+				  		console.log(searchParams)
+					  	if(location === 'main_list'){
+					  		page =  plus.webview.getWebviewById(params.route);
+								console.log(page)
+								console.log(JSON.stringify(searchParams))
+					  		mui.fire(page,'search',{ searchParams: JSON.stringify(searchParams) });
+					  	}else{
+					  		page = plus.webview.getWebviewById(params.id);
+					  		mui.fire(page,'sub_search',{ searchParams: JSON.stringify(searchParams),selectTabs: params.selectTabs });
+					  	}
+							old_back();
+							setTimeout(function(){
+								document.activeElement.blur(); // 隐藏软键盘
+							},500)
+				    })
+				    
+				   
+				    $('.search_head').on('keyup','#search',function(e){
+				    	var paramName  = e.target.value;
+				    	var url = null, data = {}, contentType = null;
+							if(paramName){
+								if(module === 'acceptance' || module === 'basicMedicine'){
+									if(location === 'main_list'){
+										url = '/a/depot/supplier/all';
+										data = { ctmaSupplierName: paramName }
+									}else{
+//										url = '/a/common/queryDrugByList';
+										url = '/a/commonCheckQuery/commonInfoSearch';
+										data = { 
+											paramName: paramName,
+//											queryType: '4'
+						    				type: params.selectTabs === 1 ? 'cache_listVoWYS': 'cache_listVoYYS'
+										}
+									}
+								}else if(module === 'grounding'){
+									if(location === 'main_list'){
+										url = '/a/checkaccept/shelfListNoPage';
+										data = {
+												distributeCode: paramName,
+												auditStatus: params.auditStatus
+											}
+									}else{
+//										url = '/a/common/queryDrugByList';
+										url = '/a/commonCheckQuery/commonInfoSearch';
+										data = { 
+											paramName: paramName,
+											type: params.selectTabs === 1 ?'cache_listVoWSJ':'cache_listVoYSJ'
+//											queryType: '4'
+										}
+									}
+								}else if(module === 'pickingOff'){
+									if(location === 'main_list'){
+										url = '/a/common/pickingorder/JdCodeList',
+										data = {
+											pickingOrderNo: paramName,
+											type: params.auditStatus
+										}
+									}else{
+//										url = '/a/common/queryDrugByList';
+										url = '/a/commonCheckQuery/commonInfoSearch'
+										data = {
+											paramName: paramName,
+//											queryType: '4'
+											type: params.selectTabs === 1 ?'Cache_notDetailList':'Cache_existDetailList'
+										}
+									}
+								}else{
+									url = '/a/common/queryDrugByList';
+									data = {
+										paramName: paramName,
+										queryType: '3'
+									}
+								}
+								console.log(url);
+								console.log(JSON.stringify(data))
+								contentType = location === 'sub_list' ? 'application/x-www-form-urlencoded':'application/json';
+								if( module === 'acceptance' || module === 'stock'){
+									contentType = 'application/x-www-form-urlencoded'
+								}
+								console.log(JSON.stringify(data))
+									mui.ajaxRequest(url,{
+									type:"post",
+									data: data,
+									contentType: contentType,
+									success: function(data){
+										if(data.code === 200){
+											if(!data.data.length){
+												$JQ('#noResult').show()
+											}else{
+												$JQ('#noResult').hide()
+											}
+											let dataList = data.data;
+											createSelect(dataList,module,location);
+										}
+									},
+									error: function(xhr,type,errorThrown){
+										console.log(xhr.responseText)
+												}
+								})
+							}else{
+								document.querySelector('#ulList').innerHTML = '';
+							}
+					});
+					
+				   
+				    function createSelect(data,module,location){
+							if(document.querySelector('.search-ullist')){
+								var ulList = document.querySelector('.search-ullist');
+								document.querySelector('#ulList').removeChild(ulList);
+							}
+							var ul = document.createElement('ul');
+							ul.className = 'search-ullist';
+							for(var i=0;i<data.length; i++){
+								var li = document.createElement('li');
+								li.className = 'search-ullist-li';
+								if(location === 'sub_list'){
+	//								li.setAttribute('data-hisDrugCode',data[i].bigDrugCode);
+	//								li.setAttribute('data-hisdrugname',data[i].ctmmParam);
+	//								li.innerHTML = data[i].ctmmParam;
+									li.setAttribute('data-hisDrugCode',data[i].value);
+									li.setAttribute('data-hisdrugname',data[i].key);
+									li.innerHTML = data[i].key;
+								}
+								if(module === 'acceptance' || module === 'basicMedicine'){
+									//验收
+									if(location === 'main_list'){
+										li.setAttribute('data-supplierCode',data[i].ctmaSupplierCode);
+										li.setAttribute('data-supplierName',data[i].ctmaSupplierName);
+										li.innerHTML = data[i].ctmaSupplierName;
+									}
+								}else if(module === 'grounding'){
+									// 上架
+									if(location === 'main_list'){
+										li.setAttribute('data-distributeCode',data[i].distributeCode);
+										li.innerHTML = data[i].distributeCode;
+									}
+								}else if(module === 'pickingOff'){
+									// 拣货下架
+									if(location === 'main_list'){
+										li.setAttribute('data-applyOrderNo',data[i]);
+										li.innerHTML = data[i];
+									}
+								}else{
+									// 库存查询
+									li.setAttribute('data-ctmmParam',data[i].ctmmParam);
+									li.setAttribute('data-bigDrugCode',data[i].bigDrugCode);
+									li.innerText = data[i].ctmmParam;
+								}
+								ul.appendChild(li);
+							}
+							document.querySelector('#ulList').appendChild(ul)
+						}
+						
+						//搜索结果电机
+						$('#ulList').on('tap','.search-ullist-li',function(){
+				  	let dataset = this.dataset;
+				  	console.log(currHistory)
+				  	console.log(dataset);
+				  	let searchParams = {};
+				  	if(location === 'sub_list'){
+				  		if(dataset.hisdrugcode){
+			  				let flag = false;
+			  				let saveData = {
+			  					hisDrugCode: dataset.hisdrugcode,
+			  					hisDrugName: dataset.hisdrugname
+			  				}
+			  				mui.each(currHistory,function(index,item){
+			  					if(item.hisDrugCode === dataset.hisdrugcode){
+			  						flag = true
+			  					}
+			  				});
+			  				if(!flag){
+			  					console.log('sub_list,不存在');
+			  					if(currHistory.length >= 10){
+			  						currHistory.shift();
+			  					}
+			  					currHistory.unshift(saveData)
+			  				}
+			  				searchParams = { hisDrugCode : dataset.hisdrugcode,hisDrugName: dataset.hisdrugname,type: params.auditStatus,selected: params.selected }
+			  			}
+				  	}
+				  	if(module === 'acceptance'){
+				  		if(location === 'main_list'){
+				  			if(dataset.suppliercode){
+				  				let supplier = {
+						  			supplierCode: dataset.suppliercode,
+						  			supplierName: dataset.suppliername
+						  		}
+				  				searchParams = supplier;
+				  				var flag = false;
+				  				console.log(searchList)
+				  				mui.each(currHistory,function(index,item){
+				  					if(item.supplierCode === supplier.supplierCode){
+				  						flag = true;
+				  					}
+				  				});
+				  				if(!flag){
+				  					console.log('历史记录中当前项不存在')
+				  					if(currHistory.length >= 10){
+				  						currHistory.shift()
+				  					}
+				  					currHistory.unshift(supplier)
+				  				}
+				  			}
+				  		}
+				  	}
+				  	else if(module === 'grounding'){
+				  		if(location==='main_list'){
+				  			if(dataset.distributecode){
+				  				let flag = false;
+				  				mui.each(currHistory,function(index,item){
+				  					if(item === dataset.distributecode){
+				  						flag = true
+				  					}
+				  				});
+				  				searchParams = { distributeCode: dataset.distributecode, auditStatus: params.auditStatus,selected: params.selected }
+				  				if(!flag){
+				  					console.log('不存在');
+				  					if(currHistory.length >= 10){
+				  						currHistory.shift();
+				  					}
+				  					currHistory.unshift(dataset.distributecode)
+				  				}
+				  			}
+				  		}
+				  	}else if(module === 'pickingOff'){
+				  		if(location === 'main_list'){
+				  			if(dataset.applyorderno){
+				  				let flag = false;
+					  			mui.each(currHistory,function(index,item){
+					  				if(item === dataset.applyorderno){
+					  					flag = true;
+					  				}
+					  			});
+					  			searchParams = { pickingOrderNo: dataset.applyorderno, auditStatus: params.auditStatus,selected: params.selected }
+					  			if(!flag){
+					  				console.log('pickingOff---main_list,不存在');
+					  				if(currHistory.length >= 10){
+				  						currHistory.shift();
+				  					}
+				  					currHistory.unshift(dataset.applyorderno)
+					  			}
+				  			}
+				  		}
+				  	}else{
+				  		if(dataset.bigdrugcode){
+				  			let flag = false;
+				  			mui.each(currHistory,function(index,item){
+				  				if(item.bigDrugCode === dataset.bigdrugcode){
+				  					flag = true;
+				  				}
+				  			});
+				  			if(!flag){
+				  				console.log('stockQuery---main_list,不存在');
+			  					if(currHistory.length >= 10){
+			  						currHistory.shift();
+			  					}
+			  					currHistory.unshift({ bigDrugCode: dataset.bigdrugcode,ctmmParam: dataset.ctmmparam })
+				  			}
+				  			searchParams = { bigDrugCode : dataset.bigdrugcode,ctmmParam: dataset.ctmmparam }
+				  		}
+				  	}
+				  	searchList[module][location] = currHistory;
+				  	plus.storage.setItem('searchHistory',JSON.stringify(searchList));
+				  	var page = undefined;
+				  	if(location === 'main_list'){
+				  		page =  plus.webview.getWebviewById(params.route);
+							console.log(JSON.stringify(searchParams))
+				  		mui.fire(page,'search',{ searchParams: JSON.stringify(searchParams) });
+				  	}else{
+				  		page = plus.webview.getWebviewById(params.id);
+//				  		console.log(page);
+				  		console.log(JSON.stringify(searchParams))
+				  		mui.fire(page,'sub_search',{ searchParams: JSON.stringify(searchParams),selectTabs: params.selectTabs});
+				  	}
+						old_back();
+						// plus.webview.currentWebview().close();
+						setTimeout(function(){
+							document.activeElement.blur(); // 隐藏软键盘
+						},500)
+				  });
+					
+				})
+				
+			})(mui,jQuery);
+			
+		</script>
+	</body>
+
+</html>

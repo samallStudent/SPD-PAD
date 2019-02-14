@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+	<link rel="import" href="tpl/list.html" id="tests"/>
+    <script src="js/mui.js"></script>
+	<script src="js/template-web.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/utils.js" type="text/javascript" charset="utf-8"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+</head>
+<body>
+<button type="button" data-loading-text="提交中" class="mui-btn" id="btn">确认</button>
+<div id="refreshContainer"></div>
+<div id="content"></div>
+    <script type="text/javascript" charset="utf-8">
+		(function($, doc) {
+			$.init({
+				statusBarBackground: '#f7f7f7',
+// 				subpages:[{
+// 				  url:your-subpage-url,//子页面HTML地址，支持本地地址和网络地址
+// 				  id:your-subpage-id,//子页面标志
+// 				}]
+				  pullRefresh : {
+					container:"#refreshContainer",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down : {
+					  style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+					  color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+					  height:'50px',//可选,默认50px.下拉刷新控件的高度,
+					  range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+					  offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+					  auto: false,//可选,默认false.首次加载自动上拉刷新一次
+					  callback :function() {
+						  console.log('call back!')
+						  mui('#refreshContainer').pullRefresh().endPulldown();
+					  } //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				  }
+			});
+			$.plusReady(function(){
+				//console.log("当前页面URL："+plus.webview.currentWebview().getURL());
+				var btn = document.querySelector('#btn')
+				btn.addEventListener('tap', function() {
+					data.list.push('体育')
+					var html = template('demo', data);
+					document.getElementById('content').innerHTML = html;
+				})
+				var data = {
+					title: '标签',
+					list: ['文艺', '博客', '摄影', '电影', '民谣', '旅行', '吉他']
+				};
+				var utils = new Utils();
+				utils.appendModule('#tests');
+				var html = template('demo', data);
+				document.getElementById('content').innerHTML = html;
+			});
+		}(mui, document))			
+    </script>
+</body>
+</html>

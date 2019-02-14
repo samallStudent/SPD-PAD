@@ -1,0 +1,75 @@
+
+<script type="text/html" id='ground_batch_list'>
+	{{ each list value i}}
+	<div class="batch-wrapper">
+		<div class="checkoneParent">
+			<div class="mui-checkbox mui-left" style="width: 48px;height:48px;padding:50px 0 ;display: block;">
+			  <input name="selected" class="checkone" type="checkbox" data-index={{ (page-1)*pageSize + i }} style="top: 35px;left: 10px;">
+			</div>
+		</div>
+		<div class="am-card scrollList-item am-card-full" style="width: 90%;border: none;"
+			data-id={{ value.id }}
+			>
+			<div class="am-card-header">
+				<div class="am-card-header-content">
+					<span style="font-size: 18px; color: rgb(51, 51, 51); font-weight: bold;">
+					{{ value.ctmmGenericName ? value.ctmmGenericName:value.ctmmTradeName ? value.ctmmTradeName: '' }}</span>
+				</div>
+				<div class="am-card-header-extra">
+					<span>{{ value.type }}</span>
+				</div>
+			</div>
+			<div class="am-card-body">
+				<div class="am-flexbox am-flexbox-align-center">
+					<div class="am-flexbox-item"> 
+						单位：<span>{{ value.replanUnit }}</span> 
+					</div>
+					<div class="am-flexbox-item"> 
+						数量：<span class="groundNum">{{ value.realNum }}</span> 
+					</div>
+					<div class="am-flexbox-item">
+					 	规格：<span>{{ value.ctmmSpecification }}</span>
+					</div>
+				</div>
+				{{ if hasGround }}
+				<div class="editForm" style="display: block;">
+					<div class="am-flexbox am-flexbox-align-center">
+						<div class="am-flexbox-item">
+							<div class="am-list-item am-input-item am-list-item-middle">
+								<div class="am-list-line">
+									<div class="am-input-label am-input-label-4 font-warning" style="width: 40px;">货位:</div>
+									<div class="am-input-control">
+										<select class="editInput select_actualStore" value={{ value.replanStore }}>
+											{{ each value.acceptoodsVo item i }}
+												{{ if value.realReceiveStore === item.id }}
+														<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
+													{{ else }}
+														<option value={{ item.id }}>{{ item.positionName }}</option>
+												{{ /if }}
+											{{ /each }}
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="am-flexbox-item">
+							<div class="am-flexbox-item">
+							 实际上架数量：<span class="realNum">{{ value.realNum }}</span>
+							 </div>
+						</div>
+					</div>
+				</div>
+				{{ /if }}
+				<div class="am-flexbox am-flexbox-align-center">
+					<div class="am-flexbox-item">
+					 生产厂家：<span>{{ value.ctmmManufacturerName }}</span>
+					 </div>
+					 <div class="am-flexbox-item" id='productBatchNo'>
+						<span style="display: none;">{{ value.productBatchNo }}</span>
+					 </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{/each}}
+</script>

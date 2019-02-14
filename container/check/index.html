@@ -1,0 +1,571 @@
+<!--盘点  - 列表页 - yuweI-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/mui.picker.min.css" />
+		<link href="../../css/check.css" rel="stylesheet" />
+		<link rel="import" href="../../tpl/check_card.html" id="card_view"/>
+	</head>
+
+	<body>
+		
+		<header class="mui-bar mui-bar-nav themes_bg_color">
+		   	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+		   		<label class="mui-pull-right theme_back_font">返回</label>
+		   	</a>
+		    <h1 class="mui-title themes_title">盘点</h1>
+		    <a href="#modal" id='showModal' class="mui-pull-right"  style="height: 45px;padding-top: 12px;">新建盘点</a>
+		</header>
+		<div class="mui-content">
+			<h4 class="title_h3">盘点记录</h4>
+			
+			<div id="check_scroll1" class="mui-scroll-wrapper">
+				<div class="mui-scroll" id='scroll'>
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell mui-tab" style="padding: 0;"></li>
+					</ul>
+				</div>
+			</div>
+			<div id="modal1" class="mui-modal">
+				<header class="mui-bar mui-bar-nav">
+					<a class="mui-icon mui-icon-close mui-pull-right closeBtn" href="#modal1"></a>
+					<h1 class="mui-title">新建盘点</h1>
+				</header>
+				<div class="mui-content" style="height: 100%;padding-top: 12px;">
+					<form id='radioForm' style="padding: 0 12px;">
+						<div class="gird mui-table-view-radio" id="checkBillType">
+							<div class="gird-label">盘点类型：</div>
+							<div class="mui-input-row mui-radio mui-left">
+								<label for="mingpan">明盘</label>
+								<input name="radio1" id="mingpan" type="radio" value='1' class="radio">
+							</div>
+							<div class="mui-input-row mui-radio mui-left">
+								<label for="anpai">暗盘</label>
+								<input name="radio1" id="anpan" type="radio" value='2' class="radio">
+							</div>
+						</div>
+						<div class="gird mui-table-view-radio" id="checkBillSubType">
+							<div class="gird-label"></div>
+							<div class="mui-input-row mui-radio mui-left">
+								<label for="allpan">全盘</label>
+								<input name="radio2" id="allpan" type="radio" value='1' class="radio2">
+							</div>
+							<div class="mui-input-row mui-radio mui-left">
+								<label for="dongpan">动盘</label>
+								<input name="radio2" id="dongpan" type="radio" value='2' class="radio2">
+							</div>
+							<div class="mui-input-row mui-radio mui-left addDate">
+								<label for="dongxiaopan">动销盘</label>
+								<input name="radio2" id="dongxiaopan" type="radio" value='3' class="radio2">
+							</div>
+						</div>
+						<div style="background-color: #f5f5f9; height: 6px;" id="checkBill"></div>
+						<div class="mui-input-row dateRow" style="display: none;">
+							<label class="font-warning" style="padding:11px 5px;width:24%">起始时间：</label>
+							<input class="mui-input checkInputDate" data-options='{ "beginYear":2018 }'  readonly="readonly" type="input"/>
+						</div>
+						<div style="background-color: #f5f5f9; height: 6px;"></div>
+						<div style="background-color: #f5f5f9; height: 6px;" id="divide"></div>
+						<div class="gird mui-table-view-radio" id="purchaseType">
+							<div class="gird-label">采购类型：</div>
+							<div class="mui-input-row mui-radio mui-left">
+								<label for="zero_storage">零库存</label>
+								<input name="purchaseType" id="zero_storage" type="radio" value='1' class="purchaseType">
+							</div>
+							<div class="mui-input-row mui-radio mui-left">
+								<label for="buy_myself">自采</label>
+								<input name="purchaseType" id="buy_myself" type="radio" value='2' class="purchaseType">
+							</div>
+						</div>
+						<div style="background-color: #f5f5f9; height: 6px;"></div>
+						<div class="gird mui-table-view-radio" id="isLocCheck">
+							<div class="gird-label">盘点范围：</div>
+							<div class="mui-input-row mui-radio mui-left">
+								<label for="checkAll">全部</label>
+								<input name="isLocCheck" id="checkAll" type="radio" value='0' class="isLocCheck">
+							</div>
+							<div class="mui-input-row mui-radio mui-left">
+								<label for="custom">自定义</label>
+								<input name="isLocCheck" id="custom" type="radio" value='1' class="isLocCheck">
+							</div>
+						</div>
+						<div style="background-color: #f5f5f9; height: 6px;"></div>
+						<div id="position" style="display: none;">
+							<div class="gird mui-table-view">
+								<div class="gird-label font-warning">起始货位：</div>
+								<div class="mui-input-row mui-search search_head" style="width:80%;display: inline-block;">
+									<input type="search" id="search_start" class="mui-input-clear" placeholder="请选择起始货位">
+									
+								</div>
+								<div id="ulList_start">
+									
+								</div>
+							</div>
+							<div style="background-color: #f5f5f9; height: 6px;"></div>
+							<div class="gird mui-table-view">
+								<div class="gird-label font-warning">结束货位：</div>
+								<div class="mui-input-row mui-search search_head" style="width:80%;display: inline-block;">
+									<input type="search" id="search_end" class="mui-input-clear" placeholder="请选择结束货位">
+								</div>
+								<div id="ulList_end">
+									
+								</div>
+							</div>
+						</div>
+						<div class="gird textarea">
+							<div class="gird-label">备注：</div>
+							<div class="gird-content" style="padding: 0 20px">
+								<textarea id="textarea" rows="5" value='' placeholder="多行文本框"></textarea>
+							</div>
+						</div>
+						<button class="mui-btn mui-btn-block" readOnly id='check' data-loading-text = "提交中" data-loading-icon-position="right">确定</button>
+					</form>
+				</div>
+			</div>
+		</div>
+		
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/mui.picker.min.js" ></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			mui.init();
+			(function($){
+				
+				$.init({
+					beforeback:function(){
+						var list = plus.webview.currentWebview().opener();
+						 mui.fire(list, 'refresh',{ getCountFlag: true });
+						 return true;
+					}
+				});
+				
+				var deceleration = mui.os.ios?0.003: 0.1;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: true,
+					indicators: false, //是否显示滚动条
+					deceleration:deceleration
+				});
+				
+				var url = '/a/checkbill/list', newAddUrl = '/a/checkbill/create', medicineFeautureUrl = '/a/spd/dict/type', medicineData = [];		
+				var page = 1, 
+					totalPage = undefined, 
+					pageSize = 15, 
+					isMore = true;
+				var utils = new Utils();
+				utils.appendModule('#card_view');
+
+				/*
+            	 	下拉刷新
+            	 * */
+            	function pulldownRefresh(){
+					var self = this;
+					page = 1;
+					mui.ajaxRequest(url,{
+                		type: 'POST',
+                		data: {
+                			pageNo: page,
+                			pageSize: pageSize
+                		},
+                		success: function(data){
+                			if(data.code === 200){
+                				var resData = data.data;
+	                			totalPage = data.totalPage;
+	                			if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
+	                				document.querySelector('.mui-pull-loading').innerHTML = '没有更多数据';
+	                				self.endPullDownToRefresh(true);
+	                				isMore = false;
+	                			}else{
+	                				self.endPullDownToRefresh();
+	                			}
+								self.refresh(true);
+								return template(resData, false)
+                			}
+                		},
+                		error: function(xhr,type,errorThrown){
+							console.log(xhr.responseText)
+                		}
+            		});
+				}
+				
+				/*
+					 
+				 *  上拉加载更多
+				 * */
+				function pullupRefresh(){
+					var self = this;
+					if(isMore){
+						page++;
+						if( page <= totalPage ){
+							mui.ajaxRequest(url,{
+		                		type: 'POST',
+		                		data:{
+		                			pageNo: page
+		                		},
+		                		success: function(data){
+		                			
+		                			var resData = data.data;
+		                			if(resData.pageNo === resData.totalPage){
+			            				isMore = false;
+			            				self.endPullUpToRefresh(true);
+			            			}else{
+			            				isMore = true;
+			            				self.endPullUpToRefresh(false);
+			            				self.refresh(true);
+			            			}
+									return template(resData,true);
+		                		},
+		                		error: function(xhr,type,errorThrown){
+									console.log(xhr.responseText)
+		                		}
+		            		});
+						}
+					}else{
+						document.querySelector('.mui-pull-loading').innerHTML = '没有更多数据';
+						self.endPullUpToRefresh(true);
+					}
+				}
+            	
+				/* 渲染模板   */
+				function template(data, insertType){
+        			utils.innerTplHtml('check_list', '.mui-tab', data, insertType);
+            	}
+				// 数组分割
+				function sliceArray(array, size) {
+				    var result = [];
+				    for (var x = 0; x < Math.ceil(array.length / size); x++) {
+				        var start = x * size;
+				        var end = start + size;
+				        result.push(array.slice(start, end));
+				    }
+				    return result;
+				}
+				$.plusReady(function(){
+					
+				 	window.addEventListener('pagefresh',function(){
+				 		mui(".mui-scroll").pullToRefresh().pullDownLoading();
+					})
+				 	//循环初始化所有下拉刷新，上拉加载。
+					$.each(document.querySelectorAll('.mui-scroll'), function(index, pullRefreshEl) {
+						$(pullRefreshEl).pullToRefresh({
+							down: {
+								style:'circle',
+								contentdown : "下拉可以刷新",
+								contentover : "释放立即刷新",
+								contentrefresh : "正在刷新...",
+								callback: pulldownRefresh
+							},
+							up: {
+								contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+	      						contentnomore:'没有更多数据',
+								callback: pullupRefresh
+							}
+						});
+					});
+					/*
+					 	radio 与 modal相斥 bug 处理
+					 * */
+					mui('.mui-bar').on('tap','#showModal',function(){
+						document.activeElement.blur();
+						document.querySelector('#modal1').className = 'mui-modal mui-active';
+						// 清空值
+						var radios = document.getElementsByTagName('input');
+						for(var i=0; i <radios.length; i++){
+							radios[i].checked = '';
+						};
+						document.querySelector('#textarea').value = '';
+						document.querySelector('.dateRow').style.display = 'none';
+					})
+					/*  请求数据  */
+					mui(".mui-scroll").pullToRefresh().pullDownLoading();
+					var divideDOM = document.querySelector('#divide');
+					// 药品特征
+					mui.ajaxRequest(medicineFeautureUrl,{
+						type: 'POST',
+						data: { type: 'med_his_drug_feature' },
+						showWaiting: true,
+						success: function(data){
+							if(data.code === 200){
+								medicineData = data.data;
+								var medicineSplitData = sliceArray( medicineData, 3 );
+						mui.each(medicineSplitData,function(index,item){
+							var wrap_node = document.createElement('div');
+							var wrap_node_label = document.createElement('div');
+							wrap_node_label.className = 'gird-label';
+							wrap_node_label.innerText = index === 0 ? '药品特征：': '';
+							wrap_node.appendChild(wrap_node_label);
+							wrap_node.className = 'gird mui-table-view-radio drugFeatureCode'
+							if(item.length){
+
+								mui.each(item,function(_index,_item){
+									var div = document.createElement('div');
+									div.className = 'mui-input-row mui-radio mui-left';
+									var label = document.createElement('label');
+									label.innerText = _item.label;
+									var input = document.createElement('input');
+									input.name = 'drugFeatureCode';
+									input.className = 'drugFeatureCode_btn'
+									input.value = _item.value ? _item.value: '';
+									input.type = 'radio';
+									div.appendChild(label);
+									div.appendChild(input)
+									wrap_node.appendChild(div);
+								})
+							}
+							divideDOM.parentNode.insertBefore(wrap_node,divideDOM)
+						})
+							}else{
+								mui.toast(data.msg)
+							}
+						},
+						error: function(xhr,type,errorThrown){
+							console.log(xhr.responseText)
+                		}
+					});
+					var position = document.querySelector('#position');
+					document.querySelector('#isLocCheck').addEventListener('click',function(e){
+						if(e.target.value === '1'){
+							position.style.display = 'block';
+							document.querySelector('#search_start').value = '';
+							document.querySelector('#search_end').value = '';
+						}else{
+							position.style.display = 'none';
+						}
+					},false)
+					
+					// 动销盘判断 盘点时间
+					$('#radioForm').on('tap','#checkBillSubType',function(e){
+						let showFlag = false;
+						if(e.target.innerText === '动销盘' || e.target.value === '3'){
+							showFlag = true;
+						}
+						document.querySelector('.dateRow').style.display = showFlag ? 'block': 'none';
+					})
+
+					// 起始货位搜索
+					$('#position').on('keyup','#search_start',function(e){
+						var positionName  = e.target.value;
+						if(positionName){
+							fetchSelect(positionName,'#ulList_start','start')
+						}
+					})
+					
+					// 结束货位搜索
+					$('#position').on('keyup','#search_end',function(e){
+						var positionName  = e.target.value;
+						if(positionName){
+							fetchSelect(positionName,'#ulList_end','end')
+						}
+					});
+					
+					$('#radioForm').on('tap','.checkInputDate',function(){
+						var _self = this;
+						console.log(_self,'self')
+						if(_self.picker) {
+							_self.picker.show(function (rs) {
+								_self.value = rs.text;
+								_self.picker.dispose();
+								_self.picker = null;
+							});
+						} else{
+							var optionsJson = this.getAttribute('data-options') || '{}';
+							var options = JSON.parse(optionsJson);
+							var id = this.getAttribute('id');
+							_self.picker = new $.DtPicker(options);
+							_self.picker.show(function(rs) {
+								_self.value = rs.text;
+								_self.picker.dispose();
+								_self.picker = null;
+							});
+						}
+					})
+					
+					function fetchSelect(name,target,key){
+						var url = '/a/dept/queryDeptLocationInfo';
+						mui.ajaxRequest(url,{
+							data: { positionName: name },
+							type:"post",
+							success: function(data){
+								if(data.code === 200){
+									let selectList = data.data;
+									createSelect(selectList,target,key);
+								}else{
+									mui.toast('暂无数据',{ type: 'div' })
+								}
+							
+							},
+							error: function(xhr,type,errorThrown){
+								console.log(xhr.responseText)
+			            	}
+						})
+					}
+				
+					var start = document.querySelector('#search_start');
+					var end = document.querySelector('#search_end');
+					function createSelect(selectList,target,key){
+						if(key === 'start'){
+							if(document.querySelector('.search_ullist_start')){
+								var ulList = document.querySelector('.search_ullist_start');
+								document.querySelector('#ulList_start').removeChild(ulList);
+							}
+						}else{
+							if(document.querySelector('.search_ullist_end')){
+								var ulList = document.querySelector('.search_ullist_end');
+								document.querySelector('#ulList_end').removeChild(ulList);
+							}
+						}
+						var ul = document.createElement('ul');
+						ul.className = key === 'start'? 'search_ullist_start': 'search_ullist_end';
+						for(var i=0;i<selectList.length; i++){
+							var li = document.createElement('li');
+							li.className = key === 'start'? 'search_ullist_start_li': 'search_ullist_end_li';
+							li.innerText = selectList[i].positionName;
+							li.setAttribute('sort',selectList[i].sort);
+							ul.appendChild(li);
+						}
+						document.querySelector(target).appendChild(ul)
+					}
+					
+					// 开始货位搜索选中
+					$('#position').on('click','.search_ullist_start_li',function(e){
+						start.value = this.innerText;
+						start.setAttribute('sort',this.getAttribute('sort'));
+						document.querySelector('.search_ullist_start').style.display = 'none';
+					})
+					// 结束货位搜索选中
+					$('#position').on('click','.search_ullist_end_li',function(e){
+						end.value = this.innerText;
+						end.setAttribute('sort',this.getAttribute('sort'));
+						document.querySelector('.search_ullist_end').style.display = 'none';
+					})
+					
+					var dateButton = document.querySelector('.checkInputDate');	
+					
+					// 隐藏键盘
+					mui('#modal1').on('tap','.closeBtn',function(e){
+						document.activeElement.blur();
+						start.value = '';
+						start.setAttribute('sort','');
+						end.value = '';
+						end.setAttribute('sort','');
+						
+					})
+					// 新建盘点
+					mui('#modal1').on('tap','.mui-btn',function(e){
+						document.activeElement.blur();
+						var checkBillType = undefined, // 盘点类型
+							checkBillSubType = undefined, //盘点子类型
+							purchaseType = undefined, //采购类型
+							isLocCheck = undefined,// 盘点范围
+							checkStartTime = undefined;// 备注
+							drugFeatureCode = undefined;//药品特征
+						var billTypeRadio = document.querySelector('#checkBillType').querySelectorAll('input');
+						var subRadio = document.querySelector('#checkBillSubType').querySelectorAll('input');
+						var drugFeatureRadio = document.querySelectorAll('.drugFeatureCode_btn');
+						console.log(drugFeatureRadio)
+						var purchaseTypeRadio = document.querySelector('#purchaseType').querySelectorAll('input');
+						var isLocCheckRodio = document.querySelector('#isLocCheck').querySelectorAll('input')
+						var startLocSort = document.querySelector('#search_start').getAttribute('sort');
+						var endLocSort = document.querySelector('#search_end').getAttribute('sort');
+						var dateButton = undefined;
+						if(document.querySelector('.checkInputDate')){
+							checkStartTime = document.querySelector('.checkInputDate').value;
+						}
+						var remarks = document.querySelector('#textarea').value;
+						mui.each(billTypeRadio,function(index,item){
+							if(item.checked){
+								checkBillType = item.value;
+							}
+						});
+						mui.each(subRadio,function(index,item){
+							if(item.checked){
+								checkBillSubType = item.value;
+							}
+						});
+						mui.each(drugFeatureRadio,function(index,item){
+							if(item.checked){
+								drugFeatureCode = item.value;
+							}
+						});
+						
+						mui.each(isLocCheckRodio,function(index,item){
+							if(item.checked){
+								isLocCheck = item.value;
+							}
+						})
+						
+						mui.each(purchaseTypeRadio,function(index,item){
+							if(item.checked){
+								purchaseType = item.value;
+							}
+						})
+						if(checkBillSubType === '3'){
+							if(!checkStartTime){
+								mui.toast('请填写起始时间');
+								return;
+							}
+						}
+						var values = {};
+						values.checkBillType = checkBillType;
+						values.checkBillSubType = checkBillSubType;
+						values.drugFeatureCode = drugFeatureCode;
+						values.purchaseType = purchaseType;
+						if(checkBillSubType === '3'){
+							values.checkStartTime = checkStartTime;
+						}
+						values.isLocCheck = isLocCheck;
+						values.remarks = remarks;
+						if(isLocCheck === '1'){
+							values.startLocSort = startLocSort;
+							values.endLocSort = endLocSort;
+						}
+						
+						console.log(values)
+						mui.ajaxRequest(newAddUrl,{
+							type: 'POST',
+							data: values,
+							showWaiting: true,
+							success: function(data){
+								if(data.code === 200){
+									mui.toast('新建盘点成功',{ type: 'div' });
+									document.querySelector('#modal1').className = 'mui-modal';
+									mui(".mui-scroll").pullToRefresh().pullDownLoading();
+								}else{
+									mui.toast(data.msg,{ type: 'div' })
+								}
+							},
+							error: function(xhr,type,errorThrown){
+								console.log(xhr.responseText)
+	                		}
+						})
+							
+					})
+					
+					
+	            	$('#scroll').on('tap','.am-card',function(){
+	            		let itemData = this.dataset;
+	            		console.log(JSON.stringify(itemData))
+	            		document.activeElement.blur();
+				 		common.openwin('checkList',{ params: JSON.stringify(itemData) });
+				 	})
+				})
+		})(mui);
+		
+		</script>
+	
+	</body>
+
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.css" rel="stylesheet" />
+		<style>
+			.theme_font_warning{
+				color: #f2a11c;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					账号信息
+					<span class="mui-pull-right version" style="font-size: 14px;"></span>
+				</li>
+			</ul>
+			<ul class="mui-table-view" style='margin-top: 16px;'>
+				<li class="mui-table-view-cell">
+					系统信息
+				</li>
+			</ul>
+			<ul class="mui-table-view mui-table-view-radio">
+				
+			</ul>
+			
+			<div 
+				style="width: 100%;margin-top: 16px;background: #f2a11c; text-align: center;color: #fff;" 
+				class="mui-table-view-cell exit-btn"
+			>
+				退出
+			</div>
+		</div>
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="../../js/request.js" ></script>
+		<script type="text/javascript">
+			(function ($, doc) {
+				var changeFlag = false;// 是否切换了系统
+				var logoutUrl = '/a/logout';
+				$.init({
+					beforeback: function() {
+						if(changeFlag){
+							var list = plus.webview.currentWebview().opener();  
+					        //触发列表界面的自定义事件（refresh）,从而进行数据刷新  
+					        mui.fire(list, 'refresh',{ getCountFlag: true });  
+					        //返回true，继续页面关闭逻辑  
+					        return true;  
+						}
+				        
+			    	}
+				})
+				$.plusReady(function() {
+					
+					plus.runtime.getProperty(plus.runtime.appid, function(info){
+					    console.log(info.version);
+					    document.querySelector('.version').innerHTML = '当前版本V: '+ info.version;
+					});
+					
+					var ul = document.body.querySelector('.mui-table-view-radio');
+					console.log(plus.storage.getItem('currDept'))
+					var deptId = JSON.parse(plus.storage.getItem('currDept')).deptId;
+					var btnArray = ['确认', '取消'];
+					if(plus.storage.getItem('deptList')){
+						var deptList = JSON.parse(plus.storage.getItem('deptList'));
+						for(var i=0; i<deptList.length; i++){
+							var li = document.createElement('li');
+							li.className = deptId === deptList[i].deptId ? 'mui-table-view-cell mui-selected theme_font_warning':'mui-table-view-cell';
+							li.setAttribute('data-id',deptList[i].deptId);
+							li.setAttribute('data-deptType',deptList[i].deptType);
+							li.setAttribute('data-deptname',deptList[i].deptName);
+							li.innerHTML = '<a class="mui-navigate-right">' + (deptList[i].deptName) + '</a>';
+							ul.appendChild(li)
+						}
+					};
+					
+					mui('.mui-content').on('tap', '.exit-btn' ,function() {
+						mui.confirm('是否确认退出当前账号？', '确认', btnArray, function(e) {
+							if (e.index === 0) {
+								mui.ajaxRequest(logoutUrl,{
+									type: 'GET',
+									data: {},
+									success: function(data){
+										if(data.code === 200){
+											plus.storage.clear('searchHistory')
+											plus.storage.clear('currDept')
+											plus.storage.clear('deptList')
+											
+											common.openwin('../login/index', {})
+										}
+									},
+									error: function(){
+										//mui.toast('网络异常,请稍后在试');
+									}
+								})
+							}
+						},'div')
+					})
+					
+					mui('.mui-table-view-radio').on('tap','.mui-table-view-cell',function(){
+						var _this = this;
+						if(this.dataset.id === JSON.parse(plus.storage.getItem('currDept')).deptId){
+							return ;
+						}
+						mui.confirm('是否确认切换库房？', '确认', btnArray, function(e) {
+							if (e.index == 0) {
+								//与后台交互  
+								var currentDept = {
+									deptName:  _this.dataset.deptname,
+									deptId: _this.dataset.id,
+									deptType: _this.dataset.depttype,
+									lastSelect: true
+								}
+								let history = undefined;// 设置历史记录数据结构
+	            				if(currentDept.deptType === '3' || currentDept.deptType === '4' ){
+	            					history = {
+	            						'acceptance':{
+	            							'main_list': [],
+	            							'sub_list':[]
+	            						},
+	            						'grounding':{
+	            							'main_list': [],
+	            							'sub_list':[]
+	            						},
+	            						'pickingOff':{
+	            							'main_list': [],
+	            							'sub_list':[]
+	            						},
+	            						'stock':{
+	            							'main_list': [], 
+	            						}
+	            					}
+	            				}else{
+	            					history = {
+	            						'basicMedicine':{
+	            							'main_list': [],
+	            							'sub_list':[]
+	            						},
+	            						'stock':{
+	            							'main_list': [], 
+	            						}
+	            					}
+	            				}
+	            				
+								plus.storage.setItem('currDept',JSON.stringify(currentDept));
+								console.log(plus.storage.getItem('currDept'));
+								var url = '/a/cacheCurrentDept/'+ currentDept.deptId
+								mui.ajaxRequest(url,{
+			                		type: 'get',
+			                		showWaiting: true,
+			                		success: function(data){
+			                			if(data.code === 200){
+			                				changeFlag = true;
+			                				plus.storage.setItem('searchHistory',JSON.stringify(history));
+			                				document.querySelector('.theme_font_warning').className = 'mui-table-view-cell'
+			                				mui.toast('切换系统成功',{ type: 'div' });
+			                				_this.className = 'mui-table-view-cell mui-selected theme_font_warning';
+			                			}else{
+			                				mui.toast('切换系统失败',{ div: 'type' });
+			                			}
+			                		},
+			                		error: function(xhr,type,errorThrown){
+										alert(xhr.responseText)
+			                		}
+			            		});
+							}
+						},'div')
+//						
+					})
+				})
+			}(mui, document))
+		</script>
+	</body>
+
+</html>

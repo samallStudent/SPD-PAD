@@ -1,0 +1,243 @@
+<!--盘点详情  - 详情页 - yuweI-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="import" href="./detail_tpl.html" id="acc_detail_tpl"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		<link href="../../css/check.css"  rel="stylesheet"/>
+		
+	</head>
+
+	<body>
+		
+		<!--<header class="mui-bar mui-bar-nav theme_back">
+		   	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		   	<a class="mui-pull-left theme_back_font">返回</a>
+		    <h1 class="mui-title">详情</h1>
+		</header>-->
+		
+		<div class="mui-content detailRow">
+			<!--<div class="detail-header-flex">
+				<div class="am-action">
+					<a class="mui-icon mui-icon-arrowleft"></a>
+					<a class="theme_back_font">上一个</a>
+				</div>
+				<div>1/12</div>
+				<div class="am-action">
+					<a class="theme_next_font">下一个</a>
+					<a class="mui-icon mui-icon-arrowright"></a>
+				</div>
+			</div>-->
+			<form class="mui-input-group" id="detailContent" style="background:none;">
+				<ul class="mui-table-view" style="margin-bottom:12px;">
+					<li class="mui-table-view-cell mui-collapse">
+						<a class="mui-navigate-right" href="#">产品信息</a>
+						<div class="mui-collapse-content">
+								
+						</div>
+					</li>
+				</ul>
+			</form>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+
+			(function($) {
+				
+			$.init()
+			
+			// 模板加载
+			$.plusReady (function(){
+				//console.log("当前页面URL："+plus.webview.currentWebview().getURL());
+				var self = plus.webview.currentWebview();
+				var details = JSON.parse(self.details);//获得参数
+				console.log(details,'details')
+				var data = {}, checkUrl = '/a/checkbill/submitCheck';
+				data.list = [];
+				data.list.push(details);
+				if(details.checkDetailStatus === 1){
+						var node = '<div id="List"></div><div id="addBtn"><button class="mui-btn mui-btn-block btn">+ 增加批号</button></div>';
+						var acceptanceBtn = '<button type="button" id="checkBtn" class="mui-btn mui-btn-warning mui-btn-block" style="margin-bottom: 20px;" data-loading-text = "提交中" data-loading-icon-position="right">确认提交</button>'
+						document.querySelector('#detailContent').insertAdjacentHTML('afterEnd',node);
+						document.querySelector('.detailRow').insertAdjacentHTML("beforeEnd",acceptanceBtn);
+					}
+				
+				var utils = new Utils();
+				utils.appendModule('#acc_detail_tpl');
+				var html = template('detail_tpl', data);
+				document.getElementById('detailContent').innerHTML = html;
+				
+				
+				/*
+			 *2 点击添加按钮 增加选填项    开始
+			 * 
+			 * 拖拽后显示操作图标，点击操作图标删除元素
+			 */
+			var itemNum = 0;
+			
+			
+			function addSlideDelete() {
+				mui('.slide-main').off('tap', '.mui-btn').on('tap', '.mui-btn', function(event) {
+					var elem = this;
+					var li = elem.parentNode.parentNode;
+					var btnArray = ['确认', '取消'];
+					mui.confirm('确认删除该条记录？', '操作提醒', btnArray, function(e) {
+						if(e.index == 0) {
+							itemNum--;
+							li.parentNode.removeChild(li);
+							//if(orderList.length==orderListArray.length){
+							var index = li.getAttribute('data-index');
+							//获取该删除的子项的index
+//							orderList.splice(index, 1);
+//							orderListArray.splice(index, 1);
+						} else {
+							setTimeout(function() {
+								mui.swipeoutClose(li);
+							}, 0);
+						}
+					},'div');
+				});
+			}
+			if(details.checkDetailStatus === 1){
+				mui("#addBtn").on('tap', '.mui-btn', function() {
+					var ParentDiv = document.createElement("div")
+					ParentDiv.className = "mui-table-view-cell slide-main";
+					ParentDiv.setAttribute('data-index', itemNum);
+					ParentDiv.innerHTML = '<div class="mui-slider-handle">' +
+						'<div class="mui-input-group">' +
+						'<div class="mui-input-row">' +
+						'<label class="font-warning">生产批号</label>' +
+						'<input type="text" name="buycontent" class="mui-input-clear mui-input mui-input-ph" placeholder="请输入" >' +
+						'</div>' +
+						'<div class="mui-input-row">' +
+						'<label class="font-warning">数量</label>' +
+						'<input type="text" name="buycontent" class="mui-input-clear mui-input mui-input-num" placeholder="请输入" >' +
+						'</div>' +
+						'</div>' +
+						'</div>' +
+						'<div class="mui-slider-right mui-disabled">' +
+						'<a class="mui-btn mui-btn-red">删除</a>' +
+						'</div>';
+					document.getElementById("List").appendChild(ParentDiv);
+					itemNum++;
+					addSlideDelete(); //添加侧滑删除
+				});
+			}
+			var accountStoreNumNode = document.querySelector('#accountStoreNum');
+			var checkNumNode = document.querySelector('#checkNum');// 实际数量
+			var accountNum = document.querySelector('#accountNum');// 账面库存
+			var total = document.querySelector('#total');
+			var referencePrice = document.querySelector('#referencePrice');
+			accountStoreNumNode.onkeyup = function(e){
+				console.log(e.target.value);
+				console.log(accountNum.innerHTML)
+				let amount = e.target.value - (accountNum.innerHTML * 1);
+				checkNumNode.innerHTML = amount;
+				total.innerHTML = (amount * (referencePrice.innerHTML *1)).toFixed(4);
+				
+			}
+				mui('.detailRow').on('tap','#checkBtn',function(event){
+					
+					var phList = document.querySelector('#List').querySelectorAll('.mui-input-ph'); // 新增批号数据
+					var numList = document.querySelector('#List').querySelectorAll('.mui-input-num'); // 批号对应的数值
+					
+					var practicalRepertory = document.querySelector('.practicalRepertory').value;
+					var realProductTime = document.querySelector('.realProductTime').value;
+					var practicalBatch = document.querySelector('.practicalBatch').value;
+					var validEndTime = document.querySelector('.validEndTime').value;
+					var currData = data.list[0];
+					var postData = {}, detailList = [], submitData = {};
+					
+					postData.practicalRepertory = practicalRepertory;
+					postData.realProductTime = realProductTime;
+					postData.practicalBatch = practicalBatch;
+					postData.validEndTime = validEndTime;
+					postData.accountBatchNo = currData.accountBatchNo;
+					postData.accountEndTime = currData.accountEndTime;
+					postData.accountProductTime = currData.accountProductTime;
+					postData.accountStoreNum = currData.accountStoreNum;
+					postData.id = currData.id;
+					postData.pId = currData.pId;
+					detailList.push(postData);
+					if(phList.length){
+						for (let i =0 ;i < phList.length; i++) {
+							let values = {};
+							values.accountBatchNo = null;
+							values.accountEndTime = null;
+							values.accountProductTime = null;
+							values.accountStoreNum = 0;
+							values.id = null;
+							values.pId = currData.id;
+							values.practicalBatch = phList[i].value;
+							values.practicalRepertory = numList[i].value;
+							
+							detailList.push(values);
+						}
+					}
+					console.log(detailList,'detailList')
+					mui.each(detailList,function(index,item){
+						item.locCode = currData.locCode;
+						item.bigDrugCode = currData.bigDrugCode;
+						item.drugCode = currData.drugCode;
+						item.referencePrice = currData.referencePrice;
+						item.supplierCode = currData.supplierCode;
+						item.unitCode = currData.unitCode;
+						item.supplierCode = currData.supplierCode;
+						item.validEndTime = validEndTime;
+					})
+					submitData.detailList = detailList;
+					submitData.checkBillNo = details.checkBillNo;
+					console.log(submitData);
+					document.activeElement.blur(); // 隐藏软键盘
+					var btnArray = ['否', '是'];
+					mui.confirm('是否确认提交？','警告',btnArray,function(e){
+						if (e.index == 1) {
+							mui.ajaxRequest(checkUrl,{
+								type: 'POST',
+								data: submitData,
+								showWaiting: true,
+								contentType: "application/json",
+								success: function(data){
+									if(data.code === 200){
+										mui.toast('提交成功');
+										var parmasData = {};
+										parmasData.finishUrl = '../check/index';
+										parmasData.keepUrl = 'checkList';
+										parmasData.resultType = 'check';
+										parmasData.itemData = details.orderInfo;
+										common.openwin('../result/index',{ parmas: JSON.stringify(parmasData) },{
+											titleText: '结果',
+											autoBackButton: false
+										})
+									}
+								},
+								error: function(xhr,type,errorThrown){
+									console.log(xhr)
+		                		}
+							})
+						}
+					},'div')
+					
+				})
+				
+			});
+			
+		})(mui);
+		
+		
+		
+		
+		</script>
+	</body>
+
+</html>

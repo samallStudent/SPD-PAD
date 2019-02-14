@@ -1,0 +1,439 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <link href="../../css/mui.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="../../css/themes.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/home.css" />
+    <link rel="import" href="../../tpl/message.html" id="message" />
+</head>
+<body>
+    <header class="mui-bar mui-bar-nav themes_bg_color">
+        <h1 class="mui-title themes_title">药品物流管理系统</h1>
+        <div class="themes_font_color themes_nav_right mui-icon mui-icon-contact">
+
+        </div>
+    </header>
+    <div style="margin-top: 44px;">
+        <div class="home-card-wrapper">
+            <div class="home-card-title">我的工作</div>
+            <div class="home-card-content" style="height: 92px;">
+               <div class="mui-loading">
+					<div class="mui-spinner">
+					</div>
+				</div>
+            </div>
+        </div>
+        <div class="home-card-wrapper" style="padding: 16px">
+            <div class="home-card-title">提醒消息</div>
+        </div>
+        <div id="slider" class="mui-slider themes_tab mui-fullscreen" style="top: 260px;">
+			<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+				<a class="mui-control-item themes_font_color_tab mui-active" data-remindType='lowStock' href="#item1mobile">低库存提醒</a>
+				<a class="mui-control-item themes_font_color_tab" data-remindType='usefulDate' href="#item2mobile">近效期提醒</a>
+			</div>
+			<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+			<div class="mui-slider-group" id="message-list">
+				<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+					<div id="scroll1" class="mui-scroll-wrapper">
+						<div class="mui-scroll" id='mui-table-view-tab1'>
+							<ul class="mui-table-view">
+								<li class="mui-table-view-cell mui-tab1" style="padding: 0;"></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div id="item2mobile" class="mui-slider-item mui-control-content">
+					<div id="scroll2" class="mui-scroll-wrapper">
+						<div class="mui-scroll" id='mui-table-view-tab2'>
+							<ul class="mui-table-view">
+								<li class="mui-table-view-cell mui-tab2" style="padding: 0;"></li>
+							</ul>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+        <!--<div id="message-list" class="mui-content mui-scroll-wrapper" style="margin-top: -16px;">
+			<div class="mui-scroll">
+
+			   <ul class="mui-table-view mui-table-view-chevron">
+			      
+			   </ul>
+			</div>
+		</div>-->
+    </div>
+    <script src="../../js/mui.js"></script>
+    <script src="../../js/mui.pullToRefresh.js"></script>
+	<script src="../../js/mui.pullToRefresh.material.js"></script>
+    <script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+    
+        (function ($, doc) {
+			
+			var deceleration = mui.os.ios?0.003:0.0009;
+			$('.mui-scroll-wrapper').scroll({
+				bounce: true,
+				indicators: true, //是否显示滚动条
+				deceleration:deceleration
+			});
+			
+			// 挂载模板
+			var utils = new Utils();
+			utils.appendModule('#message');
+			var nums = {}; // 数量
+			var remindType = 'lowStock',  page = 1, pageSize = 15, totalPage = 0,
+			url = '/a/pad/drugremind/findPadRemindListTow',logoutUrl = '/a/logout';
+			var itemDesc = [
+				{
+					text: '验收',
+					url: '../acceptance/index',
+					src: '../../images/icon_check_before_acceptance.png'
+				},
+				{
+					text: '上架',
+					url: '../grounding/index',
+					src: '../../images/icon_grounding.png'
+				},
+				{
+					text: '拣货下架',
+					url: '../pickingOff/index',
+					src: '../../images/icon_lower_frame.png'
+				},
+				{
+					text: '盘点',
+					url: '../check/index',
+					src: '../../images/icon_inventory.png'
+				},
+				{
+					text: '库存查询',
+					url: '../stockQuery/index',
+					src: '../../images/icon_query.png'
+				}
+			];
+			var basicMediclist = [
+				{
+					text: '验收',
+					url: '../basicMedicine/index',
+					src: '../../images/icon_query.png'
+				},
+				{
+					text: '库存查询',
+					url: '../stockQuery/index',
+					src: '../../images/icon_query.png'
+				}
+			];
+			var first = null;
+			// 监听返回按键 退出操作
+			document.addEventListener("plusready", function() {  
+	        	// 注册返回按键事件  
+	        	mui.back = function(){
+	        		 if (!first) {
+			            first = new Date().getTime();
+			            mui.toast('再按一次退出应用',{ type: 'div' });
+			            setTimeout(function() {
+			                first = null;
+			            }, 1000);
+			        } else {
+			            if (new Date().getTime() - first < 1000) {
+							mui.confirm('是否确定退出?','确定',['取消','确认'],function(event){
+								console.log(event.index)
+								if(event.index === 1){
+									mui.ajaxRequest(logoutUrl,{
+										type: 'GET',
+										data: {},
+										success: function(data){
+											if(data.code === 200){
+												console.log('退出了')
+												plus.runtime.quit();
+											}
+										},
+										error: function(){
+											mui.toast('网络异常,请稍后在试',{ type: 'div' });
+										}
+									})
+								}
+							},'div')
+			            }
+			        }
+	        	}
+		    });
+		    
+		    var selected = '.mui-tab1',
+		    	hasChecked = false, 
+		    	query = {};
+
+			var pageLeft = 1, 
+				pageRight = 1, 
+				totalPageLeft, 
+				totalPageRight, 
+				isMore = true,
+				selectTabs = 1,
+				insertType = true;
+			// tab 切换事件
+			$('#sliderSegmentedControl').on('tap','.mui-control-item',function(){
+				remindType = this.dataset.remindtype;
+				url = remindType === 'lowStock' ? '/a/pad/drugremind/findPadRemindListTow': '/a/pad/drugremind/findPadRemindList';
+//				toTopResetRefresh(remindType);
+			})
+			
+			function toTopResetRefresh(remindType){
+	            page = 1;
+	            pageSize = pageSize, 
+	            totalPage = 0;
+	            setTimeout(function(){
+	            	let index = remindType === 'lowStock'? 0 : 1;	
+					mui(".mui-slider-group .mui-scroll").pullToRefresh()[index].pullDownLoading();
+	            },100)
+	        }
+			
+			function template(selected,data,insertType){
+				console.log(selected,'selected')
+				utils.innerTplHtml('message-tpl', selected, data, insertType,function(){
+					$('#message-list').on('tap','.message-detail',function(){
+						console.log(this.dataset,'dataset')
+						var dataset = this.dataset;
+						dataset.remindType = remindType;
+						common.openwin('./tips', {
+							tipId: JSON.stringify(dataset)
+						}, {
+							titleText: '提醒'
+						})
+					})
+				});
+        	}
+			function pullupRefresh(){
+				var self = this;
+				console.log(isMore,'isMore')
+				if(isMore){
+					if(selectTabs === 1){
+						pageLeft ++;
+					}else{
+						pageRight ++;
+					}
+					page = selectTabs === 1 ? pageLeft: pageRight;
+					totalPage = selectTabs === 1 ? totalPageLeft: totalPageRight;
+					var postData = {
+						pageNo: page,
+						pageSize: pageSize
+					}
+					console.log(page,totalPage,'page','pageTotal')
+//					if(page < totalPage){
+						mui.ajaxRequest(url,{
+		            		type: 'POST',
+		            		data: postData,
+		            		success: function(data){
+		            			var resData = data.data;
+	                			if(resData.pageNo === resData.totalPage){
+		            				isMore = false;
+		            				self.endPullUpToRefresh(true);
+		            			}else{
+		            				isMore = true;
+		            				self.endPullUpToRefresh(false);
+		            				self.refresh(true);
+		            			}
+		            			return template(selected,resData,true)
+		            		},
+		            		error: function(xhr,type,errorThrown){
+								alert(xhr.responseText)
+		            		}
+		            	})
+//					}
+				}else{
+					var i = selectTabs === 1 ? 0 : 1;
+					document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+					self.endPullUpToRefresh(true);
+				}
+			}
+			
+			
+			function pulldownRefresh(){
+				var self = this;
+				if(selectTabs === 1){
+					pageLeft  = 1
+				}else{
+					pageRight = 1;
+				}
+				page = selectTabs === 1 ? pageLeft: pageRight;
+				var postData = {
+					pageNo: 1,
+					pageSize: pageSize
+				}
+            	mui.ajaxRequest(url,{
+            		type: 'POST',
+            		data: postData,
+            		success: function(data){
+            			var resData = data.data;
+            			var total = resData.totalPage;
+            			if(selectTabs === 1){
+            				totalPageLeft = total;
+            			}else{
+            				totalPageRight = total;
+            			}
+            			page = resData.pageNo;
+            			if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
+            				var i = selectTabs === 1 ? 0 : 1;
+            				document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+            				isMore = false;
+            				self.endPullDownToRefresh(true);
+            			}else{
+            				isMore = true;
+            				self.endPullDownToRefresh(false);
+            				self.refresh(true);
+            			}
+            			return template(selected,resData,true)
+            		},
+            		error: function(xhr,type,errorThrown){
+						alert(xhr.responseText)
+            		}
+            	})
+			}
+			
+            $.plusReady(function () {
+            	window.addEventListener('refresh', function(e) {
+            		if(e.detail.getCountFlag){
+            			window.location.reload();
+            		}
+				});
+            	getCount(); // 获取数量
+				//循环初始化所有下拉刷新，上拉加载。
+				$.each(document.querySelectorAll('.mui-slider-group .mui-scroll'), function(index, pullRefreshEl) {
+					$(pullRefreshEl).pullToRefresh({
+						down: {
+							style:'circle',
+							contentdown : "下拉可以刷新",
+							contentover : "释放立即刷新",
+							contentrefresh : "正在刷新...",
+							callback: pulldownRefresh
+						},
+						up: {
+							height: 200,
+							contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+      						contentnomore:'没有更多数据',
+							callback: pullupRefresh
+						}
+					});
+				});
+				// 第一个tab 默认加载一次数据
+				mui(".mui-slider-group .mui-scroll").pullToRefresh()[0].pullDownLoading();
+				
+				var item2 = document.querySelector('#item2mobile');
+				var item1 = document.querySelector('#item1mobile');
+				document.getElementById('slider').addEventListener('slide', function(e) {
+					let index = e.detail.slideNumber;
+					if (index === 1) {
+						url = '/a/pad/drugremind/findPadRemindList';
+						selected = '.mui-tab2';
+						hasChecked = true;
+						selectTabs = 2;
+						if (!item2.querySelector('.am-card')) {
+							$('.mui-slider-group .mui-scroll .mui-tab2')[0].innerHTML = '';
+							mui(".mui-slider-group .mui-scroll").pullToRefresh()[index].pullDownLoading();
+						}
+					}
+					if(index === 0){
+						url = '/a/pad/drugremind/findPadRemindListTow'
+						selected = '.mui-tab1';
+						hasChecked = false;
+						selectTabs = 1;
+						if (!item1.querySelector('.am-card')) {
+							insertType = false;
+							$('.mui-slider-group .mui-scroll .mui-tab1')[0].innerHTML = '';
+							mui(".mui-slider-group .mui-scroll").pullToRefresh()[index].pullDownLoading();
+						}
+					}
+				});
+	            	
+	            function getExitsItem(){
+	            	if(plus.storage.getItem('currDept')){
+	            		document.querySelector('.home-card-content').innerHTML = '';
+	            		document.querySelector('.home-card-content').style.justifyContent = 'space-between';
+	            		var currDept = JSON.parse(plus.storage.getItem('currDept'));
+	            		if(currDept.deptType === '3' || currDept.deptType === '4'){
+	            			for(var i=0; i<5; i++){
+	            				var div = document.createElement('div');
+	            				div.className = 'home-card-item';
+	            				div.setAttribute('data-src', itemDesc[i].url);
+	            				var addHtml = '<img width="65" height="65" src=' + itemDesc[i].src + ' />'+
+	            				'<div class="home-card-text">'+ itemDesc[i].text +'</div>';
+	            				div.innerHTML = addHtml;
+	            				if(i < 3){
+	            					div.innerHTML = '<span class="mui-badge mui-badge-warning badge">'+ nums[i+1] +'</span>'+ addHtml 
+	            				}
+	            				document.querySelector('.home-card-content').appendChild(div);
+	            			}
+	            		}else{
+	            			for(var i=0; i< 2; i++){
+	            				var div = document.createElement('div');
+	            				div.className = 'home-card-item';
+	            				var addHtml;
+	            				if(i === 0){
+	            					div.setAttribute('data-src', basicMediclist[0].url);
+	            					addHtml = '<span class="mui-badge mui-badge-warning badge">'+ nums[1] +'</span>' + '<img width="65" height="65" src=' + itemDesc[0].src + ' />'+
+	            					'<div class="home-card-text">'+ basicMediclist[0].text +'</div>';
+	            				}else{
+	            					div.setAttribute('data-src', basicMediclist[1].url);
+	            					addHtml = '<img width="65" height="65" src=' + basicMediclist[1].src + ' />'+
+	            					'<div class="home-card-text">'+ basicMediclist[1].text +'</div>';
+	            				}
+	            				div.innerHTML = addHtml;
+	            				document.querySelector('.home-card-content').appendChild(div);
+	            				document.querySelector('.home-card-content').style.justifyContent = 'space-around';
+	            			}
+	            		}
+	            	}else{
+	            		mui.toast('请重新登陆',{ type: 'div' });
+	            		common.openwin('../login/index',{})
+	            	}
+	            }
+	            // 获取数量
+	            function getCount(){
+	            	mui.ajaxRequest('/a/pad/countUnCheck',{
+	            		type: 'POST',
+	            		data: {},
+	            		success: function(data){
+	            			if(data.code === 200){
+	            				nums = data.data;
+	            				getExitsItem(); // 获取当前用户所拥有的模块
+	            			}else{
+	            				console.log(data.msg)
+	            			}
+	            		},
+	            		error: function(xhr,type,errorThrown){
+								alert(xhr.responseText)
+	                		}
+	            	})
+	            }
+	            
+                var btn = document.querySelector('.themes_nav_right')
+                btn.addEventListener('tap', function (e) {
+					common.openwin('./profile', {
+						tipId: this.dataset.id
+					}, {
+						titleText: '账号'
+					})
+               })
+				// 点击跳转
+				$('.home-card-content').on('tap', '.home-card-item',function() {
+					if(this.dataset.title){
+						common.openwin(this.dataset.src, {}, {
+							titleText: this.dataset.title,
+							isScan: true
+						})
+					}else{
+						common.openwin(this.dataset.src, {})
+					}
+					
+				})
+            })
+        }(mui, document))
+    </script>
+</body>
+
+</html>

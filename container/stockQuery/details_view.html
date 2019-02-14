@@ -1,0 +1,85 @@
+
+<script type="text/html" id='deitail_view'>
+	<div style="margin-top:10px;">
+		{{ each list value i}}
+		<ul class="mui-table-view" style="margin-bottom:12px;">
+			<li class="mui-table-view-cell mui-collapse mui-active">
+				<a class="mui-navigate-right" href="#">产品信息</a>
+				<div class="mui-collapse-content">
+						<div class="mui-input-row">
+							<label>通用名</label>
+							<p class="detailRow_content">{{ value.genericName }}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>商品名</label>
+							<p class="detailRow_content">{{value.tradeName}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>规格</label>
+							<p class="detailRow_content">{{value.specification}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>剂型</label>
+							<p class="detailRow_content">{{value.dosageDesc}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>生产厂家</label>
+							<p class="detailRow_content">{{value.manufactureName}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>批准文号</label>
+							<p class="detailRow_content">{{value.approvalNo}}</p>
+						</div>
+						<div class="mui-input-row">
+							<label>包装规格</label>
+							<p class="detailRow_content">{{value.packageSpecification}}</p>
+						</div>
+				</div>
+			</li>
+		</ul>
+		
+			<ul class="mui-table-view" style="margin-top:12px;">
+				{{ each tablist itemValue subIndex}}
+				<li class="mui-table-view-cell mui-collapse"  data-id={{ itemValue.id }}>
+					
+					<a class="mui-navigate-right" href="#" style="display: flex;">
+						<label class="detailRow_label head_minheight">货位</label> 
+						<p class="detailRow_content head_minheight">{{ itemValue.storeLocName }}</p>
+						<span class="detailRow_right theme_font_danger head_minheight">{{ itemValue.usableQuantity }}</span>
+					</a>
+					<div class="mui-collapse-content">
+							<div class="mui-input-row">
+								<label>货位类型</label>
+								<p class="detailRow_content">{{itemValue.storeType}}</p>
+							</div>
+							<div class="mui-input-row">
+								<label>数量</label>
+								<p class="detailRow_content">{{itemValue.usableQuantity}}</p>
+							</div>
+							<div class="mui-input-row">
+								<label>单位</label>
+								<p class="detailRow_content">{{itemValue.unit}}</p>
+							</div>
+							<div class="mui-input-row">
+								<label>供应商</label>
+								<p class="detailRow_content">{{itemValue.supplierName}}</p>
+							</div>
+							<div class="mui-input-row">
+								<label>生产批号</label>
+								<p class="detailRow_content">{{itemValue.lot}}</p>
+							</div>
+							<div class="mui-input-row">
+								<label>生产日期</label>
+								<p class="detailRow_content">{{itemValue.productDate}}</p>
+							</div>
+							<div class="mui-input-row">
+								<label>有效期至</label>
+								<p class="detailRow_content">{{itemValue.validEndDate}}</p>
+							</div>
+					</div>
+				</li>
+			{{/each}}
+		</ul>
+	{{/each}}
+	</div>
+</script>

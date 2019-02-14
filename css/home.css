@@ -1,0 +1,69 @@
+.home-card-wrapper {
+	margin-top: 16px;
+	background: #fff;
+	padding: 18px 16px;
+}
+.mui-table-view{
+	width: 100%;	
+}
+.home-card-content {
+	/*padding-top: 18px;*/
+	display: flex;
+	justify-content: center;
+}
+.home-card-content .home-card-item{
+	position: relative;
+}
+.home-card-title {
+	border-left: 6px solid #EC971F;
+	font-size: 18px;
+	padding-left: 13px;
+	margin-bottom: 6px;
+}
+
+.home-card-content .home-card-text {
+	font-family: PingFang-SC-Regular;
+	text-align: center;
+	font-size: 14px;
+	color: rgba(0, 0, 0, .65);
+}
+
+.mui-media-body {
+	width: 200px !!important;
+}
+.main-title{
+	text-align: center;
+	/*height: 78px;*/
+	padding: 15px 0;
+}
+.main-title .tip-title{
+	font-size: 18px;
+	font-weight: bold;
+	margin-bottom: 12px;
+}
+#tipDetail .mui-table-view-cell{
+	padding: 0;
+}
+#tipDetail .mui-table-view-cell .mui-input-row{
+	display: flex;
+	align-items: center;
+}
+#tipDetail .mui-table-view-cell .mui-input-row label{
+	width: 25%;
+}
+#tipDetail .mui-table-view-cell .mui-input-row label::after{
+	content: "：";
+}
+
+#tipDetail .mui-table-view-cell .detailRow_content{
+	 color: #000000;
+}
+/*  数字角标 */
+.badge{
+	position: absolute;
+	top: 0;
+	right: -14px;
+}
+.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active{
+	border-bottom: 2px solid #f2a11c;
+}

@@ -1,0 +1,334 @@
+<!--验收列表  - 列表页 - wwb-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		<link rel="import" href="../../tpl/acceptance_card.html " id="card_view"/>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav themes_bg_color">
+		   	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+		   		<label class="mui-pull-right theme_back_font">返回</label>
+		   	</a>
+		    <h1 class="mui-title themes_title">验收</h1>
+		    <a href="#modal" class="mui-pull-right"  style="height: 45px;padding-top: 12px;">
+		    	<div class="qrcode" id="qrcode" onclick="clicked('../commonPages/qrcode',true,true)">
+					<img src="../../assest/qrcode.png" width="24" height="24"/>
+				</div>
+		    </a>
+		</header>
+		<div class="mui-content">
+		    <div class="mui-input-row mui-search search_head" onclick="toSearchPage()">
+				<input type="search" class="mui-input-clear" value="" readonly="readonly" placeholder="供应商名称" >
+			</div>
+			<div id="slider" class="mui-slider themes_tab mui-fullscreen" style="top: 102px;">
+				<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<a class="mui-control-item themes_font_color_tab" href="#item1mobile">待验收</a>
+					<a class="mui-control-item themes_font_color_tab" href="#item2mobile">已验收</a>
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+				<div class="mui-slider-group">
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll" id='mui-table-view-tab1'>
+								<ul class="mui-table-view">
+									<li class="mui-table-view-cell mui-tab1" style="padding: 0;"></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll2" class="mui-scroll-wrapper">
+							<div class="mui-scroll" id='mui-table-view-tab2'>
+								<ul class="mui-table-view">
+									<li class="mui-table-view-cell mui-tab2" style="padding: 0;"></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/jquery.min.js" ></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		
+		<script type="text/javascript">
+			
+			
+			function clicked(){
+				common.openwin('../commonPages/qrcode',true,{ titleText: '扫码验收' })
+			}
+			
+			//去搜索页面
+			function toSearchPage (){
+				document.activeElement.blur(); // 隐藏软键盘
+				var params = {};
+				params.key = 'supplier';
+				params.route = '../basicMedicine/index';
+				params.module = 'basicMedicine';
+				params.location = 'main_list'
+				common.openwin('../commonPages/searchPage',{ params: JSON.stringify(params) },false)
+			}
+			
+			
+			(function($,$$) {
+				
+				$.init({
+					beforeback:function(){
+						var list = plus.webview.currentWebview().opener();
+						 mui.fire(list, 'refresh',{ getCountFlag: true });
+						 return true;
+					}
+				});
+				
+				var deceleration = mui.os.ios?0.003:0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: true,
+					indicators: true, //是否显示滚动条
+					deceleration:deceleration
+				});
+				var utils = new Utils();
+				utils.appendModule('#card_view');
+				
+				/* 渲染模板   */
+				var selected = '.mui-tab1',
+					hasChecked = false, 
+					page = undefined, 
+					pageSize = 15,
+					totalPage = undefined, 
+					query = {};
+				
+				var checkType, type, auditStatus// 验收单类型 // 验收状态   1 待验收  2 已验收 
+				var requestUrl =  '/a/checkaccept/basicMediclist'; // 请求地址
+				
+				var pageLeft = 1, 
+					pageRight = 1, 
+					totalPageLeft, 
+					totalPageRight, 
+					isMore = true, 
+					selectTabs = 1;
+				
+            	function template(selected, data, insertType){
+        			utils.innerTplHtml('acceptance', selected, data, insertType);
+            	}
+            	
+            	/*
+            	 	下拉刷新
+            	 * */
+            	function pulldownRefresh(){
+            		var self = this;
+        			if(selectTabs === 1){
+						pageLeft  = 1
+					}else{
+						pageRight = 1;
+					}
+					auditStatus = selectTabs === 1 ? '1': '3';
+					page = selectTabs === 1 ? pageLeft: pageRight;
+					var postData = {
+						auditStatus: auditStatus,
+                		checkType: checkType,
+                		pageNo: 1,
+                		pageSize: pageSize
+					}
+					if(query.supplierCode){
+						postData.supplierCodeList = [ query.supplierCode ];
+					}
+					query = {};
+					mui.ajaxRequest(requestUrl,{
+                		type: 'POST',
+                		data: postData,
+                    	contentType: "application/json",
+                		success: function(data){
+                			var resData = data.data;
+                			var total = resData.totalPage;
+                			if(selectTabs === 1){
+                				totalPageLeft = total;
+                			}else{
+                				totalPageRight = total;
+                			}
+                			if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
+                				var i = selectTabs === 1 ? 0 : 1;
+                				document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+                				isMore = false;
+                				self.endPullDownToRefresh(true);
+                			}else{
+                				isMore = true;
+                				self.endPullDownToRefresh(false);
+                				self.refresh(true);
+                			}
+							return template(selected,resData,false)
+                		},
+                		error: function(xhr,type,errorThrown){
+                			console.log(xhr.responseText)
+                		}
+            		});
+				}
+            	/*
+					 
+				 *  上拉加载更多
+				 * */
+				function pullupRefresh(){
+					var self = this;
+					if(isMore){
+						if(selectTabs === 1){
+							pageLeft ++
+						}else{
+							pageRight ++;
+						}
+						page = selectTabs === 1 ? pageLeft: pageRight;
+						totalPage = selectTabs === 1 ? totalPageLeft: totalPageRight;
+						console.log(page);
+						console.log(totalPage)
+						auditStatus = selectTabs === 1 ? '1': '3';
+						var postData = {
+							auditStatus: auditStatus,
+	                		checkType: checkType,
+	                		pageNo: page,
+	                		pageSize: pageSize
+						}
+						console.log(JSON.stringify(postData))
+						if(page <= totalPage){
+							mui.ajaxRequest(requestUrl,{
+								type: 'POST',
+		                		data: postData,
+		                    	contentType: "application/json",
+		                		success: function(data){
+		                			var resData = data.data;
+		                			if(resData.pageNo === resData.totalPage){
+			            				isMore = false;
+			            				self.endPullUpToRefresh(true);
+			            			}else{
+			            				isMore = true;
+			            				self.endPullUpToRefresh(false);
+			            				self.refresh(true);
+			            			}
+			            			return template(selected,resData,true);
+		                		},
+		                		error: function(xhr,type,errorThrown){
+									console.log(xhr.responseText)
+		                		}
+		            		});
+						}
+					}else{
+						var i = selectTabs === 1 ? 0 : 1;
+						document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+						self.endPullUpToRefresh(true);
+					}
+					
+				}
+				
+				
+				$.plusReady(function(){
+					
+					// 触发刷新 搜索页面搜的值
+					window.addEventListener('search',function(event){
+						console.log(JSON.stringify(event.detail))
+						query.supplierCode = JSON.parse(event.detail.searchParams).supplierCode;
+						query.supplierName = JSON.parse(event.detail.searchParams).supplierName;
+						console.log(JSON.stringify(query),'query')
+						$$('.mui-placeholder').hide();
+						$$('.mui-input-clear').val(query.supplierName);
+						mui(".mui-slider-group .mui-scroll").pullToRefresh()[0].pullDownLoading();
+					})
+					
+					window.addEventListener('pagefresh',function(e){
+						let index = e.detail.hasAcceptance ? 0: 1;
+						if(index === 1){
+							mui('#slider').slider().gotoItem(1);
+						}
+						mui('.mui-scroll-wrapper').scroll()[index].scrollTo(0,0,100);
+						setTimeout(function(){
+							mui(".mui-slider-group .mui-scroll").pullToRefresh()[index].pullDownLoading();
+						},300)
+					});
+					
+					plus.key.addEventListener('backbutton',function(){
+	                    plus.webview.currentWebview().close();
+	                })
+					
+					if(plus.storage.getItem('currDept')){
+						checkType = '3';
+					}else{
+						mui.toast('请重新登陆');
+						common.openwin('../login/index')
+					}
+					
+					var item2 = document.querySelector('#item2mobile');
+					var item1 = document.querySelector('#item1mobile');
+					document.getElementById('slider').addEventListener('slide', function(e) {
+						$$('.mui-input-clear').val('');
+						let index = e.detail.slideNumber;
+						if (index === 1) {
+							selected = '.mui-tab2';
+							selectTabs = 2;
+							mui('#slider').slider().gotoItem(1);
+							$('.mui-slider-group .mui-scroll .mui-tab2')[0].innerHTML = '';
+							if (!item2.querySelector('.am-card')) {
+								mui(".mui-slider-group .mui-scroll").pullToRefresh()[index].pullDownLoading();
+							}
+						}
+						if(index === 0){
+							selected = '.mui-tab1';
+							selectTabs = 1;
+							mui('#slider').slider().gotoItem(0);
+							$('.mui-slider-group .mui-scroll .mui-tab1')[0].innerHTML = '';
+							if (!item1.querySelector('.am-card')) {
+								mui(".mui-slider-group .mui-scroll").pullToRefresh()[index].pullDownLoading();
+							}
+						}
+					});
+					//循环初始化所有下拉刷新，上拉加载。
+					$.each(document.querySelectorAll('.mui-slider-group .mui-scroll'), function(index, pullRefreshEl) {
+						
+						$(pullRefreshEl).pullToRefresh({
+							down: {
+								style:'circle',
+								contentdown : "下拉可以刷新",
+								contentover : "释放立即刷新",
+								contentrefresh : "正在刷新...",
+								callback: pulldownRefresh
+							},
+							up: {
+								contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+	      						contentnomore:'没有更多数据',
+								callback: pullupRefresh
+							}
+						});
+					});
+					// 第一个tab 默认加载一次数据
+					mui(".mui-slider-group .mui-scroll").pullToRefresh()[0].pullDownLoading();
+					
+					//绑定点击事件  - 进入详情页
+						
+					$('#slider').on('tap','.am-card',function(){
+						
+						
+						let itemData = this.dataset;
+						itemData.currentSelected = hasChecked ? 'right': 'left';
+						console.log(JSON.stringify(itemData))
+						document.activeElement.blur(); // 隐藏软键盘
+						if(selectTabs===2){
+							common.openwin('basic_has_acc',{ params: JSON.stringify(itemData) },false)
+						}else{
+							common.openwin('basic_acc_list',{ params: JSON.stringify(itemData) },false)
+						}
+					})
+				});
+				
+			})(mui,jQuery);
+		
+		</script>
+	</body>
+
+</html>

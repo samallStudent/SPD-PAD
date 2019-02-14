@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<style>
+			#close {
+				position: absolute;
+				width: 160px;
+				left: 50%;
+				margin-left: -80px;
+				bottom: 120px;
+				padding: 10px;
+				color: #fff;
+				border-color: #F2A11C;
+				background-color: #F2A11C;
+			}
+			.animate {
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				width: 100%;
+				color: #fff;
+				display: -moz-box;
+			}
+			.animated {
+				position: absolute;
+				width: 100%;
+				height: 50px;
+				-webkit-animation-duration: 4s;
+				-webkit-animation-play-state: paused;
+				-webkit-animation-fill-mode: both;
+			}
+			.bounceInDown {
+				-webkit-animation-name: bounceInDown;
+				-webkit-animation-play-state: running;
+				-webkit-animation-delay: 1s;
+				display: block;
+			}
+			
+			@-webkit-keyframes bounceInDown {
+				0%, 60%, 75%, 90%, 100% {
+					-webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+					animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+				}
+				0% {
+					opacity: 0;
+					-webkit-transform: translate3d(0, 2000px, 0);
+					transform: translate3d(0, 2000px, 0);
+				}
+				60% {
+					opacity: .8;
+					-webkit-transform: translate3d(0, 770px, 0);
+					transform: translate3d(0, 770px, 0);
+				}
+				100% {
+					opacity: 1;
+					-webkit-transform: translate3d(0, 750px, 0);
+					transform: translate3d(0, 750px, 0);
+				}
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<div id="slider" class="mui-slider mui-fullscreen" style="background-color: #fff;">
+			<div class="mui-slider-group">
+				<!-- 第一张 -->
+				<div class="mui-slider-item">
+					<div class="animate guide-show">
+						<img src="../assest/guide-pic1.png"/>
+					</div>
+				</div>
+				<!-- 第二张 -->
+				<div class="mui-slider-item">
+					<div id="tips-2" class="animate mui-hidden">
+						<img src="../assest/guide-pic2.png"/>
+					</div>
+				</div>
+				<!-- 第三张 -->
+				<div class="mui-slider-item">
+					<div id="tips-3" class="animate mui-hidden">
+						<img src="../assest/guide-pic3.png"/>
+					</div>
+					<div class="animated bounceInDown">
+						<button id='close' class="mui-btn mui-btn-warning mui-btn-outlined">立即体验</button>
+					</div>
+				</div>
+			</div>
+			
+			<div class="mui-slider-indicator">
+				<div class="mui-indicator mui-active"></div>
+				<div class="mui-indicator"></div>
+				<div class="mui-indicator"></div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script>
+			mui.back = function() {};
+			mui.plusReady(function() {
+				if(mui.os.ios){
+					plus.navigator.setFullscreen(true);
+				}
+				plus.navigator.closeSplashscreen();
+			});
+			//立即体验按钮点击事件
+			document.getElementById("close").addEventListener('tap', function(event) {
+				
+				plus.storage.setItem("launchFlag", "true");
+				plus.navigator.setFullscreen(false);
+//				plus.webview.currentWebview().close();
+				mui.openWindow({
+				    url:'login/index.html',
+				    id:'login/index.html',
+				});
+			}, false);
+			//图片切换时，触发动画
+			document.querySelector('.mui-slider').addEventListener('slide', function(event) {
+			 	//注意slideNumber是从0开始的；
+			 	var index = event.detail.slideNumber+1;
+			 	if(index==2||index==3){
+			 		var item = document.getElementById("tips-"+index);
+			 		if(item.classList.contains("mui-hidden")){
+			 			item.classList.remove("mui-hidden");
+			 			item.classList.add("guide-show");
+			 		}
+			 	}
+			});
+			
+		</script>
+	</body>
+
+</html>

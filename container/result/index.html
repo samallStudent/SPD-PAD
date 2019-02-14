@@ -1,0 +1,119 @@
+<!--验收 -  详情页 - wwb-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="import" href="./success_tpl.html" id="success"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		<style>
+			.result-footer{
+				text-align: center;
+				margin-top: 36px;
+			}
+			.btn{
+				display: inline-block;
+				width: 120px;
+				height: 36px;
+				line-height: 36px;
+				border-radius: 3px;
+			}
+			.keep{
+				color: #4cd964;
+				border: 1px solid #4cd964;
+				margin-right: 24px;
+			}
+			.keep:active{
+				color: #4cd964;
+			}
+			.finish{
+				color: #007aff;
+				border: 1px solid #007aff;
+			}
+			.finish:active{
+				color: #007aff;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="mui-content">
+		    <div id="result" class="am-result">
+			
+			</div>
+			<div class="result-footer">
+				<a class="btn keep">继续<span class="actionName"></span></a>
+				<a class="btn finish">完成</a>
+			</div>
+			
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			
+
+			(function($) {
+				
+			$.init()
+			// 模板加载
+			$.ready(function(){
+				
+				var utils = new Utils();
+				utils.appendModule('#success');
+			});
+			$.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				var parmas = JSON.parse(self.parmas);
+				console.log(parmas,'parmas');
+				var data = {};
+				data.finishUrl = parmas.finishUrl;
+				data.keepUrl = parmas.keepUrl;
+				switch(parmas.resultType){
+					case 'acceptance':
+						data.resultType = '验收';
+						break;
+					case 'ground':
+						data.resultType = '上架';
+						break;
+					case 'picking':
+						data.resultType = '拣货';
+						break;
+					case 'check':
+						data.resultType = '盘点';
+						break;
+					default: 
+						break;
+				}
+				document.querySelector('.actionName').innerText = data.resultType;
+				var html = template('success_tpl', data);
+				document.getElementById('result').innerHTML = html;
+				
+				// 继续操作
+				$('.result-footer').on('click','.keep',function(){
+					var page =  plus.webview.getWebviewById(parmas.keepUrl);
+					mui.fire(page,'pagefresh',{ params: JSON.stringify(parmas.itemData),selectTab: '1' });
+					common.gotowin(parmas.keepUrl,{ params: JSON.stringify(parmas.itemData) });
+//					plus.webview.currentWebview().close();
+					
+				});
+				
+				
+				// 完成操作
+				$('.result-footer').on('tap','.finish',function(){
+					var page =  plus.webview.getWebviewById(parmas.finishUrl);
+					console.log(page);
+					mui.fire(page,'pagefresh',{ hasAcceptance: true });
+					common.gotowin(parmas.finishUrl, {}, false)
+				})
+				
+			})
+		})(mui);
+		
+		</script>
+	</body>
+
+</html>
