@@ -108,7 +108,7 @@
 				/* 渲染模板   */
 				var page = undefined, pageSize = 15,totalPage = undefined, query = {};
 				
-				var checkType, type, acceptanceType// 验收单类型 // 验收状态   1 待验收  2 已验收 
+				var checkType, type, acceptanceType// 验收单类型 // 验收状态   5 待验收  2 已验收 
 				var requestUrl =  '/a/checkaccept/list'; // 请求地址
 				
 				var pageLeft = 1, 
@@ -129,7 +129,7 @@
             		console.log(query)
             		var self = this;
 					pageLeft = 1; pageRight = 1
-					acceptanceType = selectTabs === 1 ? '1': '2';
+					acceptanceType = selectTabs === 1 ? '5': '2';
 					page = 1;
 					var postData = {
 						acceptanceType: acceptanceType,
@@ -184,7 +184,7 @@
 						}
 						page = selectTabs === 1 ? pageLeft: pageRight;
 						totalPage = selectTabs === 1 ? totalPageLeft: totalPageRight;
-						acceptanceType = selectTabs === 1 ? '1': '2';
+						acceptanceType = selectTabs === 1 ? '5': '2';
 						var postData = {
 							acceptanceType: acceptanceType,
 	                		checkType: checkType,
