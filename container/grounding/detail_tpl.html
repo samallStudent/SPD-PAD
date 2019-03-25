@@ -71,7 +71,7 @@
 						<div class="mui-input-row">
 							{{ if value.upFinishType !== 1 }}
 								<label class="font-warning">实际货位</label>
-								<select class="editInput realReceiveStore">
+								<select class="editInput realReceiveStore" style="float: left;width: 40%;">
 									{{ each value.acceptoodsVo item i }}
 										{{ if value.realReceiveStore === item.id }}
 											<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
@@ -80,6 +80,9 @@
 										{{ /if }}
 									{{ /each }}
 								</select>
+								<a href="#modal" class="mui-pull-right qrcode"  id="qrcode" onclick="clicked()" style="height: 45px;padding: 8px 25px;">
+									<img src="../../assest/qrcode.png" width="32" height="32"/>
+								</a>
 							{{ else }}
 								<label>实际货位</label>
 								<p class="detailRow_content">{{value.realReceiveStoreName}}</p>

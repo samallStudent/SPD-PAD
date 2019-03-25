@@ -95,7 +95,28 @@
 				console.log(JSON.stringify(params))
 				common.openwin('../commonPages/searchPage',{ params: JSON.stringify(params) },false)
 			}
-            
+			var acceptoodsVo = [],guid = '';
+            /*获取二维码返回值*/
+            function scaned(t, r, f) {
+            	console.log(r);//返回二维码读取的数据
+            	if(r && Array.isArray(acceptoodsVo) && acceptoodsVo.length >0){
+            		var locationCode = acceptoodsVo.filter(function(item){
+            			return item.positionName == r;
+            		})[0];
+            		if(locationCode){
+            			mui.alert('扫描成功！','提示','确定',function (e) {
+            				mui("select.select_actualStore").each(function () {
+							  if(this.dataset.id && this.dataset.id == guid){
+									this.value = locationCode.id;
+							  }
+							});
+            				//document.getElementsByClassName('select_actualStore')[0].value = locationCode.id;
+            			},'div')
+            		}else{
+            			mui.alert('扫描的货位码不在实际货位码可选集合中,请重新扫描！','提示','确定',function (e) {},'div')
+            		}
+            	}
+            }
 			
 			(function($,$$) {
 				
@@ -411,6 +432,17 @@
 								
 							}
 						},'div')
+					});
+					
+					//绑定点击事件  - 扫描
+					$('#slider').on('tap','#qrcode',function(){
+						var value = this.dataset.value;
+						if(value && typeof value == 'string' ){
+							value = JSON.parse(value);
+						}
+						acceptoodsVo = value?value.acceptoodsVo:[];
+						guid = value?value.id:'';
+						common.openwin('../commonPages/qrcode',true,{ titleText: '扫码上架' })
 					});
 				})
 			})(mui,jQuery);
