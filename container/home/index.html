@@ -115,6 +115,16 @@
 					text: '库存查询',
 					url: '../stockQuery/index',
 					src: '../../images/icon_query.png'
+				}, 
+				{
+					text: '药品追溯',
+					url: '../trace/index',
+					src: '../../images/icon_trace.png'
+				},
+				{
+					text: '货位移动',
+					url: '../move/index',
+					src: '../../images/icon_move.png'
 				}
 			];
 			var basicMediclist = [
@@ -356,7 +366,7 @@
 	            		document.querySelector('.home-card-content').style.justifyContent = 'space-between';
 	            		var currDept = JSON.parse(plus.storage.getItem('currDept'));
 	            		if(currDept.deptType === '3' || currDept.deptType === '4'){
-	            			for(var i=0; i<5; i++){
+	            			for(var i=0; i<itemDesc.length; i++){
 	            				var div = document.createElement('div');
 	            				div.className = 'home-card-item';
 	            				div.setAttribute('data-src', itemDesc[i].url);
