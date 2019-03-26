@@ -1,0 +1,228 @@
+<!--上架 -  详情页 - wwb-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/check.css"  rel="stylesheet"/>
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		<link rel="import" href="./move_new_tpl.html" id="move_new"/>
+		<style>
+				.competition {
+					margin: 10px 0 0 0;
+					position: relative;
+				}
+				.competition>.head {
+					display: flex;
+					justify-content: flex-start;
+					align-items: center;
+					padding: 5px 0;
+					color: #333;
+					font-size: 16px;
+					background-color: #fff;
+				}
+				.mui-table-view-cell {
+					margin: 5px 7px!important;
+					padding: 0;
+					border-radius: 6px;
+					background: #efeff4!important;
+				}
+				.mrl-5{
+					margin-left: 5%;
+				}
+				.text-leart {
+					display: flex;
+					justify-content: flex-start;
+					align-items: center;
+					min-height: 150px;
+					margin-top: 10px;
+					background: #fff;
+					font-size: 16px;
+					padding-left: 5%;
+				}
+				.head-left, .head-right{
+					display: flex;
+					justify-content: flex-start;
+					align-items: center;
+					padding-left: 5%;
+					height: 100%;
+					width: 40%;
+				}
+				.head-right .qrcode{
+					display: flex;
+					justify-content: flex-start;
+					align-items: center;
+				}
+				.mui-checkbox-content{
+					margin-bottom: 20px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					font-size: 20px;
+				} 
+				.mui-checkbox input[type=checkbox]{
+					position: unset !important;
+				}
+				.mui-checkbox label, .mui-radio label {
+					width: auto !important;
+					padding-right: 0 !important;
+				}
+			</style>
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav themes_bg_color">
+		   	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+		   		<label class="mui-pull-right theme_back_font">返回</label>
+		   	</a>
+		    <h1 class="mui-title themes_title">货位移动详情</h1>
+		</header>
+		<div class="mui-content">
+			<div class="competition">
+					<div class="head">
+						<div class="head-left"><i class="mui-icon mui-icon-camera"></i>请扫描新货位</div>
+						<a href="#modal" class="head-right">
+							<div class="qrcode" id="qrcode">
+								<img src="../../assest/qrcode.png" width="48" height="48"/>
+							</div>
+						</a>
+					</div>
+					<div id="content">
+						<div class="text-leart">
+							<div class="text-content">
+								<i class="mui-icon mui-icon-locked"></i>扫描货位成功后，即可操作移动到新货位！
+							</div>
+						</div>
+					</div>
+			</div>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/jquery.min.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			//货位码
+			var locationName = "",storeId = "",medName = "";
+			/*获取二维码返回值*/
+			function scaned(t, r, f) {
+				debugger
+				console.log(r+"二维码读取的数据");//返回二维码读取的数据
+				locationName = r;
+				judgeLocationMove(locationName)
+			}
+	
+			// 判断是否可以进行货位移动
+			function judgeLocationMove(locationName){
+				debugger
+				var requestUrl = "/a/pad/locAdjust/findNewLocInfo";
+				var postData = {locationName:locationName,storeId:storeId};
+				mui.ajaxRequest(requestUrl,{
+					type: 'POST',
+					data: postData,
+					success: function(data){
+						debugger
+						if(data.code == 200){
+							if(data.data.returnFla){
+								var sendData = data.data;
+								renderTemplate(sendData,false);
+							}else{
+								mui.alert(medName+"不能移动到货位："+locationCode+"下",'提示','确定',function (e) {},'div')
+							}
+						}else{
+							mui.alert(data.msg,'提示','确定',function (e) {},'div')
+						}
+					},
+					error: function(xhr,type,errorThrown){
+						console.log(xhr.responseText)
+					}
+				});
+				
+			}
+			//将tpl模板添加在页面上
+			var utils = new Utils();
+			utils.appendModule('#move_new');
+			//渲染模板
+			function renderTemplate(data, insertType){
+				debugger
+				utils.innerTplHtml('move_new_tpl', "#content", data, insertType);
+			}
+			(function($) {
+				debugger 
+				$.plusReady(function(){
+					debugger
+					var self = plus.webview.currentWebview();
+					var params = JSON.parse(self.params);//获得参数
+					var paramData = params.dataset;
+					var oldLocationName = paramData.locationname;
+					//绑定点击事件（移动）  - 进入详情页
+					$('#content').on('tap','.confirmMove',function(event){
+						debugger
+						var target = event.target,locationName = target.dataset.locationname,
+						targetLocId = target.dataset.targetlocid,
+						conversionRate = target.dataset.conversionrate,checked = false;
+						checked = $('#content input[type=checkbox]')[0].checked;
+						var btnArray = ['否', '是'];
+						mui.confirm('是否确认移动？','警告',btnArray,function(e){
+							if (e.index == 1) {
+								debugger
+								var requestUrl = "/a/pad/locAdjust/submitLocJust";
+								var postData = {
+									locationName:locationName,
+									targetLocId:targetLocId,
+									conversionRate:conversionRate,
+									storeId:storeId,
+									locAdjustNum:paramData.usablequantity,
+									locUnitCode:paramData.unitcode
+								};
+								if(checked){
+									postData.isEditLoc = 1;
+								}
+								mui.ajaxRequest(requestUrl,{
+									type: 'POST',
+									data: postData,
+									success: function(data){
+										debugger
+										if(data.code == 200){
+											mui.toast('提交成功');
+											var parmasData = {};
+											parmasData.finishUrl = '../home/index';
+											parmasData.keepUrl = '../move/index';
+											parmasData.resultType = 'move';
+											parmasData.itemData = oldLocationName;
+											common.openwin('../result/index',{ parmas: JSON.stringify(parmasData) },{
+												titleText: '结果',
+												autoBackButton: false
+											})
+										}else{
+											mui.alert(data.msg,'提示','确定',function (e) {},'div')
+										}
+									},
+									error: function(xhr,type,errorThrown){
+										console.log(xhr.responseText)
+									}
+								});
+							}
+						},'div');
+					});
+					
+					//点击扫描
+					$('.head').on('tap','#qrcode',function(event){
+						debugger
+						var target = event.target;
+						storeId = paramData.id,medName = paramData.name;
+						common.openwin('../commonPages/qrcode',true,{ titleText: '扫货位码' })
+					});
+					
+				})	
+		})(mui);
+		</script>
+	</body>
+
+</html>

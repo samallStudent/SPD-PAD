@@ -1,0 +1,33 @@
+<!-- 扫货下列显示 -->
+<script type="text/html" id='move_list_tpl'>
+	<div class="mui-card">
+		<!--页眉，放置标题-->
+		<div class="mui-card-header" data-id={{locationId}}>货位：{{locationName}}</div>
+		<!--内容区-->
+		<div class="mui-card-content">
+			<ul class="mui-table-view" id="list_warp">
+				{{ each detailVos.list value i}}
+				<li class="mui-table-view-cell mui-media">
+					<div class="mui-media-body" style="padding: 3%;">
+						<div class="mui-col-xs-12 mui-ellipsis mui-h4" style="font-weight: bold;margin-bottom: 8px;">{{value.medicinalDesc}}</div>
+						<div class="mui-row">
+							<span class="mui-col-xs-8  mui-ellipsis">规格：{{value.ctmmSpecification}}</span>
+							<span class="mui-col-xs-2" style="position: absolute;top: 25%;right: 2%;">
+								<button data-locationName={{locationName}}   data-id={{value.storeId}} data-name={{value.medicinalDesc}}  data-usableQuantity={{value.usableQuantity}} data-unitCode={{value.unitCode}}
+								style="height: 60px;box-shadow: 4px -4px 4px #888888;" type="button" 
+								class="mui-btn mui-btn-warning moveDrugs">移动</button>
+							</span>
+							<span class="mui-col-xs-10  mui-ellipsis">厂商:{{value.ctmmManufacturerName}}</span>
+							<span class="mui-col-xs-6  mui-ellipsis">单位：{{value.unitCode}}</span>
+							<span class="mui-col-xs-6  mui-ellipsis">数量：{{value.usableQuantity}}</span>
+							<span class="mui-col-xs-8  mui-ellipsis">生产批号：{{value.lot}}</span>
+							<span class="mui-col-xs-6  mui-ellipsis">生产日期：{{value.productDate}}</span>
+							<span class="mui-col-xs-6  mui-ellipsis">有效期至：{{value.validEndDate}}</span>
+						</p>
+					</div>
+				</li>
+				{{/each}}
+			</ul>
+		</div>
+	</div>
+</script>

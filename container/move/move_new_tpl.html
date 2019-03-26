@@ -1,0 +1,19 @@
+<!-- 扫货下列显示 -->
+<script type="text/html" id='move_new_tpl'>
+	<div class="mui-card">
+		<!--页眉，放置标题-->
+		<div class="mui-card-header">新货位：{{locationName}}</div>
+		<!--内容区-->
+		<div class="mui-card-content" style="padding: 20px 0;">
+				<div class="mui-checkbox-content mui-checkbox">
+				  <input name="checkbox" value="item" type="checkbox">
+				  <label>以后入库的也放在这里</label>
+				</div>
+				<div style="text-align: center;">
+					<button data-locationName={{locationName}} data-targetLocId={{locationId}} data-conversionRate={{conversionRate}}
+					style="height: 50px;width: 100px;box-shadow: 4px -4px 4px #888888;" type="button" 
+					class="mui-btn mui-btn-warning confirmMove">确认移动</button>
+				</div>
+		</div>
+	</div>
+</script>
