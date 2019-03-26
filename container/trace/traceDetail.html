@@ -1,0 +1,199 @@
+ <!--库存查询  - 列表页 - yuweI-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		<link rel="import" href="./trace_detail_body.html" id="trace_detail_body"/>
+		<link rel="import" href="./trace_detail_head.html" id="trace_detail_head"/>
+	</head>
+	<style type="text/css">
+		.head-title{
+			color: #333;
+			font-weight: bold;
+			font-size: 18px;
+		}
+		#trace_scroll1 {
+			top: 146px;
+			z-index: 1;
+		}
+		#trace_scroll1 .mui-table-view:before{
+			background: none!important;
+		}
+		#trace_scroll1 .mui-table-view .mui-table-view-cell{
+			padding: 0;
+		}
+	</style>
+	<body>
+		<header class="mui-bar mui-bar-nav themes_bg_color">
+		   	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+		   		<label class="mui-pull-right theme_back_font">返回</label>
+		   	</a>
+		    <h1 class="mui-title themes_title">药品追溯详情</h1>
+		</header>
+		<div class="mui-content">
+		    <div class="mui-head" id="head-content">
+			</div>
+			<div id="trace_scroll1" class="mui-scroll-wrapper">
+				<div id='scroll' class="mui-scroll" >
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell mui-tab" style="padding: 0;"></li>
+					</ul>
+				</div>
+			</div>		
+		</div>
+		
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			(function($) {
+
+				var deceleration = mui.os.ios?0.003:0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: true,
+					indicators: true, //是否显示滚动条
+					deceleration:deceleration
+				});
+				
+				var utils = new Utils();
+				utils.appendModule('#trace_detail_body');//import的id
+				utils.appendModule('#trace_detail_head');
+				
+				var page = 1, totalPage = undefined, pageSize = 15, isMore = true, query = {};
+            	
+            	/* 渲染模板   */
+				function template(tplId,conId,data, insertType){
+					//tpl的id,容器id,数据,true:新增,false:替换
+        			utils.innerTplHtml(tplId,conId,data,insertType);
+            	}
+				debugger
+				headData = null;
+				var requestUrl = "/a/statics/medicineStanding/newDrugLedger";
+				
+				/*
+            	 * 下拉刷新
+				 * */
+            	function pulldownRefresh(){
+					var self = this;
+					page = 1;
+					mui.ajaxRequest(requestUrl,{
+                		type: 'POST',
+                		data: {
+                			pageNo: page,
+                			pageSize: pageSize,
+							paramsName:headData.ctmmtradename,
+							lot:headData.lot
+                		},
+                		success: function(data){
+							debugger
+                			if(data.code === 200){
+                				var resData = data.data;
+	                			totalPage = resData.totalPage;
+	                			if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
+	                				document.querySelector('.mui-pull-loading').innerHTML = '没有更多数据';
+	                				self.endPullDownToRefresh(true);
+	                				isMore = false;
+	                			}else{
+	                				self.endPullDownToRefresh();
+	                			}
+								self.refresh(true);
+								return template('traceDetail_body', '.mui-tab',resData, false);
+                			}else{
+								mui.alert(data.msg,'提示','确定',function (e) {},'div')
+							}
+                		},
+                		error: function(xhr,type,errorThrown){
+							console.log(xhr.responseText)
+                		}
+            		});
+				}
+				
+				/*
+					 
+				 *  上拉加载更多
+				 * */
+				function pullupRefresh(){
+					var self = this;
+					if(isMore){
+						page++;
+						if( page <= totalPage ){
+							mui.ajaxRequest(requestUrl,{
+		                		type: 'POST',
+		                		data:{
+		                			pageNo: page,
+		                			pageSize: pageSize,
+		                			paramsName:headData.ctmmtradename,
+		                			lot:headData.lot
+		                		},
+		                		success: function(data){
+		                			debugger
+									if(data.code == 200){
+										var resData = data.data;
+										if(resData.pageNo === resData.totalPage){
+											isMore = false;
+											self.endPullUpToRefresh(true);
+										}else{
+											isMore = true;
+											self.endPullUpToRefresh(false);
+											self.refresh(true);
+										}
+										return template('traceDetail_body', '.mui-tab',resData, true);
+									}else{
+										mui.alert(data.msg,'提示','确定',function (e) {},'div')
+									}
+		                		},
+		                		error: function(xhr,type,errorThrown){
+									console.log(xhr.responseText)
+		                		}
+		            		});
+						}
+					}else{
+						document.querySelector('.mui-pull-loading').innerHTML = '没有更多数据';
+						self.endPullUpToRefresh(true);
+					}
+				}
+				
+				$.plusReady(function(){
+					debugger
+					var self = plus.webview.currentWebview();
+					var params = JSON.parse(self.params);//获得参数
+					headData = params.dataset;
+					//循环初始化所有下拉刷新，上拉加载。
+					$.each(document.querySelectorAll('.mui-scroll'), function(index, pullRefreshEl) {
+						$(pullRefreshEl).pullToRefresh({
+							down: {
+								style:'circle',
+								contentdown : "下拉可以刷新",
+								contentover : "释放立即刷新",
+								contentrefresh : "正在刷新...",
+								callback: pulldownRefresh
+							},
+							up: {
+								contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+	      						contentnomore:'没有更多数据',
+								callback: pullupRefresh
+							}
+						});
+					});
+					//手动触发下拉一次
+					mui(".mui-scroll").pullToRefresh().pullDownLoading();
+					template('traceDetail_head', '#head-content',headData, false);
+					
+				});
+				
+				
+		})(mui);
+		</script>
+		
+	</body>
+</html>

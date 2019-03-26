@@ -1,0 +1,174 @@
+<!doctype html>
+<html
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/themes.css" rel="stylesheet" />
+		<link href="../../css/index_view.css" rel="stylesheet" />
+		<link rel="import" href="./trace_list_tpl.html" id="trace_list"/>
+		<style>
+			.competition {
+				margin: 10px 0 0 0;
+				position: relative;
+			}
+			.competition>.head {
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				padding: 5px 0;
+				color: #333;
+				font-size: 16px;
+				background-color: #fff;
+			}
+			.mui-table-view-cell {
+				margin: 5px 7px!important;
+				padding: 0;
+				border-radius: 6px;
+				background: #efeff4!important;
+			}
+			.mrl-5{
+				margin-left: 5%;
+			}
+			.text-leart {
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				min-height: 150px;
+				margin-top: 10px;
+				background: #fff;
+				font-size: 16px;
+				padding-left: 5%;
+			}
+			.head-left, .head-right{
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				padding-left: 5%;
+				height: 100%;
+				width: 40%;
+			}
+			.head-right .qrcode{
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+			}
+			.mui-row>[class*=mui-col-] {
+				line-height: 30px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav themes_bg_color">
+		   	<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left">
+		   		<label class="mui-pull-right theme_back_font">返回</label>
+		   	</a>
+		    <h1 class="mui-title themes_title">药品追溯</h1>
+		</header>
+		<div class="mui-content">
+		    <div class="competition">
+					<div class="head">
+						<div class="head-left"><i class="mui-icon mui-icon-camera"></i>请扫描货位二维码</div>
+						<a href="#modal" class="head-right">
+							<div class="qrcode" id="qrcode" onclick="clicked('../commonPages/qrcode',true,true)">
+								<img src="../../assest/qrcode.png" width="48" height="48"/>
+							</div>
+						</a>
+					</div>
+					<div id="content">
+						<div class="text-leart">
+							<div class="text-content">
+								<i class="mui-icon mui-icon-locked"></i>扫描货位成功后，即显示该货位对应商品！
+							</div>
+						</div>
+					</div>
+			</div>
+		</div>
+		
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/template-web.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
+		
+		
+		<script type="text/javascript">
+			//货位码
+			var locationCode = "";
+			function clicked(){
+				common.openwin('../commonPages/qrcode',true,{ titleText: '扫货位码' })
+			}
+
+			/*获取二维码返回值*/
+			function scaned(t, r, f) {
+				debugger
+				console.log(r+"二维码读取的数据");//返回二维码读取的数据
+				locationCode = r;
+				getData(locationCode);
+			}
+			//将tpl模板添加在页面上
+			var utils = new Utils();
+			utils.appendModule('#trace_list');
+			//渲染模板
+			function renderTemplate(data, insertType){
+				debugger
+				utils.innerTplHtml('trace_list_tpl', "#content", data, insertType);
+			}
+			function getData(locationCode){
+				var requestUrl = "/a/StoreDetail/queryDrugBylocCode";
+				var postData = {positionName:locationCode};
+				mui.ajaxRequest(requestUrl,{
+					type: 'POST',
+					data: postData,
+					success: function(data){
+						debugger
+						if(data.code == 200){
+							var resData = data.data;
+							var total = resData.totalPage;
+							if(resData.list.length == 0 || total == 0){
+								document.querySelectorAll('.text-content')[0].innerHTML = '此货位下没有商品！';
+							}else{
+								var sendData = {locationCode:locationCode,list:resData.list};
+								return  renderTemplate(sendData,false);
+							}
+						}else{
+							mui.alert(data.msg,'提示','确定',function (e) {},'div')
+						}
+					},
+					error: function(xhr,type,errorThrown){
+						console.log(xhr.responseText)
+					}
+				});
+			}
+			(function($) {
+				debugger 
+				$.init({
+					beforeback:function(){
+						debugger
+						 var list = plus.webview.currentWebview().opener();
+						 mui.fire(list, 'refresh',{ getCountFlag: true });
+						 var cur= plus.webview.currentWebview();
+						 plus.webview.close(cur.id);
+						 return true;
+					}
+				});
+				$.plusReady(function(){
+					debugger
+					//绑定点击事件（追溯）  - 进入详情页
+					$('#content').on('tap','.traceDrugs',function(event){
+						debugger
+						var dataset = event.target.dataset;
+						common.openwin('traceDetail',{ params: JSON.stringify({dataset}) },false)
+					})
+				
+				})
+				
+		})(mui);
+		</script>
+	</body>
+
+</html>
