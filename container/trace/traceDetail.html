@@ -76,7 +76,7 @@
 					//tpl的id,容器id,数据,true:新增,false:替换
         			utils.innerTplHtml(tplId,conId,data,insertType);
             	}
-				debugger
+				
 				headData = null;
 				var requestUrl = "/a/statics/medicineStanding/newDrugLedger";
 				
@@ -95,7 +95,7 @@
 							lot:headData.lot
                 		},
                 		success: function(data){
-							debugger
+							
                 			if(data.code === 200){
                 				var resData = data.data;
 	                			totalPage = resData.totalPage;
@@ -136,7 +136,7 @@
 		                			lot:headData.lot
 		                		},
 		                		success: function(data){
-		                			debugger
+		                			
 									if(data.code == 200){
 										var resData = data.data;
 										if(resData.pageNo === resData.totalPage){
@@ -164,7 +164,7 @@
 				}
 				
 				$.plusReady(function(){
-					debugger
+					
 					var self = plus.webview.currentWebview();
 					var params = JSON.parse(self.params);//获得参数
 					headData = params.dataset;
