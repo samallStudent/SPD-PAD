@@ -137,7 +137,7 @@
             	function pulldownRefresh(){
 					pageLeft = 1;
 					pageRight = 1;
-					auditStatus = selectTabs === 1 ? '2': '3';
+					auditStatus = selectTabs === 1 ? '8': '3';
 					page = selectTabs === 1 ? pageLeft: pageRight;
 					var self = this;
 					var postData = {
@@ -192,7 +192,7 @@
 						page = selectTabs === 1 ? pageLeft: pageRight;
 						totalPage = selectTabs === 1 ? totalPageLeft: totalPageRight;
 
-						auditStatus = selectTabs === 1 ? '2': '3';
+						auditStatus = selectTabs === 1 ? '8': '3';
 						
 						if(page <= totalPage){
 							mui.ajaxRequest(requestUrl,{

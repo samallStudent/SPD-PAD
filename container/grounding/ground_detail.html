@@ -35,7 +35,28 @@
 		<script src="../../js/common.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/request.js" type="text/javascript" charset="utf-8"></script>
 		<script type="text/javascript">
-			
+			function clicked(){
+				common.openwin('../commonPages/qrcode',true,{ titleText: '扫码上架' })
+			}
+			var acceptoodsVo = [];//定义实际货位的列表集合
+			/*获取二维码返回值*/
+			function scaned(t, r, f) {
+				console.log(r);//返回二维码读取的数据
+				var list = acceptoodsVo;
+				if(r && Array.isArray(list) && list.length >0){
+					var locationCode = list.filter(function(item){
+						return item.positionName == r;
+					})[0];
+					if(locationCode){
+						mui.alert('扫描成功！','提示','确定',function (e) {
+							//jQuery(".realReceiveStore").val(locationCode.id); 
+							document.getElementsByClassName('realReceiveStore')[0].value = locationCode.id;
+						},'div')
+					}else{
+						mui.alert('扫描的货位码不在实际货位码可选集合中,请重新扫描！','提示','确定',function (e) {},'div')
+					}
+				}
+			}
 
 			(function($,$$) {
 				var utils = new Utils();
@@ -85,6 +106,9 @@
 										plus.nativeUI.closeWaiting();
 										if(data.code === 200){
 											detailData.list = data.data.list;
+											if(data.data.list && data.data.list[0] && data.data.list[0].acceptoodsVo){
+												acceptoodsVo = data.data.list[0].acceptoodsVo;
+											}
 											console.log('detailData********************************')
 											showData(detailData);
 											if(details.upFinishType === '0'){

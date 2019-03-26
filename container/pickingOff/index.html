@@ -77,7 +77,7 @@
 		
 		<script type="text/javascript">
 			
-			var pickingStatus = undefined,// 上架类型 // 上架状态  1 待上架  2 已上架 
+			var queryType = undefined,// 下架状态  5 待下架  6 已下架 
 				selectTabs = 1;
 			
 			function clicked(){
@@ -89,7 +89,7 @@
 				document.activeElement.blur(); // 隐藏软键盘
 				var params = {};
 				params.route = '../pickingOff/index';
-				params.auditStatus = pickingStatus;
+				params.auditStatus = queryType;
 				params.selectTabs = selectTabs;
 				params.location = 'main_list';// 主列表
 				params.module = 'pickingOff';// 所属模块
@@ -157,11 +157,11 @@
 					}else{
 						pageRight = 1;
 					}
-					pickingStatus = selectTabs === 1 ? '1': '2';
+					queryType = selectTabs === 1 ? '5': '6';
 					page = selectTabs === 1 ? pageLeft: pageRight;
 					var self = this;
 					var postData = {
-						pickingStatus: pickingStatus,
+						queryType: queryType,
             			pageNo: page,
             			pageSize: pageSize,
 					}
@@ -212,13 +212,13 @@
 						}
 						page = selectTabs === 1 ? pageLeft: pageRight;
 						totalPage = selectTabs === 1 ? totalPageLeft: totalPageRight;
-						pickingStatus = selectTabs === 1 ? '1': '2';
+						queryType = selectTabs === 1 ? '5': '6';
 						
 						if(page <= totalPage){
 							mui.ajaxRequest(requestUrl,{
 								type: 'POST',
 		                		data: {
-		                			pickingStatus: pickingStatus,
+		                			queryType: queryType,
 		                			pageNo: page,
 		                			pageSize: pageSize,
 		                		},
@@ -257,7 +257,7 @@
 					window.addEventListener('search',function(event){
 						console.log(event.detail)
 						query.applyOrderNo = JSON.parse(event.detail.searchParams).pickingOrderNo;
-						query.pickingStatus = JSON.parse(event.detail.searchParams).auditStatus;
+						query.queryType = JSON.parse(event.detail.searchParams).auditStatus;
 						search_clear.placeholder = '';
 						searchPlaceholder.style.display = 'none';
 						search_clear.value = query.applyOrderNo;
@@ -296,7 +296,7 @@
 					document.getElementById('slider').addEventListener('slide', function(e) {
 						let index = e.detail.slideNumber;
 						if (index === 1) {
-							pickingStatus = '2';
+							queryType = '6';
 							selected = '.mui-tab2';
 							hasChecked = false;
 							selectTabs = 2;
@@ -306,7 +306,7 @@
 							}
 						}
 						if(index === 0){
-							pickingStatus = '1';
+							queryType = '5';
 							selected = '.mui-tab1';
 							hasChecked = true;
 							selectTabs = 1;
