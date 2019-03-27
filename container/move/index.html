@@ -98,7 +98,7 @@
 		
 		<script type="text/javascript">
 			//货位码
-			var locationCode = "";
+			var locationName = "";
 			function clicked(){
 				common.openwin('../commonPages/qrcode',true,{ titleText: '扫货位码' })
 			}
@@ -107,8 +107,8 @@
 			function scaned(t, r, f) {
 				debugger
 				console.log(r+"二维码读取的数据");//返回二维码读取的数据
-				locationCode = r;
-				getData(locationCode);
+				locationName = r;
+				getData(locationName);
 			}
 			//将tpl模板添加在页面上
 			var utils = new Utils();
@@ -118,10 +118,11 @@
 				debugger
 				utils.innerTplHtml('move_list_tpl', "#content", data, insertType);
 			}
-			function getData(locationCode){
+			function getData(locationName,refreshFlag){
 				debugger
 				var requestUrl = "/a/pad/locAdjust/getMedicinalLists";
-				var postData = {locationName:locationCode};
+				console.log(locationName)
+				var postData = {locationName:locationName};
 				mui.ajaxRequest(requestUrl,{
 					type: 'POST',
 					data: postData,
@@ -136,7 +137,12 @@
 								return  renderTemplate(resData,false);
 							}
 						}else{
-							mui.alert(data.msg,'提示','确定',function (e) {},'div')
+							//继续移动,无数据,直接刷新
+ 							if(refreshFlag){
+ 								window.location.reload();
+ 							}else{
+								mui.alert(data.msg,'提示','确定',function (e) {},'div');
+							}
 						}
 					},
 					error: function(xhr,type,errorThrown){
@@ -158,9 +164,15 @@
 				});
 				$.plusReady(function(){
 					debugger
-					window.addEventListener('pagefresh',function(e){
-						var oldLocationName = event.detail.oldlocationname;
-						getData(oldLocationName);
+					window.addEventListener('pagefresh',function(event){
+						debugger
+						console.log(JSON.stringify(event.detail))
+						//var datas = JSON.parse(event.detai);
+						if(typeof event.detail.params == "string"){
+							var params = JSON.parse(event.detail.params);
+							oldLocationName = params.oldLocationName;
+							getData(oldLocationName,true);
+						}
 					})
 					//绑定点击事件（移动）  - 进入详情页
 					$('#content').on('tap','.moveDrugs',function(event){
