@@ -21,11 +21,11 @@
 					</div>
 					<div class="am-flexbox-item"> 
 						{{if value.inStockNum != null}}
-							<span style="color: #ec971f;font-size: 26px;">-{{value.inStockNum}}</span>
+							<span style="color: #ec971f;font-size: 26px;width: 23%;display: inline-block;">{{value.inStockNum}}</span>
 						{{else if value.outStockNum != null}} 
-							<span style="color: #ec971f;font-size: 26px;">{{value.outStockNum}}</span>
+							<span style="color: #ec971f;font-size: 26px;width: 23%;display: inline-block;">-{{value.outStockNum}}</span>
 						{{/if}}
-						<span>{{value.unit}}</span>
+						<span style="display: inline-block;">{{value.unit}}</span>
 					</div>
 				</div>
 				<div class="am-flexbox am-flexbox-align-center">

@@ -125,8 +125,8 @@
 					type: 'POST',
 					data: postData,
 					success: function(data){
-						
-						if(data.code == 200){
+						debugger
+						if(data && data.code == 200){
 							var resData = data.data;
 							var total = resData.totalPage;
 							if(resData.list.length == 0 || total == 0){
@@ -135,6 +135,9 @@
 								var sendData = {locationCode:locationCode,list:resData.list};
 								return  renderTemplate(sendData,false);
 							}
+						}else if(data == null){
+							var text = "该部门下不存在该货位！货位名称："+locationCode+",请确认后扫描！";
+							mui.alert(text,'提示','确定',function (e) {},'div')
 						}else{
 							mui.alert(data.msg,'提示','确定',function (e) {},'div')
 						}
@@ -160,7 +163,6 @@
 					
 					//绑定点击事件（追溯）  - 进入详情页
 					$('#content').on('tap','.traceDrugs',function(event){
-						
 						var dataset = event.target.dataset;
 						common.openwin('traceDetail',{ params: JSON.stringify({dataset}) },false)
 					})
