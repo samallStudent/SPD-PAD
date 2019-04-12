@@ -4,7 +4,8 @@
 		<div class="am-card scrollList-item am-card-full" 
 			data-id={{ value.id }}
 			data-realnum={{ value.realNum }}
-			data-productBatchNo={{ value.productBatchNo }}
+			data-productBatchNo={{ value.productBatchNo }} 
+			data-upParentId={{ value.upParentId?value.upParentId:"" }}
 			>
 			<div class="am-card-header">
 				<div class="am-card-header-content">
@@ -21,7 +22,7 @@
 						单位：<span>{{ value.replanUnit }}</span> 
 					</div>
 					<div class="am-flexbox-item"> 
-						数量：<span class="groundNum">{{ value.realNum }}</span> 
+						数量：<span class="groundNum">{{ value.realReceiveQuantiry }}</span> 
 					</div>
 					<div class="am-flexbox-item">
 					 	规格：<span>{{ value.ctmmSpecification }}</span>
@@ -55,7 +56,14 @@
 							</a>						
 						</div>
 						<div class="am-flexbox-item"> 
-							实际上架数量：<span>{{ value.realNum }}</span> 
+							<div class="am-list-item am-input-item am-list-item-middle">
+								<div class="am-list-line">
+									<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
+									<div class="am-input-control">
+										<input type="tel" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} class="realNum flex-item-input" />
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -69,7 +77,7 @@
 			<div class="am-card-footer">
 				<div class="am-card-footer-content"></div>
 				<div class="am-card-footer-extra">
-					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined moreDetail" data-id={{ value.id }} data-index={{ i }} style="margin: 0 5px;">更多详情</button>
+					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined moreDetail" data-id={{ value.id }} data-index={{ i }} data-upParentId={{value.upParentId?value.upParentId:0}} style="margin: 0 5px;">更多详情</button>
 					{{ if hasGround }}
 						<button type="button" class="mui-btn mui-btn-danger ground" data-id={{ value.id }} data-index={{ i }} >确认上架</button>
 					{{ /if }}

@@ -96,18 +96,18 @@
 						</div>
 						<div class="mui-input-row">
 							<label>数量</label>
-							<p class="detailRow_content">{{value.realNum}}</p>
+							<p class="detailRow_content">{{value.realReceiveQuantiry}}</p>
 						</div>
 						<div class="mui-input-row">
-							<label>实际上架数量</label>
-							<p class="detailRow_content">{{value.realNum}}</p>
-							<!--{{ if hasGround }}
+							<!-- <label>实际上架数量</label>
+							<p class="detailRow_content">{{value.realNum}}</p> -->
+							{{ if value.upFinishType !== 1  }}
 								<label class="font-warning">实际上架数量</label>
-								<input class="mui-input editInput relNum" type="number" pattern="[0-9]*" value={{ value.realNum  }} />
-								{{ else }}
+								<input type="tel" class="mui-input editInput realNum" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} />
+							{{ else }}
 								<label>实际上架数量</label>
 								<p class="detailRow_content">{{value.realNum}}</p>
-							{{ /if }}-->
+							{{ /if }}
 						</div>
 				</div>
 			</li>

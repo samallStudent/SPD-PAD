@@ -361,7 +361,9 @@
 	            	//绑定点击事件  - 进入详情页
 						
 					$('#slider').on('tap','.moreDetail',function(){
+						debugger
 						let id = this.getAttribute('data-id');
+						let upParentId = this.dataset.upparentid;
 						console.log(id)
 						let newData = {};
 						newData.id = id;
@@ -369,6 +371,7 @@
 						newData.distributeCode = distributeCode;
 						newData.selectTabs = selectTabs;
 						newData.query = query;
+						newData.upParentId = upParentId;
 						console.log(newData)
 						document.activeElement.blur();
 						common.openwin('ground_detail',{ details: JSON.stringify(newData) },{
@@ -389,24 +392,29 @@
 					
 					// 绑定事件 --确认上架
 					$('#slider').on('tap','.ground',function(){
+						debugger
 						document.activeElement.blur(); // 隐藏软键盘
 						let index = this.dataset.index;
 						var _this_card = document.querySelectorAll('.am-card')[index];
 						let id = _this_card.dataset.id;
 						var realNum = _this_card.dataset.realnum;
 						var productBatchNo = _this_card.dataset.productbatchno;
+						var upParentId = _this_card.dataset.upparentid?_this_card.dataset.upparentid:"";
 						var realReceiveStore = _this_card.querySelector('.select_actualStore').value
 						console.log(realNum);
 						console.log(realReceiveStore)
 						console.log(productBatchNo)
+						console.log(upParentId)
 						var btnArray = ['否', '是'];
 						mui.confirm('是否确认上架？', '确认', btnArray, function(e) {
 							if (e.index == 1) {
+								debugger
 								var detailListVo = [],postData = {},submitData = {};
 									postData.id = id;
 									postData.realNum = realNum;
 									postData.realReceiveStore = realReceiveStore;
 									postData.productBatchNo = productBatchNo;
+									postData.upParentId = upParentId;
 									detailListVo.push(postData);
 									submitData.detailListVo = detailListVo;
 									submitData.distributeCode = distributeCode;
@@ -444,6 +452,32 @@
 						guid = value?value.id:'';
 						common.openwin('../commonPages/qrcode',true,{ titleText: '扫码上架' })
 					});
+					
+					//绑定输入实际上架数验证
+					$$('#slider').on('keyup','.realNum',function(){
+						var _this = this,$$this = $$(this);
+						var id = _this.dataset.id,realReceiveQuantiry = _this.dataset.realreceivequantiry-0,oldValue = _this.dataset.oldvalue-0;
+						_this.value = _this.value.replace(/\D/g,'')-0;
+						var count = 0;
+						var eles = mui(".am-input-control input[data-id='"+id+"']"),len = eles.length;
+						eles.each(function (e) {
+						  count += this.value-0;
+						});
+						if(count > realReceiveQuantiry){
+							if(len == 2){
+								var text1 = "该药品存在“补货指示货位”和“备选上架货位”，两货位实际上架数量相加不能大于指示数量"+realReceiveQuantiry+"！";
+								mui.alert(text1,'提示','确定',function (e) {
+									_this.value = oldValue;
+								},'div')
+							}else{
+								var text1 = "实际上架数量不能大于指示数量"+realReceiveQuantiry+"！";
+								mui.alert(text1,'提示','确定',function (e) {
+									_this.value = oldValue;
+								},'div')
+							}
+						}
+					});
+					
 				})
 			})(mui,jQuery);
 		</script>

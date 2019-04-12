@@ -78,6 +78,8 @@
 					
 					var self = plus.webview.currentWebview();
 					var details = JSON.parse(self.details);//获得参数
+					debugger
+					var upParentId = details.upParentId;
 					console.log(JSON.stringify(details.selectTabs) );
 					var postData = {
 						distributeCode: details.distributeCode,
@@ -105,10 +107,22 @@
 										console.log(JSON.stringify(data))
 										plus.nativeUI.closeWaiting();
 										if(data.code === 200){
+											debugger
 											detailData.list = data.data.list;
 											if(data.data.list && data.data.list[0] && data.data.list[0].acceptoodsVo){
 												acceptoodsVo = data.data.list[0].acceptoodsVo;
 											}
+											if(Array.isArray(detailData.list) && detailData.list.length == 2 && detailData.list[0].id == detailData.list[1].id){
+												var _list = detailData.list.filter(function(item,index){
+													if(typeof upParentId == "string" && upParentId == "0"){
+														return item.upParentId == null;
+													}else if(upParentId == item.upParentId){
+														return item.upParentId == upParentId;
+													}
+												})
+												detailData.list = _list;
+											}
+											
 											console.log('detailData********************************')
 											showData(detailData);
 											if(details.upFinishType === '0'){
@@ -147,6 +161,7 @@
 									postData.id = detailData.list[0].id;
 									postData.realNum = detailData.list[0].realNum;
 									postData.productBatchNo = detailData.list[0].productBatchNo;
+									postData.upParentId = detailData.list[0].upParentId?detailData.list[0].upParentId:"";
 									postData.realReceiveStore = realReceiveStore;
 									detailListVo.push(postData);
 									submitData.detailListVo = detailListVo;
@@ -176,6 +191,34 @@
 							},'div')
 						});
 					}
+					
+					//绑定输入实际上架数验证
+					$$('#detailContent').on('keyup','.realNum',function(){
+						debugger
+						var _this = this,$$this = $$(this);
+						var id = _this.dataset.id,realReceiveQuantiry = _this.dataset.realreceivequantiry-0,oldValue = _this.dataset.oldvalue-0;
+						_this.value = _this.value.replace(/\D/g,'')-0;
+						var count = 0;
+						var eles = mui(".mui-input-row input[data-id='"+id+"']"),len = eles.length;
+						eles.each(function (e) {
+						  count += this.value-0;
+						});
+						if(count > realReceiveQuantiry){
+							if(len == 2){
+								var text1 = "该药品存在“补货指示货位”和“备选上架货位”，两货位实际上架数量相加不能大于指示数量"+realReceiveQuantiry+"！";
+								mui.alert(text1,'提示','确定',function (e) {
+									_this.value = oldValue;
+								},'div')
+							}else{
+								var text1 = "实际上架数量不能大于指示数量"+realReceiveQuantiry+"！";
+								mui.alert(text1,'提示','确定',function (e) {
+									_this.value = oldValue;
+								},'div')
+							}
+						}
+					});
+					
+					
 				})
 			})(mui,jQuery);
 		

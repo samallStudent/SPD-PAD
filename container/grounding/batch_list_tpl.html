@@ -8,7 +8,7 @@
 			</div>
 		</div>
 		<div class="am-card scrollList-item am-card-full" style="width: 90%;border: none;"
-			data-id={{ value.id }}
+			data-id={{ value.id }} data-upParentId={{ value.upParentId?value.upParentId:"" }} 
 			>
 			<div class="am-card-header">
 				<div class="am-card-header-content">
@@ -25,7 +25,7 @@
 						单位：<span>{{ value.replanUnit }}</span> 
 					</div>
 					<div class="am-flexbox-item"> 
-						数量：<span class="groundNum">{{ value.realNum }}</span> 
+						数量：<span class="groundNum">{{ value.realReceiveQuantiry }}</span> 
 					</div>
 					<div class="am-flexbox-item">
 					 	规格：<span>{{ value.ctmmSpecification }}</span>
@@ -53,9 +53,14 @@
 							</div>
 						</div>
 						<div class="am-flexbox-item">
-							<div class="am-flexbox-item">
-							 实际上架数量：<span class="realNum">{{ value.realNum }}</span>
-							 </div>
+							<div class="am-list-item am-input-item am-list-item-middle">
+								<div class="am-list-line">
+									<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
+									<div class="am-input-control">
+										<input type="tel" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} class="realNum flex-item-input" />
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

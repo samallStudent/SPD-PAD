@@ -314,6 +314,7 @@
 						mui.each(selectedCards,function(index,item){
 							var postData = {};
 							var id = item.dataset.id;
+							var upParentId = item.dataset.upparentid?item.dataset.upparentid:"";
 							var realNum = item.querySelector('.realNum').innerText;
 							console.log($JQ(item).find('.select_actualStore').find('option:selected').index(),'index')
 							var realReceiveStore = $JQ(item).find('.select_actualStore').find('option:selected').val();
@@ -325,6 +326,7 @@
 							postData.realNum = realNum;
 							postData.productBatchNo = productBatchNo;
 							postData.realReceiveStore = realReceiveStore;
+							postData.upParentId = upParentId;
 							detailListVo.push(postData);
 						});
 						submitData.detailListVo = detailListVo;
@@ -333,12 +335,14 @@
 						var btnArray = ['否', '是'];
 						mui.confirm('确认批量上架选中的药品？', '确认', btnArray, function(e) {
 							if (e.index == 1) {
+								debugger
 								mui.ajaxRequest(groundUrl,{
 									type: 'POST',
 									data: submitData,
 									showWaiting: true,
 									contentType: "application/json",
 									success: function(data){
+										debugger
 										if(data.code === 200){
 											mui.toast('上架成功',{ type: 'div' });
 											$JQ('.total').text(0);
@@ -356,6 +360,34 @@
 							}
 						},'div')
 					});
+					//绑定输入实际上架数验证
+					debugger
+					$JQ('#slider').on('keyup','.realNum',function(){
+						debugger
+						var _this = this,$JQthis = $JQ(this);
+						var id = _this.dataset.id,realReceiveQuantiry = _this.dataset.realreceivequantiry-0,oldValue = _this.dataset.oldvalue-0;
+						_this.value = _this.value.replace(/\D/g,'')-0;
+						var count = 0;
+						var eles = mui(".am-input-control input[data-id='"+id+"']"),len = eles.length;
+						eles.each(function (e) {
+						  count += this.value-0;
+						});
+						if(count > realReceiveQuantiry){
+							if(len == 2){
+								var text1 = "该药品存在“补货指示货位”和“备选上架货位”，两货位实际上架数量相加不能大于指示数量"+realReceiveQuantiry+"！";
+								mui.alert(text1,'提示','确定',function (e) {
+									_this.value = oldValue;
+								},'div')
+							}else{
+								var text1 = "实际上架数量不能大于指示数量"+realReceiveQuantiry+"！";
+								mui.alert(text1,'提示','确定',function (e) {
+									_this.value = oldValue;
+								},'div')
+							}
+						}
+					});
+					
+					
 					
 				});
 				
