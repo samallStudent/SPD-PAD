@@ -95,7 +95,7 @@
 				console.log(JSON.stringify(params))
 				common.openwin('../commonPages/searchPage',{ params: JSON.stringify(params) },false)
 			}
-			var acceptoodsVo = [],guid = '';
+			var acceptoodsVo = [],guid = '',scindex = '';
             /*获取二维码返回值*/
             function scaned(t, r, f) {
             	console.log(r);//返回二维码读取的数据
@@ -106,7 +106,7 @@
             		if(locationCode){
             			mui.alert('扫描成功！','提示','确定',function (e) {
             				mui("select.select_actualStore").each(function () {
-							  if(this.dataset.id && this.dataset.id == guid){
+							  if(this.dataset.id && this.dataset.id == guid && this.dataset.index == scindex){
 									this.value = locationCode.id;
 							  }
 							});
@@ -160,7 +160,82 @@
 				function template(selected, data, insertType){
         			utils.innerTplHtml('ground_list',selected, data, insertType);
             	}
-				
+				/* 过滤还有备选货位的数据 */
+				 function filterDatas(datas){
+					 
+					var list  = datas.list;
+					var hasGround = datas.hasGround;
+					if(list && list.length && list.length > 1){
+						var list  = datas.list,_list = [];
+						for(var i = 0,len = list.length;i<len;i++){
+							//存在备选上架货位
+							var realReceiveStore = [],realNum = [],storeType= [],upParentId = [],actualStore = [],realReceiveStoreName = [];
+							if(list[i].upParentId){
+								//外部的
+								var outList = list.filter(function(item,index){
+									if(hasGround){
+										return (index != i && item.id == list[i].id && item.upParentId == null);
+									}else{
+										return (index != i && item.id == list[i].upParentId && item.upParentId == null);
+									}
+								});
+								//内部的
+								var innerList = _list.filter(function(item,index){
+									if(hasGround){
+										return (item.id == list[i].id && item.upParentId == null);
+									}else{
+										return (item.id == list[i].upParentId && item.upParentId == null);
+									}
+								});
+								list.forEach(function(item,index){
+									if(hasGround){
+										if(list[i].id == item.id){
+											realReceiveStore.push(item.realReceiveStore);
+											realNum.push(item.realNum);
+											storeType.push(item.storeType);
+											upParentId.push(item.upParentId);
+											actualStore.push(item.actualStore);
+											realReceiveStoreName.push(item.realReceiveStoreName);
+										}
+									}else{
+										if(list[i].upParentId == item.id || list[i].id == item.id){
+											realReceiveStore.push(item.realReceiveStore);
+											realNum.push(item.realNum);
+											storeType.push(item.storeType);
+											upParentId.push(item.upParentId);
+											actualStore.push(item.actualStore);
+											realReceiveStoreName.push(item.realReceiveStoreName);
+										}
+									}
+									
+								})
+								if(innerList[0]){
+									innerList[0].realReceiveStore = realReceiveStore;
+									innerList[0].realNum = realNum;
+									var _store = storeType.map(function(item,index){
+										var text = "货位";
+										if(item == "补货指示货位"){
+											text = "指示货位";
+										}else if(item == "备选上架货位"){
+											text = "备选货位";
+										}
+										return text;
+									})
+									innerList[0].storeType = _store;
+									innerList[0].upParentId = upParentId;
+									innerList[0].actualStore = actualStore;
+									innerList[0].realReceiveStoreName = realReceiveStoreName;
+								}
+							}else{
+								_list.push(list[i])
+							}
+						}
+						datas.list = _list;
+						return datas;
+					}else{
+						return datas;
+					}
+				} 
 				/*
             	 	下拉刷新
             	 * */
@@ -185,7 +260,11 @@
                 		data: postData,
                 		success: function(data){
                 			var resData = data.data;
+							//过滤还有备选货位的数据
+							
                 			resData.hasGround = upFinishType === '0'? true: false;
+							var showData = filterDatas(resData);
+							
                 			totalPage = data.totalPage;
                 			if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
                 				var i = selectTabs === 1 ? 0 : 1;
@@ -198,7 +277,7 @@
                 				self.endPullDownToRefresh(false);
                 				self.refresh(true);
                 			}
-							return template(selected,resData, false)
+							return template(selected,showData, false)
                 		},
                 		error: function(xhr,type,errorThrown){
 							console.log(xhr.responseText)
@@ -225,6 +304,8 @@
 	                		},
 	                		success: function(data){
 	                			var resData = data.data;
+								
+								var showData = filterDatas(resData);
 	                			resData.hasGround = upFinishType === '0'? true: false;
 	                			if(resData.pageNo === resData.totalPage){
 		            				isMore = false;
@@ -234,7 +315,7 @@
 		            				self.endPullUpToRefresh(false);
 		            				self.refresh(true);
 		            			}
-								return template(selected,resData, true)
+								return template(selected,showData, true)
 	                			
 	                		},
 	                		error: function(xhr,type,errorThrown){
@@ -361,7 +442,7 @@
 	            	//绑定点击事件  - 进入详情页
 						
 					$('#slider').on('tap','.moreDetail',function(){
-						debugger
+						
 						let id = this.getAttribute('data-id');
 						let upParentId = this.dataset.upparentid;
 						console.log(id)
@@ -392,33 +473,44 @@
 					
 					// 绑定事件 --确认上架
 					$('#slider').on('tap','.ground',function(){
-						debugger
+						
 						document.activeElement.blur(); // 隐藏软键盘
 						let index = this.dataset.index;
 						var _this_card = document.querySelectorAll('.am-card')[index];
-						let id = _this_card.dataset.id;
-						var realNum = _this_card.dataset.realnum;
-						var productBatchNo = _this_card.dataset.productbatchno;
-						var upParentId = _this_card.dataset.upparentid?_this_card.dataset.upparentid:"";
-						var realReceiveStore = _this_card.querySelector('.select_actualStore').value
-						console.log(realNum);
-						console.log(realReceiveStore)
-						console.log(productBatchNo)
-						console.log(upParentId)
+						var edit = _this_card.querySelectorAll('.editForm');
+						var $$edit = $$(_this_card).find(".editForm");
+						var id = _this_card.dataset.id;
+						
+						
+						if(edit[0] && edit.length > 0){
+							var detailListVo = [],submitData = {};
+							mui.each(edit,function(index,item){
+								var postData = {};
+								var $$input = $$(item).find('input.realNum'),realNum = 0;
+								if($$input[0]){
+									realNum = $$input.val()-0; 
+								}
+								var upParentId = item.dataset.upparentid;
+								if(typeof upParentId == "string" && upParentId == "0"){
+									upParentId = "";
+								}
+								var productBatchNo = _this_card.dataset.productbatchno;
+								var realReceiveStore =item.querySelector('.select_actualStore').value;
+								
+								postData.id = id;
+								postData.realNum = realNum;
+								postData.productBatchNo = productBatchNo;
+								postData.realReceiveStore = realReceiveStore;
+								postData.upParentId = upParentId;
+								detailListVo.push(postData);
+							});
+							submitData.detailListVo = detailListVo;
+							submitData.distributeCode = distributeCode;
+							console.log(submitData)
+						}
 						var btnArray = ['否', '是'];
 						mui.confirm('是否确认上架？', '确认', btnArray, function(e) {
 							if (e.index == 1) {
-								debugger
-								var detailListVo = [],postData = {},submitData = {};
-									postData.id = id;
-									postData.realNum = realNum;
-									postData.realReceiveStore = realReceiveStore;
-									postData.productBatchNo = productBatchNo;
-									postData.upParentId = upParentId;
-									detailListVo.push(postData);
-									submitData.detailListVo = detailListVo;
-									submitData.distributeCode = distributeCode;
-									console.log(JSON.stringify(submitData));
 									mui.ajaxRequest(groundUrl,{
 				                		type: 'POST',
 				                		data: submitData,
@@ -426,7 +518,8 @@
 				                		showWaiting: true,
 				                		success: function(data){
 				                			if(data.code === 200){
-				                				mui.toast('上架成功',{ type: 'div' });
+				                				//mui.toast('上架成功',{ type: 'div' });
+												mui.alert(data.data);
 				                				mui(".mui-scroll").pullToRefresh()[ selectTabs -1 ].pullDownLoading();
 				                			}else{
 				                				mui.alert(data.msg)
@@ -450,11 +543,13 @@
 						}
 						acceptoodsVo = value?value.acceptoodsVo:[];
 						guid = value?value.id:'';
+						scindex = this.dataset.index;
 						common.openwin('../commonPages/qrcode',true,{ titleText: '扫码上架' })
 					});
 					
 					//绑定输入实际上架数验证
 					$$('#slider').on('keyup','.realNum',function(){
+						
 						var _this = this,$$this = $$(this);
 						var id = _this.dataset.id,realReceiveQuantiry = _this.dataset.realreceivequantiry-0,oldValue = _this.dataset.oldvalue-0;
 						_this.value = _this.value.replace(/\D/g,'')-0;

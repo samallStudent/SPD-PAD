@@ -128,6 +128,7 @@
 					data: postData,
 					success: function(data){
 						var resData = data.data;
+						var showDatas = filterDatas(resData);
 						resData.page = page;
 						resData.pageSize = pageSize;
 						resData.hasGround = true;
@@ -144,7 +145,7 @@
 								self.refresh(true);
 							}
 							console.log(JSON.stringify(data.data.list))
-							return template(resData, false)
+							return template(showDatas, false)
 							},
 							error: function(xhr,type,errorThrown){
 								console.log(xhr.responseText)
@@ -161,6 +162,58 @@
 						});
 					}
             	}
+				/* 过滤还有备选货位的数据 */
+				 function filterDatas(datas){
+					var list  = datas.list;
+					if(list && list.length && list.length > 1){
+						var list  = datas.list,_list = [];
+						for(var i = 0,len = list.length;i<len;i++){
+							//存在备选上架货位
+							var realReceiveStore = [],realNum = [],storeType= [],upParentId = [],actualStore = [],realReceiveStoreName = [];
+							if(list[i].upParentId){
+								var outList = list.filter(function(item,index){
+									return (index > i && item.id == list[i].id && item.upParentId == null);
+								});
+								var innerList = _list.filter(function(item,index){
+									return (item.id == list[i].id && item.upParentId == null);
+								});
+								list.forEach(function(item,index){
+									if(list[i].id == item.id){
+										realReceiveStore.push(item.realReceiveStore);
+										realNum.push(item.realNum);
+										storeType.push(item.storeType);
+										upParentId.push(item.upParentId);
+										actualStore.push(item.actualStore);
+										realReceiveStoreName.push(item.realReceiveStoreName);
+									}
+								})
+								if(innerList[0]){
+									innerList[0].realReceiveStore = realReceiveStore;
+									innerList[0].realNum = realNum;
+									var _store = storeType.map(function(item,index){
+										var text = "货位";
+										if(item == "补货指示货位"){
+											text = "指示货位";
+										}else if(item == "备选上架货位"){
+											text = "备选货位";
+										}
+										return text;
+									})
+									innerList[0].storeType = _store;
+									innerList[0].upParentId = upParentId;
+									innerList[0].actualStore = actualStore;
+									innerList[0].realReceiveStoreName = realReceiveStoreName;
+								}
+							}else{
+								_list.push(list[i])
+							}
+						}
+						datas.list = _list;
+						return datas;
+					}else{
+						return datas;
+					}
+				} 
             	/*
 				 *  上拉加载更多
 				 * */
@@ -180,6 +233,7 @@
 							},
 							success: function(data){
 								var resData = data.data;
+								var showDatas = filterDatas(resData);
 								resData.page = page;
 								resData.pageSize = pageSize;
 								resData.hasGround = true;
@@ -187,14 +241,14 @@
 									acceptList.push(item)
 								});
 								if(resData.pageNo === resData.totalPage){
-								isMore = false;
-								self.endPullUpToRefresh(true);
-							}else{
-								isMore = true;
-								self.endPullUpToRefresh(false);
-								self.refresh(true);
-							}
-								return template(resData, true,'render')
+									isMore = false;
+									self.endPullUpToRefresh(true);
+								}else{
+									isMore = true;
+									self.endPullUpToRefresh(false);
+									self.refresh(true);
+								}
+								return template(showDatas, true,'render')
 								
 							},
 							error: function(xhr,type,errorThrown){
@@ -298,6 +352,7 @@
 					})
 					// 绑定事件 --确认验收
 					$('.fix_bottom-wraper').on('tap','.acceptance',function(){
+						
 						document.activeElement.blur(); // 隐藏软键盘
 						console.log(document.querySelector('.total').innerText)
 						if(Number(document.querySelector('.total').innerText) === 0){
@@ -309,16 +364,24 @@
 							selectedCards.push(cards[item]);
 						});
 						console.log(selectedCards);
-//						
-						let detailListVo = [], submitData = {};
+						var edit = [];
 						mui.each(selectedCards,function(index,item){
+							var _edit = item.querySelectorAll('.editForm');
+							for(var i = 0,len = _edit.length;i<len;i++){
+								edit.push(_edit[i]);
+							}
+						});
+						let detailListVo = [], submitData = {};
+						mui.each(edit,function(index,item){
 							var postData = {};
 							var id = item.dataset.id;
-							var upParentId = item.dataset.upparentid?item.dataset.upparentid:"";
-							var realNum = item.querySelector('.realNum').innerText;
-							console.log($JQ(item).find('.select_actualStore').find('option:selected').index(),'index')
-							var realReceiveStore = $JQ(item).find('.select_actualStore').find('option:selected').val();
-							var productBatchNo = item.querySelector('#productBatchNo').querySelector('span').innerText;
+							var productBatchNo = item.dataset.productbatchno;
+							var upParentId = item.dataset.upparentid;
+							if(typeof upParentId == "string" && upParentId == "0"){
+								upParentId = "";
+							}
+							var realNum = $JQ(item).find('.realNum').val()?$JQ(item).find('.realNum').val()-0:0;
+							var realReceiveStore =item.querySelector('.select_actualStore').value;
 							console.log(productBatchNo)
 							console.log(realNum);
 							console.log(realReceiveStore,'realReceiveStore');
@@ -335,22 +398,25 @@
 						var btnArray = ['否', '是'];
 						mui.confirm('确认批量上架选中的药品？', '确认', btnArray, function(e) {
 							if (e.index == 1) {
-								debugger
+								
 								mui.ajaxRequest(groundUrl,{
 									type: 'POST',
 									data: submitData,
 									showWaiting: true,
 									contentType: "application/json",
 									success: function(data){
-										debugger
+										
 										if(data.code === 200){
-											mui.toast('上架成功',{ type: 'div' });
+											//mui.toast('上架成功',{ type: 'div' });
+											mui.alert(data.data);
 											$JQ('.total').text(0);
 											document.querySelector('#checkall').checked = false;
 											setTimeout(function(){
 												mui('.mui-scroll-wrapper').scroll().scrollTo(0,0);
 												mui(".mui-scroll").pullToRefresh().pullDownLoading();
 											},300)
+										}else{
+											mui.alert(data.msg)
 										}
 									},
 									error: function(xhr,type,errorThrown){
@@ -361,9 +427,9 @@
 						},'div')
 					});
 					//绑定输入实际上架数验证
-					debugger
+					
 					$JQ('#slider').on('keyup','.realNum',function(){
-						debugger
+						
 						var _this = this,$JQthis = $JQ(this);
 						var id = _this.dataset.id,realReceiveQuantiry = _this.dataset.realreceivequantiry-0,oldValue = _this.dataset.oldvalue-0;
 						_this.value = _this.value.replace(/\D/g,'')-0;

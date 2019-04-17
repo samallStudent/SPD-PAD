@@ -29,44 +29,87 @@
 					</div>
 				</div>
 				{{ if hasGround }}
-				<div class="editForm" style="display: block;">
-					<div class="am-flexbox am-flexbox-align-center">
-						<div class="am-flexbox-item">
-							<div class="am-list-item am-input-item am-list-item-middle">
-								<div class="am-list-line">
-									<div class="am-input-label am-input-label-4 font-warning" style="width: 40px;">货位:</div>
-									<div class="am-input-control">
-										<select class="editInput select_actualStore" data-id={{value.id}}>
-											{{ each value.acceptoodsVo item i }}
-												{{ if value.realReceiveStore === item.id }}
-													<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
-												{{ else }}
-													<option value={{ item.id }}>{{ item.positionName }}</option>
-												{{ /if }}
-											{{ /each }}
-										</select>
+					{{ if value.realNum && value.realNum.length && value.realNum.length > 1}}
+						{{ each value.realNum num index}}
+							<div class="editForm" style="display: block;" data-upParentId={{ value.upParentId[index]?value.upParentId[index]:0 }}>
+								<div class="am-flexbox am-flexbox-align-center">
+									<div class="am-flexbox-item">
+										<div class="am-list-item am-input-item am-list-item-middle">
+											<div class="am-list-line">
+												<div class="am-input-label am-input-label-4 font-warning" style="width: 56px;">{{value.storeType[index]}}:</div>
+												<div class="am-input-control">
+													<select class="editInput select_actualStore" data-id={{value.id}} data-index={{index}}>
+														{{ each value.acceptoodsVo item i }}
+															{{ if value.realReceiveStore[index] && value.realReceiveStore[index] === item.id }}
+																<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
+															{{ else }}
+																<option value={{ item.id }}>{{ item.positionName }}</option>
+															{{ /if }}
+														{{ /each }}
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="am-flexbox-item">
+										扫描货位：
+										<a href="#modal" class="qrcode"  id="qrcode" data-value={{value}} data-index={{index}} style="height: 32px;width: 32px;display: inline-block;">
+											<img src="../../assest/qrcode.png" style="width:100%;height: 100%;margin-bottom: -14px;" width="30" height="30"/>
+										</a>						
+									</div>
+									<div class="am-flexbox-item"> 
+										<div class="am-list-item am-input-item am-list-item-middle">
+											<div class="am-list-line">
+												<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
+												<div class="am-input-control">
+													<input class="realNum flex-item-input" type="tel" value={{ value.realNum[index] ? value.realNum[index] : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum[index] ? value.realNum[index] : 0}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} />
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						{{/each}}
+					{{ else }}
+						<div class="editForm" style="display: block;" data-upParentId={{ value.upParentId?value.upParentId:0 }}>
+							<div class="am-flexbox am-flexbox-align-center">
+								<div class="am-flexbox-item">
+									<div class="am-list-item am-input-item am-list-item-middle">
+										<div class="am-list-line">
+											<div class="am-input-label am-input-label-4 font-warning" style="width: 40px;">货位:</div>
+											<div class="am-input-control">
+												<select class="editInput select_actualStore" data-id={{value.id}} data-index={{1}}>
+													{{ each value.acceptoodsVo item i }}
+														{{ if value.realReceiveStore === item.id }}
+															<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
+														{{ else }}
+															<option value={{ item.id }}>{{ item.positionName }}</option>
+														{{ /if }}
+													{{ /each }}
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="am-flexbox-item">
+									扫描货位：
+									<a href="#modal" class="qrcode"  id="qrcode" data-value={{value}} data-index={{1}} style="height: 32px;width: 32px;display: inline-block;">
+										<img src="../../assest/qrcode.png" style="width:100%;height: 100%;margin-bottom: -14px;" width="30" height="30"/>
+									</a>						
+								</div>
+								<div class="am-flexbox-item"> 
+									<div class="am-list-item am-input-item am-list-item-middle">
+										<div class="am-list-line">
+											<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
+											<div class="am-input-control">
+												<input class="realNum flex-item-input" type="tel" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} />
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-						<div class="am-flexbox-item">
-							扫描货位：
-							<a href="#modal" class="qrcode"  id="qrcode" data-value={{value}} style="height: 32px;width: 32px;display: inline-block;">
-								<img src="../../assest/qrcode.png" style="width:100%;height: 100%;margin-bottom: -14px;" width="30" height="30"/>
-							</a>						
-						</div>
-						<div class="am-flexbox-item"> 
-							<div class="am-list-item am-input-item am-list-item-middle">
-								<div class="am-list-line">
-									<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
-									<div class="am-input-control">
-										<input type="tel" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} class="realNum flex-item-input" />
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+					{{ /if }}
 				{{ /if }}
 				<div class="am-flexbox am-flexbox-align-center">
 					<div class="am-flexbox-item">

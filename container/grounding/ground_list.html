@@ -114,7 +114,62 @@
 				function template(data, insertType){
         			utils.innerTplHtml('ground_list','.mui-tab1', data, insertType);
             	}
-				
+				/* 过滤还有备选货位的数据 */
+				 function filterDatas(datas){
+					 
+					var list  = datas.list;
+					var hasGround = datas.hasGround;
+					if(list && list.length && list.length > 1){
+						var list  = datas.list,_list = [];
+						for(var i = 0,len = list.length;i<len;i++){
+							//存在备选上架货位
+							var realReceiveStore = [],realNum = [],storeType= [],upParentId = [],actualStore = [],realReceiveStoreName = [];
+							if(list[i].upParentId){
+								//外部的
+								var outList = list.filter(function(item,index){
+									return (index != i && item.id == list[i].upParentId && item.upParentId == null);
+								});
+								//内部的
+								var innerList = _list.filter(function(item,index){
+									return (item.id == list[i].upParentId && item.upParentId == null);
+								});
+								list.forEach(function(item,index){
+									if(list[i].upParentId == item.id || list[i].id == item.id){
+										realReceiveStore.push(item.realReceiveStore);
+										realNum.push(item.realNum);
+										storeType.push(item.storeType);
+										upParentId.push(item.upParentId);
+										actualStore.push(item.actualStore);
+										realReceiveStoreName.push(item.realReceiveStoreName);
+									}
+								})
+								if(innerList[0]){
+									innerList[0].realReceiveStore = realReceiveStore;
+									innerList[0].realNum = realNum;
+									var _store = storeType.map(function(item,index){
+										var text = "货位";
+										if(item == "补货指示货位"){
+											text = "指示货位";
+										}else if(item == "备选上架货位"){
+											text = "备选货位";
+										}
+										return text;
+									})
+									innerList[0].storeType = _store;
+									innerList[0].upParentId = upParentId;
+									innerList[0].actualStore = actualStore;
+									innerList[0].realReceiveStoreName = realReceiveStoreName;
+								}
+							}else{
+								_list.push(list[i])
+							}
+						}
+						datas.list = _list;
+						return datas;
+					}else{
+						return datas;
+					}
+				} 
 				/*
             	 	下拉刷新
             	 * */
@@ -136,6 +191,7 @@
                 		data: postData,
                 		success: function(data){
                 			var resData = data.data;
+							var showData = filterDatas(resData);
                 			totalPage = data.totalPage;
                 			if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
                 				isMore = false;
@@ -147,7 +203,7 @@
                 				self.endPullDownToRefresh(false);
                 				self.refresh(true);
                 			}
-							return template(resData, false)
+							return template(showData, false)
                 		},
                 		error: function(xhr,type,errorThrown){
 							console.log(xhr.responseText)
@@ -174,6 +230,7 @@
 	                		},
 	                		success: function(data){
 	                			var resData = data.data;
+								var showData = filterDatas(resData);
 	                			if(resData.pageNo === resData.totalPage){
 		            				isMore = false;
 		            				self.endPullUpToRefresh(true);
@@ -182,7 +239,7 @@
 		            				self.endPullUpToRefresh(false);
 		            				self.refresh(true);
 		            			}
-								return template(resData, true)
+								return template(showData, true)
 	                			
 	                		},
 	                		error: function(xhr,type,errorThrown){

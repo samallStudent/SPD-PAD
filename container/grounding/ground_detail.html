@@ -78,7 +78,7 @@
 					
 					var self = plus.webview.currentWebview();
 					var details = JSON.parse(self.details);//获得参数
-					debugger
+					
 					var upParentId = details.upParentId;
 					console.log(JSON.stringify(details.selectTabs) );
 					var postData = {
@@ -107,20 +107,10 @@
 										console.log(JSON.stringify(data))
 										plus.nativeUI.closeWaiting();
 										if(data.code === 200){
-											debugger
+											
 											detailData.list = data.data.list;
 											if(data.data.list && data.data.list[0] && data.data.list[0].acceptoodsVo){
 												acceptoodsVo = data.data.list[0].acceptoodsVo;
-											}
-											if(Array.isArray(detailData.list) && detailData.list.length == 2 && detailData.list[0].id == detailData.list[1].id){
-												var _list = detailData.list.filter(function(item,index){
-													if(typeof upParentId == "string" && upParentId == "0"){
-														return item.upParentId == null;
-													}else if(upParentId == item.upParentId){
-														return item.upParentId == upParentId;
-													}
-												})
-												detailData.list = _list;
 											}
 											
 											console.log('detailData********************************')
@@ -152,21 +142,35 @@
 					if(details.upFinishType === '0'){
 						var ground = (document.querySelector('#ground'));
 						$('.detailRow').on('tap','#ground',function(e){
-							var realReceiveStore = $$('.realReceiveStore').val();
 							document.activeElement.blur(); // 隐藏软键盘
+							var edit = document.querySelectorAll('.goodsInfo');
+							var id = detailData.list[0].id;
+							
+							
+							if(edit[0] && edit.length > 0){
+								var detailListVo = [],submitData = {};
+								mui.each(edit,function(index,item){
+									var postData = {};
+									var $$input = $$(item).find('input.realNum'),realNum = 0;
+									if($$input[0]){
+										realNum = $$input.val()-0; 
+									}
+									var realReceiveStore =item.querySelector('.realReceiveStore').value;
+									
+									postData.id = id;
+									postData.realNum = realNum;
+									postData.productBatchNo = detailData.list[0].productBatchNo;
+									postData.realReceiveStore = realReceiveStore;
+									postData.upParentId = detailData.list[index].upParentId?detailData.list[index].upParentId:"";
+									detailListVo.push(postData);
+								});
+								submitData.detailListVo = detailListVo;
+								submitData.distributeCode = details.distributeCode;
+								console.log(submitData)
+							}
 							var btnArray = ['否', '是'];
 							mui.confirm('是否确认上架？', '操作提示', btnArray, function(e) {
 								if (e.index == 1) {
-									var detailListVo = [],postData = {},submitData = {};
-									postData.id = detailData.list[0].id;
-									postData.realNum = detailData.list[0].realNum;
-									postData.productBatchNo = detailData.list[0].productBatchNo;
-									postData.upParentId = detailData.list[0].upParentId?detailData.list[0].upParentId:"";
-									postData.realReceiveStore = realReceiveStore;
-									detailListVo.push(postData);
-									submitData.detailListVo = detailListVo;
-									submitData.distributeCode = detailData.distributecode;
-									console.log(JSON.stringify(submitData));
 									mui.ajaxRequest(groundUrl,{
 				                		type: 'POST',
 				                		data: submitData,
@@ -174,7 +178,8 @@
 				                		showWaiting: true,
 				                		success: function(data){
 				                			if(data.code === 200){
-				                				mui.toast('上架成功',{ type: 'div' });
+				                				//mui.toast('上架成功',{ type: 'div' });
+												mui.alert(data.data);
 				                				var page =  plus.webview.getWebviewById('ground_not_list');
 												mui.fire(page,'pagefresh',{ selectTab: '1' });
 												common.gotowin('acc_not_list',{  });
@@ -194,7 +199,7 @@
 					
 					//绑定输入实际上架数验证
 					$$('#detailContent').on('keyup','.realNum',function(){
-						debugger
+						
 						var _this = this,$$this = $$(this);
 						var id = _this.dataset.id,realReceiveQuantiry = _this.dataset.realreceivequantiry-0,oldValue = _this.dataset.oldvalue-0;
 						_this.value = _this.value.replace(/\D/g,'')-0;

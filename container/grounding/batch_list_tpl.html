@@ -8,8 +8,7 @@
 			</div>
 		</div>
 		<div class="am-card scrollList-item am-card-full" style="width: 90%;border: none;"
-			data-id={{ value.id }} data-upParentId={{ value.upParentId?value.upParentId:"" }} 
-			>
+			data-id={{ value.id }} data-upParentId={{ value.upParentId?value.upParentId:"" }} >
 			<div class="am-card-header">
 				<div class="am-card-header-content">
 					<span style="font-size: 18px; color: rgb(51, 51, 51); font-weight: bold;">
@@ -32,44 +31,91 @@
 					</div>
 				</div>
 				{{ if hasGround }}
-				<div class="editForm" style="display: block;">
-					<div class="am-flexbox am-flexbox-align-center">
-						<div class="am-flexbox-item">
-							<div class="am-list-item am-input-item am-list-item-middle">
-								<div class="am-list-line">
-									<div class="am-input-label am-input-label-4 font-warning" style="width: 40px;">货位:</div>
-									<div class="am-input-control">
-										<select class="editInput select_actualStore" value={{ value.replanStore }}>
-											{{ each value.acceptoodsVo item i }}
-												{{ if value.realReceiveStore === item.id }}
-														<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
-													{{ else }}
-														<option value={{ item.id }}>{{ item.positionName }}</option>
+					{{ if value.realNum && value.realNum.length && value.realNum.length > 1}}
+						{{ each value.realNum num index}}
+							<div class="editForm" style="display: block;" data-upParentId={{ value.upParentId[index]?value.upParentId[index]:0 }} 
+							data-productBatchNo = {{value.productBatchNo}} data-id={{value.id}}>
+								<div class="am-flexbox am-flexbox-align-center">
+									<div class="am-flexbox-item">
+										<div class="am-list-item am-input-item am-list-item-middle">
+											<div class="am-list-line">
+												{{ if value.upParentId[index] != null }}
+													<div class="am-input-label am-input-label-4 font-warning" style="width: 56px;">备选货位:</div>
+												{{ else }}
+													<div class="am-input-label am-input-label-4 font-warning" style="width: 56px;">指示货位:</div>
 												{{ /if }}
-											{{ /each }}
-										</select>
+												<div class="am-input-control">
+													<select class="editInput select_actualStore" value={{ value.replanStore }}>
+														{{ each value.acceptoodsVo item i }}
+															{{ if value.realReceiveStore[index] === item.id }}
+																	<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
+																{{ else }}
+																	<option value={{ item.id }}>{{ item.positionName }}</option>
+															{{ /if }}
+														{{ /each }}
+													</select>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="am-flexbox-item">
+										<div class="am-list-item am-input-item am-list-item-middle">
+											<div class="am-list-line">
+												<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
+												<div class="am-input-control">
+													<input type="tel" value={{ value.realNum[index] ? value.realNum[index] : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum[index] ? value.realNum[index] : 0}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} class="realNum flex-item-input" />
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						{{/each}}
+					{{ else }}
+						<div class="editForm" style="display: block;" data-upParentId={{ value.upParentId?value.upParentId:0 }} 
+						data-productBatchNo = {{value.productBatchNo}} data-id={{value.id}}>
+							<div class="am-flexbox am-flexbox-align-center">
+								<div class="am-flexbox-item">
+									<div class="am-list-item am-input-item am-list-item-middle">
+										<div class="am-list-line">
+											{{ if value.upParentId != null }}
+												<div class="am-input-label am-input-label-4 font-warning" style="width: 56px;">备选货位:</div>
+											{{ else }}
+												<div class="am-input-label am-input-label-4 font-warning" style="width: 56px;">指示货位:</div>
+											{{ /if }}
+											<div class="am-input-control">
+												<select class="editInput select_actualStore" value={{ value.replanStore }}>
+													{{ each value.acceptoodsVo item i }}
+														{{ if value.realReceiveStore === item.id }}
+																<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
+															{{ else }}
+																<option value={{ item.id }}>{{ item.positionName }}</option>
+														{{ /if }}
+													{{ /each }}
+												</select>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="am-flexbox-item">
+									<div class="am-list-item am-input-item am-list-item-middle">
+										<div class="am-list-line">
+											<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
+											<div class="am-input-control">
+												<input type="tel" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum ? value.realNum : 0}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} class="realNum flex-item-input" />
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-						<div class="am-flexbox-item">
-							<div class="am-list-item am-input-item am-list-item-middle">
-								<div class="am-list-line">
-									<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
-									<div class="am-input-control">
-										<input type="tel" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} class="realNum flex-item-input" />
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+					{{ /if }}
 				{{ /if }}
 				<div class="am-flexbox am-flexbox-align-center">
 					<div class="am-flexbox-item">
 					 生产厂家：<span>{{ value.ctmmManufacturerName }}</span>
 					 </div>
-					 <div class="am-flexbox-item" id='productBatchNo'>
+					 <div id='productBatchNo'>
 						<span style="display: none;">{{ value.productBatchNo }}</span>
 					 </div>
 				</div>

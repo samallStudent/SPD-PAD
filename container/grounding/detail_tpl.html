@@ -1,36 +1,43 @@
 <script type="text/html" id='detail_tpl'>
 	<div style="margin-top:10px;">
 		{{ each list value i }}
+			{{ if value.upParentId == null }}
+				<ul class="mui-table-view" style="margin-bottom:8px;">
+					<li class="mui-table-view-cell mui-collapse mui-active">
+						<a class="mui-navigate-right" href="#">单据信息</a>
+						<div class="mui-collapse-content">
+								<div class="mui-input-row">
+									<label>配送单/验收单号</label>
+									<p class="detailRow_content">{{ distributeCode ? distributeCode: '' }}</p>
+								</div>
+								<div class="mui-input-row">
+									<label>状态</label>
+									<p class="detailRow_content">{{ value.upFinishType && value.upFinishType===1 ? '已上架': ' 待上架' }}</p>
+								</div>
+								<div class="mui-input-row">
+									<label>验收时间</label>
+									<p class="detailRow_content">{{ receptionTime ? receptionTime: ''}}</p>
+								</div>
+								<!--<div class="mui-input-row">
+									<label>上架人</label>
+									<p class="detailRow_content">{{ createname ? createname: '' }}</p>
+								</div>-->
+								<div class="mui-input-row">
+									<label>上架时间</label>
+									<p class="detailRow_content">{{ upUserDate ? upUserDate: ''}}</p>
+								</div>
+						</div>
+					</li>
+				</ul>
+			{{/if}}
+		
 		<ul class="mui-table-view" style="margin-bottom:8px;">
-			<li class="mui-table-view-cell mui-collapse mui-active">
-				<a class="mui-navigate-right" href="#">单据信息</a>
-				<div class="mui-collapse-content">
-						<div class="mui-input-row">
-							<label>配送单/验收单号</label>
-							<p class="detailRow_content">{{ distributeCode ? distributeCode: '' }}</p>
-						</div>
-						<div class="mui-input-row">
-							<label>状态</label>
-							<p class="detailRow_content">{{ value.upFinishType && value.upFinishType===1 ? '已上架': ' 待上架' }}</p>
-						</div>
-						<div class="mui-input-row">
-							<label>验收时间</label>
-							<p class="detailRow_content">{{ receptionTime ? receptionTime: ''}}</p>
-						</div>
-						<!--<div class="mui-input-row">
-							<label>上架人</label>
-							<p class="detailRow_content">{{ createname ? createname: '' }}</p>
-						</div>-->
-						<div class="mui-input-row">
-							<label>上架时间</label>
-							<p class="detailRow_content">{{ upUserDate ? upUserDate: ''}}</p>
-						</div>
-				</div>
-			</li>
-		</ul>
-		<ul class="mui-table-view" style="margin-bottom:8px;">
-			<li class="mui-table-view-cell mui-collapse mui-active">
-				<a class="mui-navigate-right" href="#">产品信息</a>
+			<li class="mui-table-view-cell mui-collapse mui-active goodsInfo">
+				{{ if value.upParentId != null }}
+					<a class="mui-navigate-right" href="#">产品信息<span style="color: #f5222d;">(备选上架货位)</span></a>
+				{{ else }}
+					<a class="mui-navigate-right" href="#">产品信息</a>
+				{{ /if }}
 				<div class="mui-collapse-content">
 						<div class="mui-input-row">
 							<label>通用名称</label>
@@ -70,7 +77,11 @@
 						</div>
 						<div class="mui-input-row">
 							{{ if value.upFinishType !== 1 }}
-								<label class="font-warning">实际货位</label>
+								{{ if value.upParentId != null }}
+									<label class="font-warning">备选上架实际货位</label>
+								{{ else }}
+									<label class="font-warning">实际货位</label>
+								{{ /if }}
 								<select class="editInput realReceiveStore" style="float: left;width: 40%;">
 									{{ each value.acceptoodsVo item i }}
 										{{ if value.realReceiveStore === item.id }}
@@ -84,7 +95,11 @@
 									<img src="../../assest/qrcode.png" width="32" height="32"/>
 								</a>
 							{{ else }}
-								<label>实际货位</label>
+								{{ if value.upParentId != null }}
+									<label>备选上架实际货位</label>
+								{{ else }}
+									<label>实际货位</label>
+								{{ /if }}
 								<p class="detailRow_content">{{value.realReceiveStoreName}}</p>
 							{{ /if }}
 							
@@ -102,10 +117,18 @@
 							<!-- <label>实际上架数量</label>
 							<p class="detailRow_content">{{value.realNum}}</p> -->
 							{{ if value.upFinishType !== 1  }}
-								<label class="font-warning">实际上架数量</label>
+								{{ if value.upParentId != null }}
+									<label class="font-warning">备选货位实际上架数量</label>
+								{{ else }}
+									<label class="font-warning">实际上架数量</label>
+								{{ /if }}								
 								<input type="tel" class="mui-input editInput realNum" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} />
 							{{ else }}
-								<label>实际上架数量</label>
+								{{ if value.upParentId != null }}
+									<label>备选货位实际上架数量</label>
+								{{ else }}
+									<label>实际上架数量</label>
+								{{ /if }}								
 								<p class="detailRow_content">{{value.realNum}}</p>
 							{{ /if }}
 						</div>
