@@ -67,6 +67,20 @@
 					document.getElementById('detailContent').innerHTML = html;
 				}
 				
+				/* 过滤还有备选货位的数据 */
+				 function filterDatas(datas,upFinishType){
+					 
+					var list  = datas.list;
+					if(upFinishType != "1" && list.length && list.length > 0){//未上架
+						for(var i = 0,len = list.length;i<len;i++){
+							if(!list[i].upParentId){//指示货位
+								list[i].realNum = list[i].realReceiveQuantiry;
+							}
+						}
+					}
+					return datas;
+				} 
+				
 				$.plusReady(function(){
 					$.init({
 						beforeback: function() {
@@ -114,7 +128,9 @@
 											}
 											
 											console.log('detailData********************************')
-											showData(detailData);
+											
+											var _detailData = filterDatas(detailData,details.upFinishType);
+											showData(_detailData);
 											if(details.upFinishType === '0'){
 												var groundBtn = '<button type="button" id="ground" class="mui-btn mui-btn-warning mui-btn-block" style="margin-bottom: 20px;" data-loading-text = "提交中" data-loading-icon-position="right">确认上架</button>'
 												document.querySelector('.detailRow').insertAdjacentHTML("beforeEnd",groundBtn);

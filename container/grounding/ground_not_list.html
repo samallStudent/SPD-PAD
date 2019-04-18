@@ -170,7 +170,7 @@
 						for(var i = 0,len = list.length;i<len;i++){
 							//存在备选上架货位
 							var realReceiveStore = [],realNum = [],storeType= [],upParentId = [],actualStore = [],realReceiveStoreName = [];
-							if(list[i].upParentId){
+							if(list[i].upParentId){//备选货位
 								//外部的
 								var outList = list.filter(function(item,index){
 									if(hasGround){
@@ -191,7 +191,11 @@
 									if(hasGround){
 										if(list[i].id == item.id){
 											realReceiveStore.push(item.realReceiveStore);
-											realNum.push(item.realNum);
+											var realnum = item.realNum;
+											if(!item.upParentId){
+												realnum = item.realReceiveQuantiry;
+											}
+											realNum.push(realnum);
 											storeType.push(item.storeType);
 											upParentId.push(item.upParentId);
 											actualStore.push(item.actualStore);
@@ -200,7 +204,11 @@
 									}else{
 										if(list[i].upParentId == item.id || list[i].id == item.id){
 											realReceiveStore.push(item.realReceiveStore);
-											realNum.push(item.realNum);
+											var realnum = item.realNum;
+											if(!item.upParentId){
+												realnum = item.realReceiveQuantiry;
+											}
+											realNum.push(realnum);
 											storeType.push(item.storeType);
 											upParentId.push(item.upParentId);
 											actualStore.push(item.actualStore);
@@ -226,13 +234,19 @@
 									innerList[0].actualStore = actualStore;
 									innerList[0].realReceiveStoreName = realReceiveStoreName;
 								}
-							}else{
+							}else{//指示货位
+								if(!list[i].realNum){
+									list[i].realNum = list[i].realReceiveQuantiry;
+								}
 								_list.push(list[i])
 							}
 						}
 						datas.list = _list;
 						return datas;
 					}else{
+						if(list[0] && !list[0].realNum){
+							list[0].realNum = list[0].realReceiveQuantiry;
+						}
 						return datas;
 					}
 				} 

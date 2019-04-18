@@ -180,7 +180,11 @@
 								list.forEach(function(item,index){
 									if(list[i].id == item.id){
 										realReceiveStore.push(item.realReceiveStore);
-										realNum.push(item.realNum);
+										var realnum = item.realNum;
+										if(!item.upParentId){
+											realnum = item.realReceiveQuantiry;
+										}
+										realNum.push(realnum);
 										storeType.push(item.storeType);
 										upParentId.push(item.upParentId);
 										actualStore.push(item.actualStore);
@@ -205,12 +209,18 @@
 									innerList[0].realReceiveStoreName = realReceiveStoreName;
 								}
 							}else{
+								if(!list[i].realNum){
+									list[i].realNum = list[i].realReceiveQuantiry;
+								}
 								_list.push(list[i])
 							}
 						}
 						datas.list = _list;
 						return datas;
 					}else{
+						if(list[0] && !list[0].realNum){
+							list[0].realNum = list[0].realReceiveQuantiry;
+						}
 						return datas;
 					}
 				} 

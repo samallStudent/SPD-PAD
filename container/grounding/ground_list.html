@@ -136,7 +136,11 @@
 								list.forEach(function(item,index){
 									if(list[i].upParentId == item.id || list[i].id == item.id){
 										realReceiveStore.push(item.realReceiveStore);
-										realNum.push(item.realNum);
+										var realnum = item.realNum;
+										if(!item.upParentId){
+											realnum = item.realReceiveQuantiry;
+										}
+										realNum.push(realnum);
 										storeType.push(item.storeType);
 										upParentId.push(item.upParentId);
 										actualStore.push(item.actualStore);
