@@ -409,7 +409,27 @@
 			            		});
 							}
 						},'div')
-					})
+					});
+					
+					var countModal = false;
+					$$('#slider').on('keyup','.allocationNum',function(){
+						var _this = this,$this = $$(this);
+						var index = this.dataset.index;
+						var value = Number(this.value?this.value:0);
+						var _this_node = document.querySelectorAll('.am-card')[index];
+						var allocationNum = _this_node.dataset.allocationnum?_this_node.dataset.allocationnum:0;
+						var text = "实到数量不能大于数量"+allocationNum+"，且不能小于0！";
+						if(!countModal){
+							if(value<0 || value>allocationNum){
+								countModal = true;
+								mui.alert(text,'提示','确定',function (e) {
+									countModal = false;
+									_this.value = allocationNum;
+								},'div')
+							} 
+						}
+					});
+					
 				});
 				
 		})(mui,jQuery);

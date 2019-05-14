@@ -299,7 +299,7 @@
 								selectedCards.push(cards[item]);
 								if (cards[index].dataset.isusual === '0') {
 									// 正常单据
-									cardFactNum.push(cards[item].querySelector('.realReceiveQuantity'));
+									cardFactNum.push(cards[item].querySelector('.realReceiveQuantiry'));
 								} else {
 									// 异常单据
 									cardFactNum.push(cards[item].querySelector('.errorQuantiry'))
@@ -324,7 +324,7 @@
 								postData.isUsual = item.dataset.isusual;
 								postData.drugCode = item.dataset.drugcode;
 								if (item.dataset.isusual === '0') {
-									var realReceiveQuantity = item.querySelector('.realReceiveQuantity').value;
+									var realReceiveQuantiry = item.querySelector('.realReceiveQuantiry').value;
 									var realProductTime = item.querySelector('.realProductTime').value;
 									var productBatchNo = item.querySelector('.productBatchNo').value;
 									var realValidEndDate = item.querySelector('.realValidEndDate').value;
@@ -332,7 +332,7 @@
 										var realAcceptanceTemperature = item.querySelector('.realAcceptanceTemperature').value;
 										postData.realAcceptanceTemperature = realAcceptanceTemperature
 									}
-									postData.realReceiveQuantiry = realReceiveQuantity;
+									postData.realReceiveQuantiry = realReceiveQuantiry;
 									postData.realProductTime = realProductTime;
 									postData.productBatchNo = productBatchNo;
 									postData.realValidEndDate = realValidEndDate;
@@ -394,6 +394,67 @@
 							}
 						}, 'div')
 					});
+					
+					
+					//绑定输入实到数量验证
+					var countModal = false;
+					$JQ('#slider').on('keyup','.realReceiveQuantiry',function(){
+						
+						var _this = this,$this = $JQ(this);
+						var index = this.dataset.index;
+						var value = Number(this.value?this.value:0);
+						var _this_node = document.querySelectorAll('.am-card')[index];
+						var realDeliveryQuantiry = _this_node.dataset.realdeliveryquantiry?_this_node.dataset.realdeliveryquantiry:0;
+						var text = "实到数量不能大于数量"+realDeliveryQuantiry+"，且不能小于0！";
+						if(!countModal){
+							if(value<0 || value>realDeliveryQuantiry){
+								countModal = true;
+								mui.alert(text,'提示','确定',function (e) {
+									countModal = false;
+									_this.value = realDeliveryQuantiry;
+								},'div')
+							} 
+						}
+					});
+					
+					
+					//生产日期与有效日期验证
+					$JQ('#slider').on('change','.realProductTime,.realValidEndDate',function(){
+						
+						var _this = this,$this = $JQ(this);
+						var index = this.dataset.index,cls = this.className;
+						var _this_node = document.querySelectorAll('.am-card')[index];
+						var realProductTime = _this_node.dataset.realproducttime?_this_node.dataset.realproducttime:"0";
+						var realValidEndDate = _this_node.dataset.realvalidenddate?_this_node.dataset.realvalidenddate:"0";
+						var value = this.value?this.value:"0";
+						var _realProductTime = "",_realValidEndDate = "";
+						if(realProductTime.indexOf("-") != -1){
+							_realProductTime = Number(realProductTime.replace(/-/g,""));
+						}
+						if(realValidEndDate.indexOf("-") != -1){
+							_realValidEndDate = Number(realValidEndDate.replace(/-/g,""));
+						}
+						if(value.indexOf("-") != -1){
+							value = Number(value.replace(/-/g,""));
+						}
+						if(cls.indexOf("realProductTime")!=-1){//生产日期
+							var text1 = "生产日期不能大于有效日期！";
+							if(value > _realValidEndDate){
+								mui.alert(text1,'提示','确定',function (e) {
+									_this.value = realProductTime;
+								},'div')
+							}
+						}else if(cls.indexOf("realValidEndDate")!=-1){//有效期至
+						var text2 = "有效日期不能小于生产日期！";
+							if(value < _realProductTime){
+								mui.alert(text2,'提示','确定',function (e) {
+									_this.value = realValidEndDate;
+								},'div')
+							}
+						}
+					});
+					
+					
 
 				});
 

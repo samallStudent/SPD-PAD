@@ -120,7 +120,7 @@
 				if(details.hasPicked){
 					var picking = document.querySelector('#picking');
 					picking.addEventListener('tap',function(e){
-						var num = details.allocationNum;
+						var num = detailData.list[0].allocationNum;
 						var realInputNum = document.querySelector('.relNum').value;
 						if(realInputNum > num){
 							return mui.toast('实际上架数量不得大于指示数量',{ type: 'div' });
