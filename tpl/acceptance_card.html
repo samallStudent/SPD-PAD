@@ -27,6 +27,9 @@
 						<span>{{ value.checkType === 1 || value.checkType === 3 ? '配送/验收单：': '验收单：' }}</span>
 						<span>{{ value.distributeCode }}</span> 
 					</div>
+					<div class="am-flexbox-item"> 
+						<span class="mui-badge mui-badge-warning badge">{{value.checkAcceptDetailsItemsCount?value.checkAcceptDetailsItemsCount:0}}</span>
+					</div>
 					<!--<div class="am-flexbox-item"> 
 						品相数：<span>{{ value.total }}</span> 
 					</div>-->
