@@ -80,6 +80,7 @@
 					params = undefined,
 					distributeCode = undefined,
 					isShowTemprature = undefined,
+					barcode = undefined,
 					selectedRows = [],
 					acceptList = [],// 数据
 					selecteIndex = [];
@@ -122,28 +123,47 @@
 						pageNo: page,
 						pageSize: pageSize
 					};
+					if(barcode){
+						postData = {
+							barcode: barcode,
+							status: status,
+							pageNo: page,
+							pageSize: pageSize
+						};
+					}
 					mui.ajaxRequest(_url, {
 						type: 'POST',
 						data: postData,
 						success: function(data) {
-							var resData = data.data;
-							resData.page = page;
-							resData.pageSize = pageSize;
-							acceptList = resData.list;
-							resData.acceptance = true;
-							resData.checkType = checkType;
-							totalPage = data.totalPage;
-							console.log( resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage))
-							if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
-								isMore = false;
+							
+							/* if(barcode){
+								//data = {"msg":"success","data":{"pageNo":1,"pageSize":15,"count":1,"list":[{"rowNo":1,"id":"f67c9e73f48f4533b846fd40a5029ca3","ctmmGenericName":"酮洛芬凝胶","ctmmTradeName":"酮洛芬凝胶(0.5g/支)","ctmmSpecification":"0.5g/支","ctpHdmsCheckInConvfacCode":1,"ctmmDosageFormDesc":"凝胶","packageSpecification":"0.5g/支","ctmmManufacturerName":"北京韩美药品有限公司","approvalNo":"","replanUnit":"支","replanUnitCode":"016","ctpHdmsPackageDesc":"支","drugCode":"10000000120","bigDrugCode":"15453047350501","hisDrugCode":"111512001GL1","hisFlowId":"0000000120","deptCode":"24C69445D19C4625960DA3F1E58A6A1F","deptName":null,"usableQuantity":0,"totalStoreNum":0,"batchNo":null,"lot":null,"rescuecarDeptCodeName":null,"price":23.5100,"purchaseType":1,"productDate":null,"validEndDate":null,"goodsCode":null,"goodsName":null,"replanStore":"11711","upperQuantity":6000,"downQuantity":500,"drugPrice":null,"supplierCode":"1012027","supplierName":"华润安徽医药有限公司","supplierList":null,"key":"eab2b453-1a10-4e8d-a339-6ac309aeff65","distributeCode":"12216","productBatchNo":"18120003","realProductTime":"2018-07-23","realValidEndDate":"2020-07-22","realAcceptanceTemperature":null,"realDeliveryQuantiry":50,"realReceiveQuantiry":50,"realStore":null,"replanStoreName":"YKYL-04-01-01-02","realNum":50,"unit":"支","status":1,"upUserId":"","upUserDate":null,"upFinishType":0,"isUsual":0,"parentId":null,"deliveryTime":null,"ctmmManufacturerCode":"00042"}],"totalPage":1},"code":200}
+								data = {"msg":"success","data":{"pageNo":1,"pageSize":15,"count":1,"list":[{"rowNo":1,"id":"1632669f5a784909a811dba5084e28ab","ctmmGenericName":"阿莫西林胶囊","ctmmTradeName":"阿莫西林胶囊(0.25g*50粒/盒)","ctmmSpecification":"0.25g*50粒/盒","ctpHdmsCheckInConvfacCode":50,"ctmmDosageFormDesc":"胶囊","packageSpecification":"0.25g*50粒/盒","ctmmManufacturerName":"石药中诺药业股份有限公司","approvalNo":"","replanUnit":"盒(50)","replanUnitCode":"038","ctpHdmsPackageDesc":"箱(400)","drugCode":"10000001056","bigDrugCode":"15453048476851","hisDrugCode":"110101001CP1","hisFlowId":"0000001056","deptCode":"24C69445D19C4625960DA3F1E58A6A1F","deptName":null,"usableQuantity":0,"totalStoreNum":0,"batchNo":null,"lot":null,"rescuecarDeptCodeName":null,"price":8.0000,"purchaseType":1,"productDate":null,"validEndDate":null,"goodsCode":null,"goodsName":null,"replanStore":"10225","upperQuantity":6000,"downQuantity":500,"drugPrice":null,"supplierCode":"1012027","supplierName":"华润安徽医药有限公司","supplierList":null,"key":"5c223517-ea73-495b-9666-1622b72e1aa1","distributeCode":"10954","productBatchNo":"3241803101","realProductTime":"2018-03-01","realValidEndDate":"2021-02-28","realAcceptanceTemperature":null,"realDeliveryQuantiry":200,"realReceiveQuantiry":200,"realStore":null,"replanStoreName":"YKCW-04-02-04-02","realNum":200,"unit":"盒(50)","status":1,"upUserId":"","upUserDate":null,"upFinishType":0,"isUsual":0,"parentId":null,"deliveryTime":null,"ctmmManufacturerCode":"00687"}],"totalPage":1},"code":200}
+							} */
+							if(data.code == 200){
+								var resData = data.data;
+								resData.page = page;
+								resData.pageSize = pageSize;
+								acceptList = resData.list;
+								resData.acceptance = true;
+								resData.checkType = checkType;
+								totalPage = data.totalPage;
+								console.log( resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage))
+								if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
+									isMore = false;
+									self.endPullDownToRefresh(true);
+									document.querySelectorAll('.mui-pull-loading')[0].innerHTML = '没有更多数据';
+								} else {
+									isMore = true;
+									self.endPullDownToRefresh(false);
+									self.refresh(true);
+								}
+								return template(resData, false)			
+							}else{
 								self.endPullDownToRefresh(true);
 								document.querySelectorAll('.mui-pull-loading')[0].innerHTML = '没有更多数据';
-							} else {
-								isMore = true;
-								self.endPullDownToRefresh(false);
-								self.refresh(true);
+								//mui.alert(data.msg,'提示','确定',function (e) {},'div');
 							}
-							return template(resData, false)
 						},
 						error: function(xhr, type, errorThrown) {
 							console.log(xhr.responseText)
@@ -161,33 +181,52 @@
 					console.log(isMore, 'isMore');
 					if (isMore) {
 						page++;
-						mui.ajaxRequest(_url, {
-							type: 'POST',
-							data: {
-								distributeCode: distributeCode,
+						var paramData = {
+							distributeCode: distributeCode,
+							status: status,
+							pageNo: page,
+							pageSize: pageSize
+						}
+						if(barcode){
+							paramData = {
+								barcode: barcode,
 								status: status,
 								pageNo: page,
 								pageSize: pageSize
-							},
+							};
+						}
+						mui.ajaxRequest(_url, {
+							type: 'POST',
+							data: paramData,
 							success: function(data) {
-								var resData = data.data;
-								resData.page = page;
-								resData.pageSize = pageSize;
-								mui.each(resData.list,function(index,item){
-									acceptList.push(item)
-								});
-								resData.acceptance = true;
-								resData.checkType = checkType;
-								if (resData.pageNo === resData.totalPage) {
+								
+								/* if(barcode){
+									//data = {"msg":"success","data":{"pageNo":1,"pageSize":15,"count":1,"list":[{"rowNo":1,"id":"f67c9e73f48f4533b846fd40a5029ca3","ctmmGenericName":"酮洛芬凝胶","ctmmTradeName":"酮洛芬凝胶(0.5g/支)","ctmmSpecification":"0.5g/支","ctpHdmsCheckInConvfacCode":1,"ctmmDosageFormDesc":"凝胶","packageSpecification":"0.5g/支","ctmmManufacturerName":"北京韩美药品有限公司","approvalNo":"","replanUnit":"支","replanUnitCode":"016","ctpHdmsPackageDesc":"支","drugCode":"10000000120","bigDrugCode":"15453047350501","hisDrugCode":"111512001GL1","hisFlowId":"0000000120","deptCode":"24C69445D19C4625960DA3F1E58A6A1F","deptName":null,"usableQuantity":0,"totalStoreNum":0,"batchNo":null,"lot":null,"rescuecarDeptCodeName":null,"price":23.5100,"purchaseType":1,"productDate":null,"validEndDate":null,"goodsCode":null,"goodsName":null,"replanStore":"11711","upperQuantity":6000,"downQuantity":500,"drugPrice":null,"supplierCode":"1012027","supplierName":"华润安徽医药有限公司","supplierList":null,"key":"eab2b453-1a10-4e8d-a339-6ac309aeff65","distributeCode":"12216","productBatchNo":"18120003","realProductTime":"2018-07-23","realValidEndDate":"2020-07-22","realAcceptanceTemperature":null,"realDeliveryQuantiry":50,"realReceiveQuantiry":50,"realStore":null,"replanStoreName":"YKYL-04-01-01-02","realNum":50,"unit":"支","status":1,"upUserId":"","upUserDate":null,"upFinishType":0,"isUsual":0,"parentId":null,"deliveryTime":null,"ctmmManufacturerCode":"00042"}],"totalPage":1},"code":200}
+									data = {"msg":"success","data":{"pageNo":1,"pageSize":15,"count":1,"list":[{"rowNo":1,"id":"1632669f5a784909a811dba5084e28ab","ctmmGenericName":"阿莫西林胶囊","ctmmTradeName":"阿莫西林胶囊(0.25g*50粒/盒)","ctmmSpecification":"0.25g*50粒/盒","ctpHdmsCheckInConvfacCode":50,"ctmmDosageFormDesc":"胶囊","packageSpecification":"0.25g*50粒/盒","ctmmManufacturerName":"石药中诺药业股份有限公司","approvalNo":"","replanUnit":"盒(50)","replanUnitCode":"038","ctpHdmsPackageDesc":"箱(400)","drugCode":"10000001056","bigDrugCode":"15453048476851","hisDrugCode":"110101001CP1","hisFlowId":"0000001056","deptCode":"24C69445D19C4625960DA3F1E58A6A1F","deptName":null,"usableQuantity":0,"totalStoreNum":0,"batchNo":null,"lot":null,"rescuecarDeptCodeName":null,"price":8.0000,"purchaseType":1,"productDate":null,"validEndDate":null,"goodsCode":null,"goodsName":null,"replanStore":"10225","upperQuantity":6000,"downQuantity":500,"drugPrice":null,"supplierCode":"1012027","supplierName":"华润安徽医药有限公司","supplierList":null,"key":"5c223517-ea73-495b-9666-1622b72e1aa1","distributeCode":"10954","productBatchNo":"3241803101","realProductTime":"2018-03-01","realValidEndDate":"2021-02-28","realAcceptanceTemperature":null,"realDeliveryQuantiry":200,"realReceiveQuantiry":200,"realStore":null,"replanStoreName":"YKCW-04-02-04-02","realNum":200,"unit":"盒(50)","status":1,"upUserId":"","upUserDate":null,"upFinishType":0,"isUsual":0,"parentId":null,"deliveryTime":null,"ctmmManufacturerCode":"00687"}],"totalPage":1},"code":200}
+								} */
+								if(data.code == 200){
+									var resData = data.data;
+									resData.page = page;
+									resData.pageSize = pageSize;
+									mui.each(resData.list,function(index,item){
+										acceptList.push(item)
+									});
+									resData.acceptance = true;
+									resData.checkType = checkType;
+									if (resData.pageNo === resData.totalPage) {
+										isMore = false;
+										self.endPullUpToRefresh(true);
+									} else {
+										isMore = true;
+										self.endPullUpToRefresh(false);
+										self.refresh(true);
+									}
+									return template(resData, true,'rerender')
+								}else{
+									//mui.alert(data.msg,'提示','确定',function (e) {},'div');
 									isMore = false;
 									self.endPullUpToRefresh(true);
-								} else {
-									isMore = true;
-									self.endPullUpToRefresh(false);
-									self.refresh(true);
 								}
-								return template(resData, true,'rerender')
-
 							},
 							error: function(xhr, type, errorThrown) {
 								console.log(xhr.responseText)
@@ -213,6 +252,7 @@
 					status = params.status;
 					checkType = params.checkType;
 					isShowTemprature = params.isShowTemprature;
+					barcode = params.barcode;
 					console.log(checkType,'checkType')
 					console.log(params);
 
@@ -292,7 +332,7 @@
 						var cards = document.querySelectorAll('.am-card');
 						let detailList = [],
 							submitData = {};
-						if (params.isPsList) {
+						if (params.isPsList || params.barcode) {
 							let selectedCards = [],
 								cardFactNum = [];
 							mui.each(selecteIndex, function(index, item) {
@@ -319,10 +359,13 @@
 							};
 
 							mui.each(selectedCards, function(index, item) {
+								
 								var postData = {};
 								postData.id = item.dataset.id;
 								postData.isUsual = item.dataset.isusual;
 								postData.drugCode = item.dataset.drugcode;
+								postData.distributeCode = item.dataset.distributecode;
+								postData.rowNo = item.dataset.rowno;
 								if (item.dataset.isusual === '0') {
 									var realReceiveQuantiry = item.querySelector('.realReceiveQuantiry').value;
 									var realProductTime = item.querySelector('.realProductTime').value;
@@ -336,6 +379,7 @@
 									postData.realProductTime = realProductTime;
 									postData.productBatchNo = productBatchNo;
 									postData.realValidEndDate = realValidEndDate;
+									
 								} else {
 									var errorQuantiry = item.querySelector('.errorQuantiry').innerText;
 									var errRealProductTime = item.querySelector('.errRealProductTime').innerText;
@@ -350,7 +394,7 @@
 						} else {
 							mui.each(selecteIndex, function(index, item) {
 								let postData = {};
-								postData.realReceiveQuantiry = acceptList[item].realReceiveQuantiry;
+								postData.realReceiveQuantiry = acceptList[item].realNum;//应海洪的要求改的
 								postData.realProductTime = acceptList[item].realProductTime;
 								postData.productBatchNo = acceptList[item].productBatchNo;
 								postData.realValidEndDate = acceptList[item].realValidEndDate;
@@ -360,11 +404,17 @@
 									postData.realAcceptanceTemperature = acceptList[item].realAcceptanceTemperature;
 								}
 								postData.drugCode = acceptList[item].drugCode;
+								postData.distributeCode = acceptList[item].distributeCode;
+								postData.rowNo = acceptList[item].rowNo;
 								detailList.push(postData);
 							});
 						}
+						
 						submitData.detailList = detailList;
 						submitData.distributeCode = distributeCode;
+						if(barcode){
+							submitData.barcode = barcode;
+						}
 						console.log(submitData)
 
 						var btnArray = ['否', '是'];
@@ -377,14 +427,20 @@
 									contentType: "application/json",
 									success: function(data) {
 										if (data.code === 200) {
-											mui.toast('验收成功',{ type: 'div' });
-											$JQ('.total').text(0);
-											document.querySelector('#checkall').checked=false;
-											setTimeout(function(){
-												mui('.mui-scroll-wrapper').scroll().scrollTo(0,0);
-												mui(".mui-scroll").pullToRefresh().pullDownLoading();
-											},300)
-											
+											var text = "验收成功！";
+											if(data.data[0]){
+												text = data.data[0];
+											}
+											mui.alert(text,'提示','确定',function (e) {
+												$JQ('.total').text(0);
+												document.querySelector('#checkall').checked=false;
+												setTimeout(function(){
+													mui('.mui-scroll-wrapper').scroll().scrollTo(0,0);
+													mui(".mui-scroll").pullToRefresh().pullDownLoading();
+												},300)
+											},'div');
+										}else{
+											mui.alert(data.mag,'提示','确定',function (e) {},'div');
 										}
 									},
 									error: function(xhr, type, errorThrown) {
@@ -405,13 +461,19 @@
 						var value = Number(this.value?this.value:0);
 						var _this_node = document.querySelectorAll('.am-card')[index];
 						var realDeliveryQuantiry = _this_node.dataset.realdeliveryquantiry?_this_node.dataset.realdeliveryquantiry:0;
-						var text = "实到数量不能大于数量"+realDeliveryQuantiry+"，且不能小于0！";
+						var realReceiveQuantiry = _this_node.dataset.realnum?_this_node.dataset.realnum:0;
+						var compareNum = realDeliveryQuantiry;
+						var text = "实到数量不能大于数量"+compareNum+"，且不能小于0！";
+						if(barcode){
+							compareNum = realReceiveQuantiry;
+							text = "实到数量不能大于条码数量"+compareNum+"，且不能小于0！";
+						}
 						if(!countModal){
-							if(value<0 || value>realDeliveryQuantiry){
+							if(value<0 || value>compareNum){
 								countModal = true;
 								mui.alert(text,'提示','确定',function (e) {
 									countModal = false;
-									_this.value = realDeliveryQuantiry;
+									_this.value = compareNum;
 								},'div')
 							} 
 						}

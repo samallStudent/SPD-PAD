@@ -105,7 +105,7 @@
 
 			/*获取二维码返回值*/
 			function scaned(t, r, f) {
-				debugger
+				
 				console.log(r+"二维码读取的数据");//返回二维码读取的数据
 				locationName = r;
 				getData(locationName);
@@ -115,11 +115,11 @@
 			utils.appendModule('#move_list');
 			//渲染模板
 			function renderTemplate(data, insertType){
-				debugger
+				
 				utils.innerTplHtml('move_list_tpl', "#content", data, insertType);
 			}
 			function getData(locationName,refreshFlag){
-				debugger
+				
 				var requestUrl = "/a/pad/locAdjust/getMedicinalLists";
 				console.log(locationName)
 				var postData = {locationName:locationName};
@@ -127,7 +127,7 @@
 					type: 'POST',
 					data: postData,
 					success: function(data){
-						debugger
+						
 						if(data.code == 200){
 							var resData = data.data;
 							var total = resData.detailVos.totalPage;
@@ -152,7 +152,7 @@
 			}
 			
 			(function($,window) {
-				debugger 
+				 
 				$.init({
 					beforeback:function(){
 						 var list = plus.webview.currentWebview().opener();
@@ -163,9 +163,9 @@
 					}
 				});
 				$.plusReady(function(){
-					debugger
+					
 					window.addEventListener('pagefresh',function(event){
-						debugger
+						
 						console.log(JSON.stringify(event.detail))
 						//var datas = JSON.parse(event.detai);
 						if(typeof event.detail.params == "string"){
@@ -176,7 +176,7 @@
 					})
 					//绑定点击事件（移动）  - 进入详情页
 					$('#content').on('tap','.moveDrugs',function(event){
-						debugger
+						
 						var dataset = event.target.dataset;
 						common.openwin('moveDetail',{ params: JSON.stringify({dataset}) },false)
 					})

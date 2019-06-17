@@ -11,6 +11,7 @@
 			var ws=null,wo=null;
 			var scan=null,domready=false;
 			// H5 plus事件处理
+			
 			function plusReady(){
 				if(ws||!window.plus||!domready){
 					return;
@@ -23,7 +24,7 @@
 				});
 				wo=ws.opener();
 				// 开始扫描
-				var filter;   
+				var filter = [plus.barcode.QR,plus.barcode.EAN13,plus.barcode.EAN8,plus.barcode.CODE128];
 				var styles = {frameColor: "#29E52C",scanbarColor: "#29E52C",background: ""}
 				ws.addEventListener('show', function(){
 					scan=new plus.barcode.Barcode('bcid',filter,styles);
@@ -51,6 +52,7 @@
 			}
 			// 二维码扫描成功
 			function onmarked(type, result, file){
+				
 			    switch(type){
 			    	case plus.barcode.QR:
 			    	type = 'QR';
@@ -61,6 +63,9 @@
 			    	case plus.barcode.EAN8:
 			    	type = 'EAN8';
 			    	break;
+					case plus.barcode.CODE128:
+					type = 'CODE128';
+					break;
 			    	default:
 			    	type = '其它'+type;
 			    	break;
@@ -93,9 +98,10 @@
 			// 从相册中选择二维码图片 
 			function scanPicture(){
 			    plus.gallery.pick(function(path){
+					var filter = [plus.barcode.QR,plus.barcode.EAN13,plus.barcode.EAN8,plus.barcode.CODE128];
 				    plus.barcode.scan(path,onmarked,function(error){
 						plus.nativeUI.alert('无法识别此图片');
-					});
+					},filter);
 			    }, function(err){
 			        console.log('Failed: '+err.message);
 			    });

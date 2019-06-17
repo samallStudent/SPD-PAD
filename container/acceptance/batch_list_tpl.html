@@ -16,6 +16,10 @@
 				data-realProductTime = {{ value.realProductTime }}
 				data-realValidEndDate = {{ value.realValidEndDate }}
 				data-realDeliveryQuantiry = {{ value.realDeliveryQuantiry }}
+				data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} 
+				data-realNum = {{ value.realNum }} 
+				data-distributeCode={{ value.distributeCode }} 
+				data-rowNo = {{ value.rowNo }} 
 			>
 				<div class="am-card-header" style="padding: 9px 15px 0px 5px !important;">
 					<div class="am-card-header-content">
@@ -47,7 +51,7 @@
 											<div class="am-list-line">
 												<div class="am-input-label am-input-label-4 font-warning">实到数量:</div>
 												<div class="am-input-control">
-													<input pattern="[0-9]*" type="number" value={{ value.realReceiveQuantiry ? value.realReceiveQuantiry: value.realDeliveryQuantiry }} data-index={{ i }} placeholder="请输入" class="realReceiveQuantiry flex-item-input" />
+													<input pattern="[0-9]*" type="number" value={{ value.realNum ? value.realNum: value.realDeliveryQuantiry }} data-index={{ i }} placeholder="请输入" class="realReceiveQuantiry flex-item-input" />
 												</div>
 											</div>
 										</div>
@@ -105,7 +109,7 @@
 							{{ else }}
 							<div class="am-flexbox am-flexbox-align-center">
 								<div class="am-flexbox-item"> 
-									实到数量：<span class='errorQuantiry'>{{ value.realReceiveQuantiry }}</span>
+									实到数量：<span class='errorQuantiry'>{{ value.realNum }}</span>
 								</div>
 								<div class="am-flexbox-item am-last-flexItem">
 								 	生产日期：<span class="errRealProductTime">{{ value.realProductTime }}</span>

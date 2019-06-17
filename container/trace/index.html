@@ -130,7 +130,8 @@
 							var resData = data.data;
 							var total = resData.totalPage;
 							if(resData.list.length == 0 || total == 0){
-								document.querySelectorAll('.text-content')[0].innerHTML = '此货位下没有商品！';
+								var text = "此货位下没有商品！货位名称："+locationCode+",请确认后扫描！";
+								mui.alert(text,'提示','确定',function (e) {},'div');
 							}else{
 								var sendData = {locationCode:locationCode,list:resData.list};
 								return  renderTemplate(sendData,false);

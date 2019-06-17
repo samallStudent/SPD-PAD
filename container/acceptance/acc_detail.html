@@ -52,6 +52,7 @@
 					type = undefined, 
 					data = null, 
 					details = undefined, 
+					barcode = undefined;
 					url = '/a/exam/detail', // 分页接口
 					titleUrl = '/a/exam/detailhead',// 头部接口
 					checkUrl = '/a/checkacceptdetail/checkList';
@@ -69,6 +70,7 @@
 					details = JSON.parse(self.details);//获得参数
 					checkType = details.checkType;
 					status = details.status;
+					barcode = details.barcode;
 					console.log(JSON.stringify(details) );
 					console.log(typeof details.selectTabs)
 					var postData = {
@@ -76,6 +78,9 @@
 						status: details.status,
 						id: details.id
 					};
+					if(barcode){
+						postData.barcode = barcode;
+					}
 					var detailData = {};
 					plus.nativeUI.showWaiting('加载中...');
 					mui.ajaxRequest(titleUrl,{
@@ -86,6 +91,7 @@
 								for(var key in data.data){
 									detailData[key] = data.data[key];
 									detailData.isPsList = details.isPsList;
+									detailData.barcode = details.barcode;
 								}
 								mui.ajaxRequest(url,{
 									type: 'POST',
@@ -95,6 +101,7 @@
 										if(data.code === 200){
 											detailData.list = data.data.list;
 											console.log(detailData)
+											
 											showData(detailData);
 											if(details.hasAcceptance){
 												setTimeout(function(){
@@ -124,7 +131,7 @@
 					
 					// checkType  1 2 4 配送单 可编辑     其余 出库单  不能编辑
 					function showOrHideBtn(){
-						if(checkType === 1 && details.isPsList && status === '1' && detailData.list[0].isUsual === 0){	
+						if(checkType === 1 && (details.isPsList || details.barcode) && status === '1' && detailData.list[0].isUsual === 0){	
 							var node = '<div id="addBtn"><button class="mui-btn mui-btn-block btn">+ 增加批号</button></div>';
 							document.querySelector('#List').insertAdjacentHTML('afterEnd',node);
 						}
@@ -191,7 +198,8 @@
 					// 验收
 					mui('.detailRow').on('tap','#acceptance',function(event){
 						let postData = [],submitData = {};
-						if(details.isPsList && detailData.list[0].isUsual === 0){ // 配送单验收  可以修改
+						
+						if((details.isPsList || details.barcode) && detailData.list[0].isUsual === 0){ // 配送单验收  可以修改
 							// 获取产品信息详情中编辑字段值
 							
 							var phValue = document.querySelector('.mui-input').value; // 批号文号
@@ -227,6 +235,8 @@
 									}
 									values.isUsual = detailData.list[0].isUsual;
 									values.drugCode = detailData.list[0].drugCode;
+									values.distributeCode = detailData.list[0].distributeCode;
+									values.rowNo = detailData.list[0].rowNo;
 									values.id = null;
 									values.parentId = detailData.list[0].id;
 									postData.push(values);
@@ -243,6 +253,8 @@
 								values.drugCode = detailData.list[0].drugCode;
 								values.isUsual = detailData.list[0].isUsual;
 								values.id = detailData.list[0].id;
+								values.distributeCode = detailData.list[0].distributeCode;
+								values.rowNo = detailData.list[0].rowNo;
 								values.parentId = null;
 								postData.push(values);
 							}
@@ -255,21 +267,26 @@
 							if(defaultStatus.isShowTemprature === 1){
 								values.realAcceptanceTemperature = detailData.list[0].realAcceptanceTemperature;
 							}
-							values.realReceiveQuantiry = detailData.list[0].realReceiveQuantiry;
+							values.realReceiveQuantiry = detailData.list[0].realNum;//应海洪要求改的
 							values.drugCode = detailData.list[0].drugCode;
 							values.isUsual = detailData.list[0].isUsual;
 							values.id = detailData.list[0].id;
 							values.parentId = detailData.list[0].id;
+							values.distributeCode = detailData.list[0].distributeCode;
+							values.rowNo = detailData.list[0].rowNo;
 							postData.push(values);
 						}
 						
 						submitData.detailList = postData;
 						submitData.distributeCode = detailData.distributeCode;
+						if(barcode){
+							submitData.barcode = barcode;
+						}
 						let count = 0;
 						mui.each(submitData.detailList,function(index,item){
 							count += Number(item.realReceiveQuantiry)
 						});
-						if(count > detailData.list[0].realReceiveQuantiry){
+						if(count > detailData.list[0].realNum){
 							mui.toast('请注意：实到数量比配送数量多');
 						}
 						console.log(submitData,'submitData'); // 批号 数据
@@ -286,11 +303,18 @@
 									contentType: "application/json",
 									success: function(data){
 										if(data.code === 200){
-											mui.toast('验收成功',{ type: 'div' });
-											var page =  plus.webview.getWebviewById('acc_not_list');
-											mui.fire(page,'pagefresh',{ selectTabs: '1', query:{} });
-											common.gotowin('acc_not_list',{  });
-											plus.webview.currentWebview().close();
+											var text = "验收成功！";
+											if(data.data[0]){
+												text = data.data[0];
+											}
+											mui.alert(text,'提示','确定',function (e) {
+												var page =  plus.webview.getWebviewById('acc_not_list');
+												mui.fire(page,'pagefresh',{ selectTabs: '1', query:{} });
+												common.gotowin('acc_not_list',{  });
+												plus.webview.currentWebview().close();
+											},'div');
+										}else{
+											mui.alert(data.msg,'提示','确定',function (e) {},'div');
 										}
 									},
 									error: function(xhr,type,errorThrown){
@@ -308,14 +332,21 @@
 						
 						var _this = this,$this = $$(this);
 						var value = Number(this.value?this.value:0);
-						var realDeliveryQuantiry = detailData.list[0].realReceiveQuantiry?detailData.list[0].realReceiveQuantiry:0;
-						var text = "实到数量不能大于配送数量"+realDeliveryQuantiry+"，且不能小于0！";
+						var realDeliveryQuantiry = detailData.list[0].realDeliveryQuantiry?detailData.list[0].realDeliveryQuantiry:0;
+						var realReceiveQuantiry = detailData.list[0].realNum?detailData.list[0].realNum:0;
+						var compareNum = realDeliveryQuantiry;
+						var text = "实到数量不能大于配送数量"+compareNum+"，且不能小于0！";
+						if(barcode){
+							compareNum = realReceiveQuantiry;
+							text = "实到数量不能大于条码数量"+compareNum+"，且不能小于0！";
+						}
+						
 						if(!countModal){
-							if(value<0 || value>realDeliveryQuantiry){
+							if(value<0 || value>compareNum){
 								countModal = true;
 								mui.alert(text,'提示','确定',function (e) {
 									countModal = false;
-									_this.value = realDeliveryQuantiry;
+									_this.value = compareNum;
 								},'div')
 							} 
 						}

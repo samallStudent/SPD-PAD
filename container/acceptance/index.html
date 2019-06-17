@@ -17,7 +17,7 @@
 		   		<label class="mui-pull-right theme_back_font">返回</label>
 		   	</a>
 		    <h1 class="mui-title themes_title">验收</h1>
-		    <a href="#modal" class="mui-pull-right"  style="height: 45px;padding-top: 12px;">
+		    <a id="barcode" href="#modal" class="mui-pull-right"  style="height: 45px;padding-top: 12px;">
 		    	<div class="qrcode" id="qrcode" onclick="clicked('../commonPages/qrcode',true,true)">
 					<img src="../../assest/qrcode.png" width="24" height="24"/>
 				</div>
@@ -68,12 +68,28 @@
 			
 			
 			var selectTabs = 1; // 默认选中第一个tab
+			//货位码
 			function clicked(){
+				
 				common.openwin('../commonPages/qrcode',true,{ titleText: '扫码验收' })
 			}
+			
+			/*获取二维码返回值*/
+			function scaned(t, r, f) {
+				
+				console.log(r+"条形码读取的数据");//返回二维码读取的数据
+				if(r){
+					var itemData = {barcode:r}
+					itemData.currentSelected = selectTabs === 1 ? 'left': 'right';
+					console.log(JSON.stringify(itemData))
+					document.activeElement.blur(); // 隐藏软键盘
+					let openwinUrl = 'acc_not_list';
+					common.openwin(openwinUrl,{ params: JSON.stringify(itemData) },false)
+				}
+			}
+			
 			//去搜索页面
 			function toSearchPage (){
-
 				var params = {};
 				params.key = 'supplier';
 				params.route = '../acceptance/index';
@@ -82,7 +98,6 @@
 				params.location = 'main_list'
 				common.openwin('../commonPages/searchPage',{ params: JSON.stringify(params) },false)
 				document.activeElement.blur(); // 隐藏软键盘
-				
 			}
 
 			
@@ -264,6 +279,12 @@
 							default:
 								break;
 						}
+						//除了药库显示右上角扫描按钮,其他都不显示
+						if(type == "3"){
+							$$("#barcode").css("display","black");
+						}else{
+							$$("#barcode").css("display","none");
+						}
 					}else{
 						mui.toast('请重新登陆');
 						common.openwin('../login/index')
@@ -317,6 +338,7 @@
 					//绑定点击事件  - 进入详情页
 						
 					$('#slider').on('tap','.am-card',function(){
+						
 						let itemData = this.dataset;
 						itemData.currentSelected = selectTabs === 1 ? 'left': 'right';
 						console.log(JSON.stringify(itemData))

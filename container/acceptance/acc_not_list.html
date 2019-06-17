@@ -81,6 +81,7 @@
             }
             var auditStatus = undefined, //验收状态   1 待验收  2 已验收
             	selectTabs = 1; // 默认选中第一个tab
+			var storeData = undefined;//批量传参的时候用来取第一个distributeCode,不在乎传哪一个,一定要传一个
             //去搜索页面
 			function toSearchPage (){
 				var params = {};
@@ -112,7 +113,6 @@
 				});
 				var currentSelected = undefined;
 				
-				
 				/* 渲染模板   */
 				var params = undefined, 
 					checkType = undefined,
@@ -135,6 +135,7 @@
 					isMore = true, 
 					distributeCode = undefined, 
 					status = undefined;
+					barcode = undefined;
 				
 				function template(selected, data, insertType){
 					utils.innerTplHtml('list_tpl_view', selected , data, insertType);
@@ -143,15 +144,24 @@
             	 	下拉刷新
             	 * */
             	function pulldownRefresh(){
+					
 					var self = this;
 					pageLeft = 1; pageRight = 1;
 					status = selectTabs === 1 ? '1': '2';
 					var postData = {
 						distributeCode: distributeCode,
-						status,status,
+						status:status,
 						pageNo: 1,
                 		pageSize: pageSize
 					};
+					if(barcode){
+						postData = {
+							barcode: barcode,
+							status:status,
+							pageNo: 1,
+							pageSize: pageSize
+						};
+					}
 					if(query.hisDrugCode){
 						postData.hisDrugCode = query.hisDrugCode
 						$$('.mui-input-clear').val(query.hisDrugName);
@@ -161,25 +171,37 @@
 						$$('.mui-placeholder').show();
 					}
 					query = {};
+					
 					mui.ajaxRequest(_url,{
                 		type: 'POST',
                 		data: postData,
                 		success: function(data){
-                			var resData = data.data;
-                			resData.acceptance = selectTabs === 1 ? true: false;
-                			resData.checkType = checkType;
-                			totalPage = data.totalPage;
-                			if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
-                				var i = selectTabs === 1 ? 0 : 1;
-                				isMore = false;
-                				self.endPullDownToRefresh(true);
-                				document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
-                			}else{
-                				isMore = true;
-                				self.endPullDownToRefresh(false);
-                				self.refresh(true);
-                			}
-							return template(selected,resData, false)
+							var code = data.code;
+							if(code == 200){
+								var resData = data.data;
+								storeData = resData;
+								resData.acceptance = selectTabs === 1 ? true: false;
+								resData.checkType = checkType;
+								totalPage = data.totalPage;
+								if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
+									var i = selectTabs === 1 ? 0 : 1;
+									isMore = false;
+									self.endPullDownToRefresh(true);
+									document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+								}else{
+									isMore = true;
+									self.endPullDownToRefresh(false);
+									self.refresh(true);
+								}
+								
+								return template(selected,resData, false)
+							}else{
+								mui.alert(data.msg,'提示','确定',function (e) {},'div');
+								var i = selectTabs === 1 ? 0 : 1;
+								isMore = false;
+								self.endPullDownToRefresh(true);
+								document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+							}
                 		},
                 		error: function(xhr,type,errorThrown){
 							console.log(xhr.responseText)
@@ -192,35 +214,54 @@
 				 *  上拉加载更多
 				 * */
 				function pullupRefresh(){
+					
 					var self = this;
 					console.log(isMore,'isMore')
 					if(isMore){
 						page++;
+						var paramData = {
+							distributeCode: distributeCode,
+							status:status,
+							pageNo: page,
+							pageSize: pageSize
+						};
+						if(barcode){
+							paramData = {
+								barcode: barcode,
+								status:status,
+								pageNo: page,
+								pageSize: pageSize
+							};
+						}
 						mui.ajaxRequest(_url,{
 	                		type: 'POST',
-	                		data:{
-	                			distributeCode: distributeCode,
-	                			status,status,
-	                			pageNo: page,
-	                			pageSize: pageSize
-	                		},
+	                		data:paramData,
 	                		success: function(data){
-	                			var resData = data.data;
-//	                			resData.acceptance = selectTabs === 1 && checkType === 1 ? true: false;
-	                			resData.acceptance = status === '1'? true: false;
-	                			resData.checkType = checkType;
-	                			if(resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage){
-	                				var i = selectTabs === 1 ? 0 : 1;
-		            				isMore = false;
-		            				self.endPullUpToRefresh(true);
-		            				document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
-		            			}else{
-		            				isMore = true;
-		            				self.endPullUpToRefresh(false);
-		            				self.refresh(true);
-		            			}
-								return template(selected, resData, true)
-	                			
+								var code = data.code;
+								if(code == 200){
+									var resData = data.data;
+									storeData = resData;
+									//resData.acceptance = selectTabs === 1 && checkType === 1 ? true: false;
+									resData.acceptance = status === '1'? true: false;
+									resData.checkType = checkType;
+									if(resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage){
+										var i = selectTabs === 1 ? 0 : 1;
+										isMore = false;
+										self.endPullUpToRefresh(true);
+										document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+									}else{
+										isMore = true;
+										self.endPullUpToRefresh(false);
+										self.refresh(true);
+									}
+									return template(selected, resData, true)                			
+								}else{
+									mui.alert(data.msg,'提示','确定',function (e) {},'div');
+									var i = selectTabs === 1 ? 0 : 1;
+									isMore = false;
+									self.endPullUpToRefresh(true);
+									document.querySelectorAll('.mui-pull-loading')[i].innerHTML = '没有更多数据';
+								}
 	                		},
 	                		error: function(xhr,type,errorThrown){
 								console.log(xhr.responseText)
@@ -236,6 +277,7 @@
 
 				// 模板加载
 				$.plusReady(function(){
+					
 					let globalQuery = {};
 					window.addEventListener('pagefresh',function(event){
 						console.log('从详情回来')
@@ -292,6 +334,7 @@
 				    params = JSON.parse(self.params);//获得参数
 				    console.log(params)
 				    distributeCode = params.distributecode;
+					barcode = params.barcode;
 				    isUsual = params.isusual;
 				    
 				    // 判断是否是配送单
@@ -301,6 +344,7 @@
 				    status = currentSelected === 'left'? '1': '2';
 				    auditStatus = currentSelected === 'left'? '1': '2';
 				    selectTabs = currentSelected === 'left'? 1: 2;
+					
 				    console.log(status)
 				    if(currentSelected === 'left'){
 				    	$$('.batchAccetpance').show();
@@ -370,6 +414,7 @@
 					//绑定点击事件  - 进入详情页
 						
 					$('#slider').on('tap','.moreDetail',function(){
+						
 						let id = this.dataset.id;
 						let newData = {};
 						newData.checkType = checkType; // 药房，药库，基数药 区分
@@ -377,11 +422,15 @@
 						newData.distributeCode = distributeCode;
 						newData.isShowTemprature = isShowTemprature;
 						newData.hasAcceptance = hasAcceptance;// 判断 详情页面是否有验收按钮
-						newData.status = status;
+						newData.status = status;//1
 						newData.id = id;
 						newData.selectTabs = selectTabs;
-						newData.isPsList = isPsList; // 是否是配送单
+						newData.isPsList = isPsList; // 是否是配送单true
 						newData.query = globalQuery;
+						if(barcode){
+							newData.distributeCode = this.dataset.distributecode;
+							newData.barcode = barcode;//标记是扫描的数据，达到和isPlist同样的目的，显示数据可以修改 
+						}
 						console.log(JSON.stringify(newData))
 						document.activeElement.blur(); // 隐藏软键盘
 						common.openwin('acc_detail',{ details: JSON.stringify(newData) },{
@@ -399,6 +448,12 @@
 						paramsData.itemData = params;
 						paramsData.checkType = checkType;
 						paramsData.acceptance = true;
+						if(barcode){//批量不带distributeCode查询
+							paramsData.barcode = barcode;//标记是扫描的数据，达到和isPlist同样的目的，显示数据可以修改 
+							if(storeData && storeData.list && storeData.list[0]){
+								paramsData.distributeCode = storeData.list[0].distributeCode;
+							}
+						}
 						console.log(JSON.stringify(paramsData));
 						common.openwin('acc_batch',{ params: JSON.stringify(paramsData) },false)
 					})
@@ -409,13 +464,15 @@
 						var editFormNode = this.parentNode.parentNode.previousElementSibling.querySelector('.editForm')
 						let id = this.dataset.id;
 						let index = this.dataset.index;
+						let rowNo = this.dataset.rowno;
 						let postData = {}, detailList = [], submitData = {};
 						var _this_node = document.querySelectorAll('.am-card')[index];
 						console.log(_this_node.dataset)
 						postData.id = _this_node.dataset.id;
 						postData.drugCode = _this_node.dataset.drugcode;
 						postData.isUsual = Number(_this_node.dataset.isusual);
-						if(isPsList && Number(_this_node.dataset.isusual) === 0){
+						//扫描的也能输入
+						if((barcode || isPsList) && Number(_this_node.dataset.isusual) === 0){
 							// 配送单验收
 							var realReceiveQuantiry = editFormNode.querySelector('.realReceiveQuantiry').value?editFormNode.querySelector('.realReceiveQuantiry').value:"0";
 							var realProductTime = editFormNode.querySelector('.realProductTime').value;
@@ -429,6 +486,8 @@
 								postData.realProductTime = realProductTime;
 								postData.productBatchNo = productBatchNo;
 								postData.realValidEndDate = realValidEndDate;
+								postData.distributeCode = _this_node.dataset.distributecode;
+								postData.rowNo = rowNo;
 								if(isShowTemprature === 1){
 									postData.realAcceptanceTemperature = realAcceptanceTemperature;
 								}
@@ -439,16 +498,22 @@
 							postData.realProductTime = _this_node.dataset.realproducttime;
 							postData.productBatchNo = _this_node.dataset.productbatchno;
 							postData.realValidEndDate = _this_node.dataset.realvalidenddate;
+							postData.distributeCode = _this_node.dataset.distributecode;
+							postData.rowNo = rowNo;
 						}
 						detailList.push(postData);
+						
 						submitData.detailList = detailList;
 						submitData.distributeCode = distributeCode;
+						if(barcode){
+							submitData.barcode = barcode;
+							submitData.distributeCode = this.dataset.distributecode;
+						}
 						console.log(submitData);
 						
 						var btnArray = ['否', '是'];
 						mui.confirm('是否确认验收？', '确认', btnArray, function(e) {
 							if (e.index == 1) {
-								
 								var data = submitData;
 								mui.ajaxRequest(checkUrl,{
 									type: 'POST',
@@ -457,8 +522,15 @@
 									contentType: "application/json",
 									success: function(data){
 										if(data.code === 200){
-											mui.toast('验收成功',{ type: 'div' });
-											mui(".mui-scroll").pullToRefresh()[ selectTabs -1 ].pullDownLoading();
+											var text = "验收成功！";
+											if(data.data[0]){
+												text = data.data[0];
+											}
+											mui.alert(text,'提示','确定',function (e) {
+												mui(".mui-scroll").pullToRefresh()[ selectTabs -1 ].pullDownLoading();
+											},'div');
+										}else{
+											mui.alert(data.msg,'提示','确定',function (e) {},'div');
 										}
 									},
 									error: function(xhr,type,errorThrown){
@@ -479,13 +551,20 @@
 						var value = Number(this.value?this.value:0);
 						var _this_node = document.querySelectorAll('.am-card')[index];
 						var realDeliveryQuantiry = _this_node.dataset.realdeliveryquantiry?_this_node.dataset.realdeliveryquantiry:0;
-						var text = "实到数量不能大于数量"+realDeliveryQuantiry+"，且不能小于0！";
+						var realReceiveQuantiry = _this_node.dataset.realnum?_this_node.dataset.realnum:0;
+						var compareNum = realDeliveryQuantiry;
+						var text = "实到数量不能大于数量"+compareNum+"，且不能小于0！";
+						if(barcode){//扫码
+							compareNum = realReceiveQuantiry;
+							text = "实到数量不能大于条码数量"+compareNum+"，且不能小于0！";
+						}
+						
 						if(!countModal){
-							if(value<0 || value>realDeliveryQuantiry){
+							if(value<0 || value>compareNum){
 								countModal = true;
 								mui.alert(text,'提示','确定',function (e) {
 									countModal = false;
-									_this.value = realDeliveryQuantiry;
+									_this.value = compareNum;
 								},'div')
 							} 
 						}
@@ -494,7 +573,6 @@
 					
 					//生产日期与有效日期验证
 					$$('#slider').on('change','.realProductTime,.realValidEndDate',function(){
-						
 						var _this = this,$this = $$(this);
 						var index = this.dataset.index,cls = this.className;
 						var _this_node = document.querySelectorAll('.am-card')[index];
