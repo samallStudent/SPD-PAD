@@ -5,14 +5,19 @@
 (function($, doc) {
 //	var baseUrl = "http://192.168.31.200:8888/medicinal-web" // 测试地址//
 //	var baseUrl = "http://192.168.31.223:8080/medicinal-web" // 测试地址/
-//	var baseUrl = 'http://116.62.143.29:8088/medicinal-web'; // 线上地址2（快）
-//	var baseUrl = 'http://10.146.8.221:9002/medicinal-web'; // 合肥测试环境
-
+//  var baseUrl = 'http://116.62.143.29:8088/medicinal-web'; // 线上地址2（快）
+//  var baseUrl = 'http://10.146.8.221:9002/medicinal-web'; // 合肥测试环境
+//  var baseUrl = 'http://zesghq.natappfree.cc/medicinal-web'; 
 //	var baseUrl = 'http://10.146.159.113:8888/medicinal-web'; // 个人测试地址
-	
-	var baseUrl = 'http://10.146.9.50:8080/medicinal-web';// 合肥正式环境
-
-
+//  var baseUrl = 'http://192.168.3.3:8080/medicinal-web';
+//  var baseUrl = 'http://61.190.54.189:9001/medicinal-web';
+//	var baseUrl = 'http://192.168.2.154:8080/medicinal-web';
+//  var baseUrl = 'http://192.168.2.111:8080/medicinal-web';
+//  var baseUrl = 'http://192.168.2.111:8080/medicinal-web';
+//	var baseUrl = 'http://10.146.9.50:8080/medicinal-web';//
+	var baseUrl = 'http://10.146.9.50:8080/medicinal-web';//合肥正式环境
+//	var baseUrl = 'http://10.146.159.176:8080/medicinal-web';//
+//  var baseUrl = 'http://192.168.0.104:8080/medicinal-web';
     mui.extend({
         ajaxRequest: function(url , options){
             var defaults = commonDefaules(options);
