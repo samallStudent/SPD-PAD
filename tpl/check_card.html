@@ -2,14 +2,14 @@
 <script type="text/html" id='check_list'>
 	{{ each list value i}}
 		<div class="am-card scrollList-item am-card-full" 
-			data-checkBillNo={{ value.checkBillNo ? value.checkBillNo: '--' }}
-			data-checkBillTypeName={{ value.checkBillTypeName ? value.checkBillTypeName: '--' }}
-			data-checkBillDeptName={{ value.checkBillDeptName ? value.checkBillDeptName: '--' }}
-			data-createUserName={{ value.createUserName ? value.createUserName: '--' }}
-			data-createDate={{ value.createDate ? value.createDate.split(' ').join('|'): '--' }}
-			data-sheveUserName={{ value.sheveUserName ? value.sheveUserName: '--' }}
-			data-updateDate={{ value.updateDate ? value.updateDate: '--' }}
-			data-checkStatus={{ value.checkStatus ? value.checkStatus: '--' }}
+			data-checkBillNo="{{ value.checkBillNo ? value.checkBillNo: '--' }}" 
+			data-checkBillTypeName="{{ value.checkBillTypeName ? value.checkBillTypeName: '--' }}" 
+			data-checkBillDeptName="{{ value.checkBillDeptName ? value.checkBillDeptName: '--' }}" 
+			data-createUserName="{{ value.createUserName ? value.createUserName: '--' }}" 
+			data-createDate="{{ value.createDate ? value.createDate.split(' ').join('|'): '--' }}" 
+			data-sheveUserName="{{ value.sheveUserName ? value.sheveUserName: '--' }}" 
+			data-updateDate="{{ value.updateDate ? value.updateDate: '--' }}" 
+			data-checkStatus="{{ value.checkStatus ? value.checkStatus: '--' }}" 
 			>
 			<div class="am-card-header">
 				<div class="am-card-header-content">

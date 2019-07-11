@@ -4,13 +4,13 @@
 	<div class="batch-wrapper">
 		<div class="checkoneParent">
 			<div class="mui-checkbox mui-left" style="width: 48px;height:48px;padding:50px 0 ;display: block;">
-			  <input name="selected" class="checkone" type="checkbox" data-index={{ (page-1)*pageSize + i }} style="top: 35px;left: 10px;">
+			  <input name="selected" class="checkone" type="checkbox" data-index="{{ (page-1)*pageSize + i }}" style="top: 35px;left: 10px;">
 			</div>
 		</div>
 		<div class="am-card scrollList-item am-card-full" style="width: 90%;border: none;" 
-			data-id={{ value.id }}
-			data-drugCode={{ value.drugCode }}
-			data-allocationNum={{value.allocationNum}}
+			data-id="{{ value.id }}" 
+			data-drugCode="{{ value.drugCode }}" 
+			data-allocationNum="{{value.allocationNum}}" 
 			>
 			<div class="am-card-header">
 				<div class="am-card-header-content">
@@ -32,7 +32,7 @@
 								<div class="am-list-line">
 									<div class="am-input-label am-input-label-4 font-warning">实到数量:</div>
 									<div class="am-input-control">
-										<input pattern="[0-9]*" type="number" data-index={{ i }} value={{ value.allocationNum?value.allocationNum: '' }} placeholder="请输入" class="allocationNum flex-item-input" />
+										<input pattern="[0-9]*" type="number" data-index="{{ i }}" value="{{ value.allocationNum?value.allocationNum: '' }}" placeholder="请输入" class="allocationNum flex-item-input" />
 									</div>
 								</div>
 							</div>

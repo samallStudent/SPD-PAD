@@ -15,11 +15,11 @@
 							<span class="mui-col-xs-2" style="position: absolute;top: 25%;right: 2%;">
 								<button style="height: 60px;box-shadow: 4px -4px 4px #888888;" type="button" 
 								class="mui-btn mui-btn-warning traceDrugs" 
-								data-ctmmTradeName={{ value.ctmmTradeName }} 
-								data-ctmmSpecification={{ value.ctmmSpecification }} 
-								data-lot={{ value.lot }} 
-								data-totalQuantity={{ value.totalQuantity }} 
-								data-id={{ value.id?value.id:"" }} >追溯</button>
+								data-ctmmTradeName="{{ value.ctmmTradeName }}"  
+								data-ctmmSpecification="{{ value.ctmmSpecification }}"  
+								data-lot="{{ value.lot }}"  
+								data-totalQuantity="{{ value.totalQuantity }}"  
+								data-id="{{ value.id?value.id:"" }}" >追溯</button>
 							</span>
 							<span class="mui-col-xs-10  mui-ellipsis">厂商：{{value.ctmmManufacturerName}}</span>
 							<span class="mui-col-xs-6  mui-ellipsis">单位：{{value.replanUnit}}</span>

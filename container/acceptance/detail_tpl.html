@@ -59,7 +59,7 @@
 						<div class="mui-input-row">
 							{{ if (isPsList || barcode) && value.status === 1 && value.isUsual === 0 }}
 								<label class="font-warning">生产批号</label>
-								<input class="mui-input editInput BatchNo" value={{ value && value.productBatchNo ? value.productBatchNo: ''}} />
+								<input class="mui-input editInput BatchNo" value="{{ value && value.productBatchNo ? value.productBatchNo: ''}}" />
 								{{ else }}
 									<label>生产批号</label>
 									<p class="detailRow_content">{{ value && value.productBatchNo ?value.productBatchNo: ''}}</p>
@@ -68,7 +68,7 @@
 						<div class="mui-input-row">
 							{{ if (isPsList || barcode) && value.status === 1 && value.isUsual === 0 }}
 								<label class="font-warning">生产日期</label>
-								<input class="mui-input editInput realProductTime" type='date' value={{ value && value.realProductTime ? value.realProductTime: ''}} />
+								<input class="mui-input editInput realProductTime" type='date' value="{{ value && value.realProductTime ? value.realProductTime: ''}}" />
 								{{ else }}
 									<label>生产日期</label>
 									<p class="detailRow_content">{{value && value.realProductTime ? value.realProductTime: ''}}</p>
@@ -82,7 +82,7 @@
 						<div class="mui-input-row">
 							{{ if (isPsList || barcode) && value.status === 1 && isUsual === 0 }}
 								<label class="font-warning">有效期至</label>
-								<input class="mui-input editInput realValidEndDate" type='date' value={{ value && value.realValidEndDate ? value.realValidEndDate: '' }} />
+								<input class="mui-input editInput realValidEndDate" type='date' value="{{ value && value.realValidEndDate ? value.realValidEndDate: '' }}" />
 								{{ else }}
 									<label>有效期至</label>
 									<p class="detailRow_content">{{value && value.realValidEndDate ? value.realValidEndDate: ''}}</p>
@@ -92,7 +92,7 @@
 							<div class="mui-input-row">
 								{{ if (isPsList || barcode) && value.status === 1 && isUsual === 0 }}
 									<label class="font-warning">验收温度（℃）</label>
-									<input class="mui-input editInput realAcceptanceTemperature" type='number' value={{ value && value.realAcceptanceTemperature ? value.realAcceptanceTemperature: ''}}/>
+									<input class="mui-input editInput realAcceptanceTemperature" type='number' value="{{ value && value.realAcceptanceTemperature ? value.realAcceptanceTemperature: ''}}" />
 									{{ else }}
 										<label>验收温度（℃）</label>
 										<p class="detailRow_content">{{value && value.realAcceptanceTemperature ? value.realAcceptanceTemperature: ''}}</p>
@@ -106,7 +106,7 @@
 						<div class="mui-input-row">
 							{{ if (isPsList || barcode) && value.status === 1 && isUsual === 0 }}
 								<label class="font-warning">实到数量</label>
-								<input class="mui-input editInput realReceiveQuantiry" type="number"  pattern="[0-9]*" value={{ value && value.realNum ? value.realNum: value && value.realDeliveryQuantiry ? value.realDeliveryQuantiry: '' }} />
+								<input class="mui-input editInput realReceiveQuantiry" type="number"  pattern="[0-9]*" value="{{ value && value.realNum ? value.realNum: value && value.realDeliveryQuantiry ? value.realDeliveryQuantiry: '' }}" />
 								{{ else }}
 									<label>实到数量</label>
 									<p class="detailRow_content">{{value && value.isUsual === 0 && value.realNum ? value.realNum: 0 }}</p>

@@ -4,22 +4,22 @@
 		<div class="batch-wrapper">
 			<div class="checkoneParent">
 				<div class="mui-checkbox mui-left" style="width: 48px;height:48px;padding:50px 0 ;display: block;">
-				  <input name="selected" class="checkone" type="checkbox" data-index={{ (page-1)*pageSize + i }} style="top: 35px;left: 10px;">
+				  <input name="selected" class="checkone" type="checkbox" data-index="{{ (page-1)*pageSize + i }}" style="top: 35px;left: 10px;">
 				</div>
 			</div>
 			<div class="am-card scrollList-item am-card-full" style="width: 90%;border: none;"
-				data-id={{ value.id }} 
-				data-drugCode={{ value.drugCode }}
-				data-isUsual={{ value.isUsual }}
-				data-parentId={{ value.parentId }}
-				data-productBatchNo={{ value.productBatchNo }}
-				data-realProductTime = {{ value.realProductTime }}
-				data-realValidEndDate = {{ value.realValidEndDate }}
-				data-realDeliveryQuantiry = {{ value.realDeliveryQuantiry }}
-				data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} 
-				data-realNum = {{ value.realNum }} 
-				data-distributeCode={{ value.distributeCode }} 
-				data-rowNo = {{ value.rowNo }} 
+				data-id="{{ value.id }}"  
+				data-drugCode="{{ value.drugCode }}" 
+				data-isUsual="{{ value.isUsual }}" 
+				data-parentId="{{ value.parentId }}" 
+				data-productBatchNo="{{ value.productBatchNo }}" 
+				data-realProductTime = "{{ value.realProductTime }}" 
+				data-realValidEndDate = "{{ value.realValidEndDate }}" 
+				data-realDeliveryQuantiry = "{{ value.realDeliveryQuantiry }}" 
+				data-realReceiveQuantiry = "{{ value.realReceiveQuantiry }}"  
+				data-realNum = "{{ value.realNum }}"  
+				data-distributeCode="{{ value.distributeCode }}"   
+				data-rowNo = "{{ value.rowNo }}"   
 			>
 				<div class="am-card-header" style="padding: 9px 15px 0px 5px !important;">
 					<div class="am-card-header-content">
@@ -51,7 +51,7 @@
 											<div class="am-list-line">
 												<div class="am-input-label am-input-label-4 font-warning">实到数量:</div>
 												<div class="am-input-control">
-													<input pattern="[0-9]*" type="number" value={{ value.realNum ? value.realNum: value.realDeliveryQuantiry }} data-index={{ i }} placeholder="请输入" class="realReceiveQuantiry flex-item-input" />
+													<input pattern="[0-9]*" type="number" value="{{ value.realNum ? value.realNum: value.realDeliveryQuantiry }}" data-index="{{ i }}" placeholder="请输入" class="realReceiveQuantiry flex-item-input" />
 												</div>
 											</div>
 										</div>
@@ -61,7 +61,7 @@
 											<div class="am-list-line">
 												<div class="am-input-label am-input-label-5 font-warning">生产日期:</div>
 												<div class="am-input-control">
-													<input pattern="[0-9]*" type="date" value={{ value.realProductTime }} data-index={{ i }} placeholder="请输入" class="realProductTime flex-item-input" />
+													<input pattern="[0-9]*" type="date" value="{{ value.realProductTime }}" data-index="{{ i }}" placeholder="请输入" class="realProductTime flex-item-input" />
 												</div>
 											</div>
 										</div>
@@ -71,7 +71,7 @@
 											<div class="am-list-line">
 												<div class="am-input-label am-input-label-5 font-warning">有效期至:</div>
 												<div class="am-input-control">
-													<input pattern="[0-9]*" type="date" value={{ value.realValidEndDate }} data-index={{ i }} placeholder="请输入" class="realValidEndDate flex-item-input" />
+													<input pattern="[0-9]*" type="date" value="{{ value.realValidEndDate }}" data-index="{{ i }}" placeholder="请输入" class="realValidEndDate flex-item-input" />
 												</div>
 											</div>
 										</div>
@@ -83,7 +83,7 @@
 											<div class="am-list-line">
 												<div class="am-input-label am-input-label-4 font-warning">生产批号:</div>
 												<div class="am-input-control">
-													<input pattern="[0-9]*" type="text" value={{ value.productBatchNo }} placeholder="请输入" class="productBatchNo flex-item-input"/>
+													<input pattern="[0-9]*" type="text" value="{{ value.productBatchNo }}" placeholder="请输入" class="productBatchNo flex-item-input"/>
 												</div>
 											</div>
 										</div>
@@ -97,7 +97,7 @@
 												<div class="am-list-line">
 													<div class="am-input-label am-input-label-4 font-warning">验收温度:</div>
 													<div class="am-input-control">
-														<input pattern="[0-9]*" type="number" value={{ value.realAcceptanceTemperature ? value.realAcceptanceTemperature: '' }} placeholder="请输入" class="realAcceptanceTemperature flex-item-input"/>
+														<input pattern="[0-9]*" type="number" value="{{ value.realAcceptanceTemperature ? value.realAcceptanceTemperature: '' }}" placeholder="请输入" class="realAcceptanceTemperature flex-item-input"/>
 													</div>
 												</div>
 											</div>

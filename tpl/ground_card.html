@@ -2,12 +2,12 @@
 <script type="text/html" id='ground'>
 	{{ each list value i}}
 		<div class="am-card scrollList-item am-card-full" 
-			data-distributeCode={{ value.distributeCode }}
-			data-receptionTime={{ value.receptionTime ? value.receptionTime.split(' ').join('|'): '--' }}
-			data-statusName={{ value.statusName ? value.statusName: '--' }}
-			data-updateDate={{ value.updateDate ? value.updateDate.split(' ').join('|'): '--' }}
-			data-createName={{ value.createName ? value.createName: '--'}}
-			data-upUserDate={{ value.upUserDate ? value.upUserDate.split(' ').join('|'): '--' }}
+			data-distributeCode="{{ value.distributeCode }}" " 
+			data-receptionTime="{{ value.receptionTime ? value.receptionTime.split(' ').join('|'): '--' }}" 
+			data-statusName="{{ value.statusName ? value.statusName: '--' }}" 
+			data-updateDate="{{ value.updateDate ? value.updateDate.split(' ').join('|'): '--' }}" 
+			data-createName="{{ value.createName ? value.createName: '--'}}" 
+			data-upUserDate="{{ value.upUserDate ? value.upUserDate.split(' ').join('|'): '--' }}" 
 		>
 			<div class="am-card-header">
 				<div class="am-card-header-content">

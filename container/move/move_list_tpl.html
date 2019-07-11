@@ -2,7 +2,7 @@
 <script type="text/html" id='move_list_tpl'>
 	<div class="mui-card">
 		<!--页眉，放置标题-->
-		<div class="mui-card-header" data-id={{locationId}}>货位：{{locationName}}</div>
+		<div class="mui-card-header" data-id="{{locationId}}">货位：{{locationName}}</div>
 		<!--内容区-->
 		<div class="mui-card-content">
 			<ul class="mui-table-view" id="list_warp">
@@ -13,7 +13,7 @@
 						<div class="mui-row">
 							<span class="mui-col-xs-8  mui-ellipsis">规格：{{value.ctmmSpecification}}</span>
 							<span class="mui-col-xs-2" style="position: absolute;top: 25%;right: 2%;">
-								<button data-locationName={{locationName}}   data-id={{value.storeId}} data-name={{value.medicinalDesc}}  data-usableQuantity={{value.usableQuantity}} data-unitCode={{value.unitCode}}
+								<button data-locationName="{{locationName}}"   data-id="{{value.storeId}}" data-name="{{value.medicinalDesc}}"  data-usableQuantity="{{value.usableQuantity}}"  data-unitCode="{{value.unitCode}}" 
 								style="height: 60px;box-shadow: 4px -4px 4px #888888;" type="button" 
 								class="mui-btn mui-btn-warning moveDrugs">移动</button>
 							</span>

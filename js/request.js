@@ -15,7 +15,7 @@
 //  var baseUrl = 'http://192.168.2.111:8080/medicinal-web';
 //  var baseUrl = 'http://192.168.2.111:8080/medicinal-web';
 //	var baseUrl = 'http://10.146.9.50:8080/medicinal-web';//
-	var baseUrl = 'http://10.146.9.50:8080/medicinal-web';//合肥正式环境
+var baseUrl = 'http://10.146.9.50:8080/medicinal-web';//合肥正式环境
 //	var baseUrl = 'http://10.146.159.176:8080/medicinal-web';//
 //  var baseUrl = 'http://192.168.0.104:8080/medicinal-web';
     mui.extend({

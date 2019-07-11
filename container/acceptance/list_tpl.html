@@ -2,17 +2,17 @@
 <script type="text/html" id='list_tpl_view'>
 	{{ each list value i}}
 		<div class="am-card scrollList-item am-card-full" 
-			data-id={{ value.id }}
-			data-isUsual={{ value.isUsual }}
-			data-drugCode = {{ value.drugCode }}
-			data-parentId = {{ value.parentId ? value.parentId:'-' }}
-			data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} 
-			data-realNum = {{ value.realNum }} 
-			data-realProductTime = {{ value.realProductTime }}
-			data-productBatchNo = {{ value.productBatchNo}}
-			data-realValidEndDate = {{ value.realValidEndDate }} 
-			data-realDeliveryQuantiry = {{ value.realDeliveryQuantiry }} 
-			data-distributeCode={{ value.distributeCode }}
+			data-id="{{ value.id }}" 
+			data-isUsual="{{ value.isUsual }}" 
+			data-drugCode = "{{ value.drugCode }}" 
+			data-parentId = "{{ value.parentId ? value.parentId:'-' }}" 
+			data-realReceiveQuantiry = "{{ value.realReceiveQuantiry }}" 
+			data-realNum = "{{ value.realNum }}" 
+			data-realProductTime = "{{ value.realProductTime }}" 
+			data-productBatchNo = "{{ value.productBatchNo}}" 
+			data-realValidEndDate = "{{ value.realValidEndDate }}"  
+			data-realDeliveryQuantiry = "{{ value.realDeliveryQuantiry }}"  
+			data-distributeCode="{{ value.distributeCode }}" 
 		>
 			<div class="am-card-header">
 				<div class="am-card-header-content">
@@ -37,14 +37,14 @@
 				</div>
 				{{ if acceptance }}
 					{{ if value.isUsual === 0 && checkType === 1 }}
-						<div class="editForm" data-index={{i}} style="display: block;">
+						<div class="editForm" data-index="{{i}}" style="display: block;">
 							<div class="am-flexbox am-flexbox-align-center">
 								<div class="am-flexbox-item">
 									<div class="am-list-item am-input-item am-list-item-middle">
 										<div class="am-list-line">
 											<div class="am-input-label am-input-label-4 font-warning">实到数量:</div>
 											<div class="am-input-control">
-												<input pattern="[0-9]*" type="number" value={{ value.realNum ? value.realNum: value.realDeliveryQuantiry }} data-index={{i}} placeholder="请输入" class="realReceiveQuantiry flex-item-input"/>
+												<input pattern="[0-9]*" type="number" value="{{ value.realNum ? value.realNum: value.realDeliveryQuantiry }}" data-index="{{i}}" placeholder="请输入" class="realReceiveQuantiry flex-item-input"/>
 											</div>
 										</div>
 									</div>
@@ -54,7 +54,7 @@
 										<div class="am-list-line">
 											<div class="am-input-label am-input-label-5 font-warning">生产日期:</div>
 											<div class="am-input-control">
-												<input pattern="[0-9]*" type="date" value={{ value.realProductTime }} data-index={{i}} placeholder="请输入" class="realProductTime flex-item-input" />
+												<input pattern="[0-9]*" type="date" value="{{ value.realProductTime }}" data-index="{{i}}" placeholder="请输入" class="realProductTime flex-item-input" />
 											</div>
 										</div>
 									</div>
@@ -64,7 +64,7 @@
 										<div class="am-list-line">
 											<div class="am-input-label am-input-label-5 font-warning">有效期至:</div>
 											<div class="am-input-control">
-												<input pattern="[0-9]*" type="date" value={{ value.realValidEndDate }} data-index={{i}} placeholder="请输入" class="realValidEndDate flex-item-input" />
+												<input pattern="[0-9]*" type="date" value="{{ value.realValidEndDate }}" data-index="{{i}}" placeholder="请输入" class="realValidEndDate flex-item-input" />
 											</div>
 										</div>
 									</div>
@@ -90,7 +90,7 @@
 											<div class="am-list-line">
 												<div class="am-input-label am-input-label-4 font-warning">验收温度:</div>
 												<div class="am-input-control">
-													<input pattern="[0-9]*" type="number" value={{ value.realAcceptanceTemperature ? value.realAcceptanceTemperature: '' }} placeholder="请输入" class="realAcceptanceTemperature flex-item-input"/>
+													<input pattern="[0-9]*" type="number" value="{{ value.realAcceptanceTemperature ? value.realAcceptanceTemperature: '' }}" placeholder="请输入" class="realAcceptanceTemperature flex-item-input"/>
 												</div>
 											</div>
 										</div>
@@ -132,11 +132,11 @@
 				<div class="am-card-footer-content"></div>
 				<div class="am-card-footer-extra">
 					{{ if acceptance && value.isUsual === 0 && value.showEditBtn }}
-						<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined edit" data-id={{ value.id }} data-index={{i}}>收起编辑</button>
+						<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined edit" data-id="{{ value.id }}" data-index="{{i}}">收起编辑</button>
 					{{ /if }}
-					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined moreDetail" data-distributeCode={{ value.distributeCode }} data-id={{ value.id }} data-index={{i}} style="margin: 0 5px;">更多详情</button>
+					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined moreDetail" data-distributeCode="{{ value.distributeCode }}" data-id="{{ value.id }}" data-index="{{i}}" style="margin: 0 5px;">更多详情</button>
 					{{ if acceptance }}
-						<button type="button" class="mui-btn mui-btn-blue mui-btn-danger acceptance" data-rowNo={{ value.rowNo }} data-distributeCode={{ value.distributeCode }} data-id={{ value.id }}  data-index={{i}}>确认验收</button>
+						<button type="button" class="mui-btn mui-btn-blue mui-btn-danger acceptance" data-rowNo="{{ value.rowNo }}" data-distributeCode="{{ value.distributeCode }}" data-id="{{ value.id }}"  data-index="{{i}}">确认验收</button>
 					{{ /if }}
 					
 				</div>

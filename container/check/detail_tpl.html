@@ -79,7 +79,7 @@
 						<div class="mui-input-row">
 							{{ if value.checkDetailStatus === 1 }}
 								<label class="font-warning">实际数量</label>
-								<input pattern="[0-9]*" id="accountStoreNum" type="number" value={{ value.accountStoreNum }} placeholder="请输入" class="practicalRepertory flex-item-input" />
+								<input pattern="[0-9]*" id="accountStoreNum" type="number" value="{{ value.accountStoreNum }}" placeholder="请输入" class="practicalRepertory flex-item-input" />
 								{{ else }}
 									<label>实际数量</label>
 									<p class="detailRow_content">{{value.practicalRepertory}}</p>
@@ -97,7 +97,7 @@
 						<div class="mui-input-row">
 							{{ if value.checkDetailStatus === 1 }}
 								<label class="font-warning">实际批号</label>
-								<input pattern="[0-9]*" type="number" value={{ value.accountBatchNo }} placeholder="请输入" class="practicalBatch flex-item-input" />
+								<input pattern="[0-9]*" type="number" value="{{ value.accountBatchNo }}" placeholder="请输入" class="practicalBatch flex-item-input" />
 								{{ else }}
 								<label>实际批号</label>
 								<p class="detailRow_content">{{value.practicalBatch}}</p>
@@ -110,7 +110,7 @@
 						<div class="mui-input-row">
 							{{ if value.checkDetailStatus === 1 }}
 								<label class="font-warning">实际生产日期</label>
-								<input pattern="[0-9]*" type="date" value={{ value.accountProductTime }} placeholder="请输入" class="realProductTime flex-item-input" />
+								<input pattern="[0-9]*" type="date" value="{{ value.accountProductTime }}" placeholder="请输入" class="realProductTime flex-item-input" />
 								{{ else }}
 								<label>实际生产日期</label>
 								<p class="detailRow_content">{{value.realProductTime}}</p>
@@ -123,7 +123,7 @@
 						<div class="mui-input-row">
 							{{ if value.checkDetailStatus === 1 }}
 								<label class="font-warning">实际有效期至</label>
-								<input pattern="[0-9]*" type="date" value={{ value.accountEndTime }} placeholder="请输入" class="validEndTime flex-item-input"/>
+								<input pattern="[0-9]*" type="date" value="{{ value.accountEndTime }}" placeholder="请输入" class="validEndTime flex-item-input"/>
 								{{ else }}
 								<label>实际有效期至</label>
 								<p class="detailRow_content">{{value.validEndTime}}</p>

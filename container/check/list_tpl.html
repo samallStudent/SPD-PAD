@@ -1,7 +1,7 @@
 
 <script type="text/html" id='check_list_tpl'>
 	{{ each list value i}}
-		<div class="am-card scrollList-item am-card-full" data-id={{ value.id }}>
+		<div class="am-card scrollList-item am-card-full" data-id="{{ value.id }}">
 			<div class="am-card-header">
 				<div class="am-card-header-content">
 					<span style="font-size: 18px; color: rgb(51, 51, 51); font-weight: bold;">
@@ -33,7 +33,7 @@
 										<div class="am-list-line">
 											<div class="am-input-label am-input-label-4 font-warning">数量:</div>
 											<div class="am-input-control">
-												<input pattern="[0-9]*" type="number" value={{ value.accountStoreNum }} placeholder="请输入" class="practicalRepertory flex-item-input" />
+												<input pattern="[0-9]*" type="number" value="{{ value.accountStoreNum }}" placeholder="请输入" class="practicalRepertory flex-item-input" />
 											</div>
 										</div>
 									</div>
@@ -43,7 +43,7 @@
 										<div class="am-list-line">
 											<div class="am-input-label am-input-label-5 font-warning">生产日期:</div>
 											<div class="am-input-control">
-												<input pattern="[0-9]*" type="date" value={{ value.accountProductTime }} placeholder="请输入" class="realProductTime flex-item-input" />
+												<input pattern="[0-9]*" type="date" value="{{ value.accountProductTime }}" placeholder="请输入" class="realProductTime flex-item-input" />
 											</div>
 										</div>
 									</div>
@@ -53,7 +53,7 @@
 										<div class="am-list-line">
 											<div class="am-input-label am-input-label-5 font-warning">生产批号:</div>
 											<div class="am-input-control">
-												<input pattern="[0-9]*" type="text" value={{ value.accountBatchNo }} placeholder="请输入" class="practicalBatch flex-item-input" />
+												<input pattern="[0-9]*" type="text" value="{{ value.accountBatchNo }}" placeholder="请输入" class="practicalBatch flex-item-input" />
 											</div>
 										</div>
 									</div>
@@ -65,7 +65,7 @@
 										<div class="am-list-line">
 											<div class="am-input-label am-input-label-4 font-warning">有效期至:</div>
 											<div class="am-input-control">
-												<input pattern="[0-9]*" type="date" value={{ value.accountEndTime }} placeholder="请输入" class="validEndTime flex-item-input"/>
+												<input pattern="[0-9]*" type="date" value="{{ value.accountEndTime }}" placeholder="请输入" class="validEndTime flex-item-input"/>
 											</div>
 										</div>
 									</div>
@@ -107,11 +107,11 @@
 			<div class="am-card-footer">
 				<div class="am-card-footer-extra">
 					{{if value.checkDetailStatus === 1 }}
-						<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined eidtRow" style="margin: 0 5px;" data-id={{ value.id }} data-index={{ i }}>收起编辑</button>
+						<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined eidtRow" style="margin: 0 5px;" data-id="{{ value.id }}" data-index="{{ i }}">收起编辑</button>
 					{{/if}}
-					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined toPage" style="margin: 0 5px;" data-index={{ i }}>更多详情</button>
+					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined toPage" style="margin: 0 5px;" data-index="{{ i }}">更多详情</button>
 					{{ if value.checkDetailStatus === 1 }}
-						<button type="button" class="mui-btn mui-btn-blue mui-btn-danger submitButton" data-id={{ value.id }} data-index={{ i }}>提交</button>
+						<button type="button" class="mui-btn mui-btn-blue mui-btn-danger submitButton" data-id="{{ value.id }}" data-index="{{ i }}">提交</button>
 					{{ /if }}
 				</div>
 			</div>

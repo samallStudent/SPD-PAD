@@ -2,11 +2,11 @@
 <script type="text/html" id='picking_tpl'>
 	{{ each list value i}}
 		<div class="am-card scrollList-item am-card-full" 
-			data-id={{ value.id }}
-			data-applyOrderNo={{ applyOrderNo }}
-			data-allocationNum={{ value.allocationNum }}
-			data-drugCode={{ value.drugCode }}
-			data-pickingNum={{ value.pickingNum }}
+			data-id="{{ value.id }}" 
+			data-applyOrderNo="{{ applyOrderNo }}" 
+			data-allocationNum="{{ value.allocationNum }}" 
+			data-drugCode="{{ value.drugCode }}" 
+			data-pickingNum="{{ value.pickingNum }}" 
 		>
 			<div class="am-card-header">
 				<div class="am-card-header-content">
@@ -28,7 +28,7 @@
 								<div class="am-list-line">
 									<div class="am-input-label am-input-label-4 font-warning">实到数量:</div>
 									<div class="am-input-control">
-										<input pattern="[0-9]*" type="number" data-index={{ i }} value={{ value.allocationNum?value.allocationNum: '' }} placeholder="请输入" class="allocationNum flex-item-input" />
+										<input pattern="[0-9]*" type="number" data-index="{{ i }}" value="{{ value.allocationNum?value.allocationNum: '' }}" placeholder="请输入" class="allocationNum flex-item-input" />
 									</div>
 								</div>
 							</div>
@@ -61,9 +61,9 @@
 			</div>
 			<div class="am-card-footer">
 				<div class="am-card-footer-extra">
-					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined toPage" style="margin: 0 5px;" data-index={{ i }} data-id={{ value.id }}>更多详情</button>
+					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined toPage" style="margin: 0 5px;" data-index="{{ i }}" data-id="{{ value.id }}">更多详情</button>
 					{{ if hasPicked }}
-						<button type="button" class="mui-btn mui-btn-blue mui-btn-danger submitButton" data-index={{ i }}>确认拣货</button>
+						<button type="button" class="mui-btn mui-btn-blue mui-btn-danger submitButton" data-index="{{ i }}">确认拣货</button>
 					{{ /if }}
 				</div>
 			</div>

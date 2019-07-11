@@ -85,9 +85,9 @@
 								<select class="editInput realReceiveStore" style="float: left;width: 40%;">
 									{{ each value.acceptoodsVo item i }}
 										{{ if value.realReceiveStore === item.id }}
-											<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
+											<option value="{{ item.id }}" selected="selected">{{ item.positionName }}</option>
 										{{ else }}
-											<option value={{ item.id }}>{{ item.positionName }}</option>
+											<option value="{{ item.id }}">{{ item.positionName }}</option>
 										{{ /if }}
 									{{ /each }}
 								</select>
@@ -122,7 +122,7 @@
 								{{ else }}
 									<label class="font-warning">实际上架数量</label>
 								{{ /if }}								
-								<input type="tel" class="mui-input editInput realNum" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} />
+								<input type="tel" class="mui-input editInput realNum" value="{{ value.realNum ? value.realNum : 0}}" placeholder="请输入" data-id="{{value.id}}" data-oldValue = "{{value.realNum}}" data-realReceiveQuantiry = "{{ value.realReceiveQuantiry }}" />
 							{{ else }}
 								{{ if value.upParentId != null }}
 									<label>备选货位实际上架数量</label>

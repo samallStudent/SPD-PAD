@@ -2,10 +2,10 @@
 <script type="text/html" id='list_tpl_view'>
 	{{ each list value i}}
 		<div class="am-card scrollList-item am-card-full" 
-			data-id={{ value.id }}
-			data-isUsual={{ value.isUsual }}
-			data-drugCode={{ value.drugCode }}
-			data-parentId={{ value.parentId }}
+			data-id="{{ value.id }}" 
+			data-isUsual="{{ value.isUsual }}" 
+			data-drugCode="{{ value.drugCode }}" 
+			data-parentId="{{ value.parentId }}" 
 		>
 			<div class="am-card-header">
 				<div class="am-card-header-content">
@@ -55,9 +55,9 @@
 			<div class="am-card-footer">
 				<div class="am-card-footer-content"></div>
 				<div class="am-card-footer-extra">
-					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined moreDetail" data-id={{ value.id }} data-index={{ i }} style="margin: 0 5px;">更多详情</button>
+					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined moreDetail" data-id="{{ value.id }}" data-index="{{ i }}" style="margin: 0 5px;">更多详情</button>
 					{{ if acceptance }}
-						<button type="button" class="mui-btn mui-btn-blue mui-btn-danger acceptance" data-id={{ value.id }}  data-index={{ i }}>确认验收</button>
+						<button type="button" class="mui-btn mui-btn-blue mui-btn-danger acceptance" data-id="{{ value.id }}"  data-index="{{ i }}">确认验收</button>
 					{{ /if }}
 					
 				</div>

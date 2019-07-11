@@ -2,13 +2,12 @@
 <script type="text/html" id='pick_list'>
 		{{ each list value i}}
 		<div class="am-card scrollList-item am-card-full" 
-			data-pickingOrderNo={{ value.pickingOrderNo }}
-			data-deptName={{ value.deptName?value.deptName: '--' }}
-			data-statusName={{ value.statusName ? value.statusName: '--' }}
-			data-updateDate={{ value.updateDate ? value.updateDate.split(' ').join('|'): '--' }}
-			data-pickingUserName={{ value.pickingUserName ? value.pickingUserName: '--' }}
-			data-applyOrderNo={{ value.applyOrderNo ? value.applyOrderNo: '' }}
-			
+			data-pickingOrderNo="{{ value.pickingOrderNo }}" 
+			data-deptName="{{ value.deptName?value.deptName: '--' }}" 
+			data-statusName="{{ value.statusName ? value.statusName: '--' }}" 
+			data-updateDate="{{ value.updateDate ? value.updateDate.split(' ').join('|'): '--' }}" 
+			data-pickingUserName="{{ value.pickingUserName ? value.pickingUserName: '--' }}" 
+			data-applyOrderNo="{{ value.applyOrderNo ? value.applyOrderNo: '' }}" 
 			>
 			<div class="am-card-header">
 				<div class="am-card-header-content">

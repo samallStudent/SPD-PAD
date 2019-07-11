@@ -2,10 +2,10 @@
 <script type="text/html" id='ground_list'>
 	{{ each list value i}}
 		<div class="am-card scrollList-item am-card-full" 
-			data-id={{ value.id }}
-			data-realnum={{ value.realNum }}
-			data-productBatchNo={{ value.productBatchNo }} 
-			data-upParentId={{ value.upParentId?value.upParentId:"" }}
+			data-id="{{ value.id }}" 
+			data-realnum="{{ value.realNum }}" 
+			data-productBatchNo="{{ value.productBatchNo }}"  
+			data-upParentId="{{ value.upParentId?value.upParentId:"" }}" 
 			>
 			<div class="am-card-header">
 				<div class="am-card-header-content">
@@ -31,19 +31,19 @@
 				{{ if hasGround }}
 					{{ if value.realNum && value.realNum.length && value.realNum.length > 1}}
 						{{ each value.realNum num index}}
-							<div class="editForm" style="display: block;" data-upParentId={{ value.upParentId[index]?value.upParentId[index]:0 }}>
+							<div class="editForm" style="display: block;" data-upParentId="{{ value.upParentId[index]?value.upParentId[index]:0 }}">
 								<div class="am-flexbox am-flexbox-align-center">
 									<div class="am-flexbox-item">
 										<div class="am-list-item am-input-item am-list-item-middle">
 											<div class="am-list-line">
 												<div class="am-input-label am-input-label-4 font-warning" style="width: 56px;">{{value.storeType[index]}}:</div>
 												<div class="am-input-control">
-													<select class="editInput select_actualStore" data-id={{value.id}} data-index={{index}}>
+													<select class="editInput select_actualStore" data-id="{{value.id}}" data-index="{{index}}">
 														{{ each value.acceptoodsVo item i }}
 															{{ if value.realReceiveStore[index] && value.realReceiveStore[index] === item.id }}
-																<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
+																<option value="{{ item.id }}" selected="selected">{{ item.positionName }}</option>
 															{{ else }}
-																<option value={{ item.id }}>{{ item.positionName }}</option>
+																<option value="{{ item.id }}">{{ item.positionName }}</option>
 															{{ /if }}
 														{{ /each }}
 													</select>
@@ -53,7 +53,7 @@
 									</div>
 									<div class="am-flexbox-item">
 										扫描货位：
-										<a href="#modal" class="qrcode"  id="qrcode" data-value={{value}} data-index={{index}} style="height: 32px;width: 32px;display: inline-block;">
+										<a href="#modal" class="qrcode"  id="qrcode" data-value="{{value}}" data-index="{{index}}" style="height: 32px;width: 32px;display: inline-block;">
 											<img src="../../assest/qrcode.png" style="width:100%;height: 100%;margin-bottom: -14px;" width="30" height="30"/>
 										</a>						
 									</div>
@@ -62,7 +62,7 @@
 											<div class="am-list-line">
 												<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
 												<div class="am-input-control">
-													<input class="realNum flex-item-input" type="tel" value={{ value.realNum[index] ? value.realNum[index] : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum[index] ? value.realNum[index] : 0}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} />
+													<input class="realNum flex-item-input" type="tel" value="{{ value.realNum[index] ? value.realNum[index] : 0}}" placeholder="请输入" data-id="{{value.id}}" data-oldValue = "{{value.realNum[index] ? value.realNum[index] : 0}}" data-realReceiveQuantiry = "{{ value.realReceiveQuantiry }}" />
 												</div>
 											</div>
 										</div>
@@ -71,19 +71,19 @@
 							</div>
 						{{/each}}
 					{{ else }}
-						<div class="editForm" style="display: block;" data-upParentId={{ value.upParentId?value.upParentId:0 }}>
+						<div class="editForm" style="display: block;" data-upParentId="{{ value.upParentId?value.upParentId:0 }}">
 							<div class="am-flexbox am-flexbox-align-center">
 								<div class="am-flexbox-item">
 									<div class="am-list-item am-input-item am-list-item-middle">
 										<div class="am-list-line">
 											<div class="am-input-label am-input-label-4 font-warning" style="width: 40px;">货位:</div>
 											<div class="am-input-control">
-												<select class="editInput select_actualStore" data-id={{value.id}} data-index={{1}}>
+												<select class="editInput select_actualStore" data-id="{{value.id}}" data-index="{{1}}">
 													{{ each value.acceptoodsVo item i }}
 														{{ if value.realReceiveStore === item.id }}
-															<option value={{ item.id }} selected="selected">{{ item.positionName }}</option>
+															<option value="{{ item.id }}" selected="selected">{{ item.positionName }}</option>
 														{{ else }}
-															<option value={{ item.id }}>{{ item.positionName }}</option>
+															<option value="{{ item.id }}">{{ item.positionName }}</option>
 														{{ /if }}
 													{{ /each }}
 												</select>
@@ -93,7 +93,7 @@
 								</div>
 								<div class="am-flexbox-item">
 									扫描货位：
-									<a href="#modal" class="qrcode"  id="qrcode" data-value={{value}} data-index={{1}} style="height: 32px;width: 32px;display: inline-block;">
+									<a href="#modal" class="qrcode"  id="qrcode" data-value="{{value}}" data-index="{{1}}" style="height: 32px;width: 32px;display: inline-block;">
 										<img src="../../assest/qrcode.png" style="width:100%;height: 100%;margin-bottom: -14px;" width="30" height="30"/>
 									</a>						
 								</div>
@@ -102,7 +102,7 @@
 										<div class="am-list-line">
 											<div class="am-input-label am-input-label-6 font-warning">实际上架数量:</div>
 											<div class="am-input-control">
-												<input class="realNum flex-item-input" type="tel" value={{ value.realNum ? value.realNum : 0}} placeholder="请输入" data-id={{value.id}} data-oldValue = {{value.realNum}} data-realReceiveQuantiry = {{ value.realReceiveQuantiry }} />
+												<input class="realNum flex-item-input" type="tel" value="{{ value.realNum ? value.realNum : 0}}" placeholder="请输入" data-id="{{value.id}}" data-oldValue = "{{value.realNum}}" data-realReceiveQuantiry = "{{ value.realReceiveQuantiry }}" />
 											</div>
 										</div>
 									</div>
@@ -120,9 +120,9 @@
 			<div class="am-card-footer">
 				<div class="am-card-footer-content"></div>
 				<div class="am-card-footer-extra">
-					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined moreDetail" data-id={{ value.id }} data-index={{ i }} data-upParentId={{value.upParentId?value.upParentId:0}} style="margin: 0 5px;">更多详情</button>
+					<button type="button" class="mui-btn mui-btn-blue mui-btn-outlined moreDetail" data-id="{{ value.id }}" data-index="{{ i }}" data-upParentId="{{value.upParentId?value.upParentId:0}}" style="margin: 0 5px;">更多详情</button>
 					{{ if hasGround }}
-						<button type="button" class="mui-btn mui-btn-danger ground" data-id={{ value.id }} data-index={{ i }} >确认上架</button>
+						<button type="button" class="mui-btn mui-btn-danger ground" data-id="{{ value.id }}" data-index="{{ i }}" >确认上架</button>
 					{{ /if }}
 				</div>
 			</div>

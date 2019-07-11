@@ -2,14 +2,14 @@
 <script type="text/html" id='acceptance'>
 	{{ each list value i}}
 		<div class="am-card scrollList-item am-card-full" 
-			data-distributeCode={{ value.distributeCode ? value.distributeCode: '--' }}
-			data-orderCode={{ value.orderCode ? value.orderCode: '--' }}
-			data-statusName={{ value.statusName ? value.statusName: '--' }}
-			data-acceptType={{ value.type }}
-			data-typeName={{ value.typeName ? value.typeName: "--" }}
-			data-supplierName={{ value.supplierName ? value.supplierName: '--' }} 
-			data-deptAddress={{ value.deptAddress ? value.deptAddress: '--' }}
-			data-isUsual={{ value.isUsual }}
+			data-distributeCode="{{ value.distributeCode ? value.distributeCode: '--' }}" 
+			data-orderCode="{{ value.orderCode ? value.orderCode: '--' }}" 
+			data-statusName="{{ value.statusName ? value.statusName: '--' }}" 
+			data-acceptType="{{ value.type }}" 
+			data-typeName="{{ value.typeName ? value.typeName: "--" }}" 
+			data-supplierName="{{ value.supplierName ? value.supplierName: '--' }}"  
+			data-deptAddress="{{ value.deptAddress ? value.deptAddress: '--' }}" 
+			data-isUsual="{{ value.isUsual }}" 
 		>
 			<div class="am-card-header">
 				<div class="am-card-header-content">
