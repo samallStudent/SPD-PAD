@@ -43,7 +43,7 @@
 						</div>
 					</div>
 					{{ if acceptance }}
-						{{ if value.isUsual === 0 && checkType === 1 }}
+						{{ if value.isUsual === 0 && checkType === 1 && (isPsList || barcode)}}
 							<div class="editForm" style="display: block;">
 								<div class="am-flexbox am-flexbox-align-center">
 									<div class="am-flexbox-item">

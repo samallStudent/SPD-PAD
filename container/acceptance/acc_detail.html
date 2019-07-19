@@ -52,7 +52,8 @@
 					type = undefined, 
 					data = null, 
 					details = undefined, 
-					barcode = undefined;
+					barcode = undefined,
+					isPsList = undefined,
 					url = '/a/exam/detail', // 分页接口
 					titleUrl = '/a/exam/detailhead',// 头部接口
 					checkUrl = '/a/checkacceptdetail/checkList';
@@ -71,6 +72,7 @@
 					checkType = details.checkType;
 					status = details.status;
 					barcode = details.barcode;
+					isPsList = details.isPsList;
 					console.log(JSON.stringify(details) );
 					console.log(typeof details.selectTabs)
 					var postData = {
@@ -89,10 +91,11 @@
 						success: function(data){
 							if(data.code === 200){
 								for(var key in data.data){
-									detailData[key] = data.data[key];
-									detailData.isPsList = details.isPsList;
-									detailData.barcode = details.barcode;
+									detailData[key] = data.data[key];					
 								}
+								detailData.isPsList = details.isPsList;
+								detailData.barcode = details.barcode;
+								detailData.checkType = details.checkType;
 								mui.ajaxRequest(url,{
 									type: 'POST',
 									data: postData,

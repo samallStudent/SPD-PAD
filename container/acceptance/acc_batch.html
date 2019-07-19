@@ -81,6 +81,7 @@
 					distributeCode = undefined,
 					isShowTemprature = undefined,
 					barcode = undefined,
+					isPsList = undefined,
 					selectedRows = [],
 					acceptList = [],// 数据
 					selecteIndex = [];
@@ -142,6 +143,8 @@
 								acceptList = resData.list;
 								resData.acceptance = true;
 								resData.checkType = checkType;
+								resData.barcode = barcode;
+								resData.isPsList = isPsList;
 								totalPage = data.totalPage;
 								console.log( resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage))
 								if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
@@ -203,6 +206,8 @@
 									});
 									resData.acceptance = true;
 									resData.checkType = checkType;
+									resData.barcode = barcode;
+									resData.isPsList = isPsList;
 									if (resData.pageNo === resData.totalPage) {
 										isMore = false;
 										self.endPullUpToRefresh(true);
@@ -243,6 +248,7 @@
 					checkType = params.checkType;
 					isShowTemprature = params.isShowTemprature;
 					barcode = params.barcode;
+					isPsList = params.isPsList;
 					console.log(checkType,'checkType')
 					console.log(params);
 

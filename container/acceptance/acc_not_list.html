@@ -182,6 +182,8 @@
 								storeData = resData;
 								resData.acceptance = selectTabs === 1 ? true: false;
 								resData.checkType = checkType;
+								resData.barcode = barcode;
+								resData.isPsList = isPsList;
 								totalPage = data.totalPage;
 								if(resData.list.length === 0 || (resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage)){
 									var i = selectTabs === 1 ? 0 : 1;
@@ -244,6 +246,8 @@
 									//resData.acceptance = selectTabs === 1 && checkType === 1 ? true: false;
 									resData.acceptance = status === '1'? true: false;
 									resData.checkType = checkType;
+									resData.barcode = barcode;
+									resData.isPsList = isPsList;
 									if(resData.list.length <= resData.pageSize && resData.pageNo === resData.totalPage){
 										var i = selectTabs === 1 ? 0 : 1;
 										isMore = false;
@@ -494,7 +498,7 @@
 							}
 						}else{
 							// 送货单验收
-							postData.realReceiveQuantiry = _this_node.dataset.realreceivequantiry;
+							postData.realReceiveQuantiry = _this_node.dataset.realnum;//realreceivequantiry->realnum,//应海洪要求改的
 							postData.realProductTime = _this_node.dataset.realproducttime;
 							postData.productBatchNo = _this_node.dataset.productbatchno;
 							postData.realValidEndDate = _this_node.dataset.realvalidenddate;
