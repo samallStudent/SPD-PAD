@@ -107,15 +107,12 @@
 						});
 					}
 				}
-				/*
-				            	 	下拉刷新
-				            	 * */
+				/* 下拉刷新 */
 				function pulldownRefresh() {
 					// 重置 勾选项
 					document.querySelector('.total').innerText = 0;
 					document.querySelector('#checkall').checked = false;
 					selecteIndex = [];
-					
 					var self = this;
 					page = 1;
 					var postData = {
