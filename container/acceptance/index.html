@@ -68,7 +68,7 @@
 			
 			
 			var selectTabs = 1; // 默认选中第一个tab
-			//货位码
+			//条形码
 			function clicked(){
 				
 				common.openwin('../commonPages/qrcode',true,{ titleText: '扫码验收' })
@@ -76,9 +76,12 @@
 			
 			/*获取二维码返回值*/
 			function scaned(t, r, f) {
-				
 				console.log(r+"条形码读取的数据");//返回二维码读取的数据
 				if(r){
+					r = r+"";
+					if(typeof r == 'string'){//去掉条形码前面的0
+						r = r.replace(/\b(0+)/gi,"");
+					}
 					var itemData = {barcode:r}
 					itemData.currentSelected = selectTabs === 1 ? 'left': 'right';
 					console.log(JSON.stringify(itemData))
